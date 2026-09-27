@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>Confirma tu plaza · Trenzia</title>
+<link rel="stylesheet" href="probar.css">
+</head>
+<body>
+<main>
+ <a class="brand" href="./"><img src="logo.svg" alt="" width="44" height="44"><span>Trenzia</span></a>
+
+ <!--
+  El enlace del correo trae aquí, y es ESTE botón el que confirma. No se
+  confirma al abrir la página: los antivirus del correo (Safe Links de
+  Outlook/Hotmail) abren todos los enlaces antes que la persona, y confirmarían
+  solos.
+ -->
+ <section id="pedir">
+  <h1>Confirma tu plaza</h1>
+  <p class="lead">Pulsa el botón para confirmar que quieres probar Trenzia.</p>
+  <button class="primary" id="confirmar" type="button">Confirmo que quiero probar Trenzia</button>
+ </section>
+
+ <section id="resultado" tabindex="-1" aria-live="polite" hidden></section>
+
+ <footer>
+  <p>
+   <a href="privacidad.html">Política de privacidad</a>
+   <a href="terminos.html">Términos de uso</a>
+  </p>
+  <p>Contacto: <a href="mailto:soporte@trenzia.es">soporte@trenzia.es</a></p>
+ </footer>
+</main>
+
+<script>
+(() => {
+  "use strict";
+  const API = "https://zbmtqhipmnsztplraeqk.supabase.co/functions/v1/beta-testers";
+  const t = new URLSearchParams(location.search).get("t") || "";
+  // El token no se queda en la barra de direcciones (capturas, historial).
+  if (t) history.replaceState(null, "", location.pathname);
+
+  const pedir = document.getElementById("pedir");
+  const res = document.getElementById("resultado");
+
+  function mostrar(titulo, parrafos, enlace) {
+    pedir.hidden = true;
+    res.hidden = false;
+    res.textContent = "";
+    const h = document.createElement("h1");
+    h.textContent = titulo;
+    res.appendChild(h);
+    for (const p of parrafos) {
+      const el = document.createElement("p");
+      el.textContent = p;
+      res.appendChild(el);
+    }
+    if (enlace) {
+      const a = document.createElement("a");
+      a.href = enlace[1];
+      a.textContent = enlace[0];
+      const p = document.createElement("p");
+      p.appendChild(a);
+      res.appendChild(p);
+    }
+    res.focus();
+  }
+
+  const MOVIL = { android: "tu Android", ios: "tu iPhone" };
+  const OTRA_VEZ = ["Volver a apuntarme", "probar.html"];
+
+  if (!t) {
+    mostrar("Falta el enlace", ["Abre esta página desde el botón del correo que te enviamos."], OTRA_VEZ);
+    return;
+  }
+
+  document.getElementById("confirmar").addEventListener("click", async (e) => {
+    const b = e.currentTarget;
+    b.disabled = true;
+    b.textContent = "Confirmando…";
+    try {
+      const r = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ accion: "confirmar", t }) });
+      const d = await r.json().catch(() => ({}));
+      const movil = MOVIL[d.plataforma] || "tu móvil";
+      switch (d.estado) {
+        case "confirmado":
+          mostrar("¡Confirmado! Gracias.", [
+            `Ya estás en la lista de probadores de Trenzia. Cuando empiece la prueba te escribiremos con las instrucciones para instalar la app en ${movil}.`,
+            "Si no ves nuestros correos, mira en correo no deseado.",
+            "Recuerda tu compromiso: usar la app al menos 14 días seguidos. Es lo que nos permite publicarla.",
+          ]);
+          return;
+        case "ya_confirmado":
+          mostrar("Ya estabas confirmado", [
+            `No tienes que hacer nada más. Te escribiremos con las instrucciones para instalar la app en ${movil}.`,
+            "Si no ves nuestros correos, mira en correo no deseado.",
+          ]);
+          return;
+        case "caducado":
+          mostrar("Este enlace ha caducado", ["El enlace de confirmación vale 7 días. Vuelve a apuntarte con el mismo correo y te mandaremos uno nuevo."], OTRA_VEZ);
+          return;
+        case "baja":
+          mostrar("Te diste de baja", ["Si quieres volver, apúntate de nuevo."], OTRA_VEZ);
+          return;
+        case "invalido":
+          mostrar("Este enlace no es válido", ["Puede que ya no exista o que se haya copiado incompleto. Si te apuntaste hace poco, busca el último correo que te enviamos, o vuelve a apuntarte."], OTRA_VEZ);
+          return;
+      }
+      throw new Error(d.message || "respuesta inesperada");
+    } catch {
+      b.disabled = false;
+      b.textContent = "Confirmo que quiero probar Trenzia";
+      alert("No hemos podido confirmar. Revisa tu conexión e inténtalo de nuevo.");
+    }
+  });
+})();
+</script>
+</body>
+</html>
