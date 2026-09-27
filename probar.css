@@ -43,13 +43,24 @@ button.danger{border-color:var(--err);color:var(--err)}
 details{margin-top:40px;border-top:1px solid var(--line);padding-top:20px}
 summary{cursor:pointer;font-weight:600}
 [hidden]{display:none!important}
-/* Buscador de oposición (combobox) */
-#op-lista{list-style:none;margin:8px 0 0;padding:4px 0;max-height:320px;overflow-y:auto;border:1px solid var(--line);border-radius:8px;background:var(--field)}
-#op-lista .grupo{padding:10px 12px 4px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-#op-lista [role=option]{padding:11px 12px;cursor:pointer;min-height:44px;display:flex;align-items:center}
-#op-lista [role=option]:hover,#op-lista [aria-selected=true]{background:#24242a;box-shadow:inset 3px 0 0 var(--o)}
-#op-lista .vacio{padding:12px;color:var(--muted);font-size:15px}
-.elegida{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;border:1px solid var(--o);border-radius:8px;padding:11px 12px;margin:0}
+/* Selector de oposición, como la pantalla «Cuerpo de oposición» de la app */
+.label.sub{font-size:13px;font-weight:600;color:var(--muted);margin:16px 0 6px}
+#op-buscar{margin-bottom:2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:14px;color:var(--soft);background:var(--field);border:1px solid var(--line);border-radius:999px;padding:8px 14px;min-height:40px;cursor:pointer}
+.chip[aria-pressed=true]{color:var(--o);border-color:var(--o);background:rgba(255,90,31,.12);font-weight:700}
+#f-ccaa{margin-bottom:4px}
+#op-cuenta{margin:14px 0 8px}
+.tarjetas{list-style:none;margin:0;padding:0;display:grid;gap:8px;max-height:440px;overflow-y:auto;overscroll-behavior:contain}
+.tarjeta{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;font:inherit;color:#fff;background:var(--field);border:1px solid var(--line);border-radius:12px;padding:14px 16px;cursor:pointer}
+button.tarjeta:hover{border-color:var(--soft)}
+button.tarjeta::after{content:"›";color:var(--muted);font-size:22px;line-height:1}
+.t-texto{display:flex;flex-direction:column;gap:2px;min-width:0}
+.t-nombre{font-size:17px;font-weight:700}
+.t-sub{font-size:14px;color:var(--muted)}
+.tarjeta.marcada{border-color:var(--o);box-shadow:inset 3px 0 0 var(--o);cursor:default}
+.vacio{color:var(--muted);margin:12px 0 0}
+button.link.destacado{color:var(--o);font-weight:700}
 button.link{font:inherit;font-size:15px;color:#fff;background:none;border:0;padding:8px 0;text-decoration:underline;cursor:pointer}
 .seg.seg3{flex-wrap:wrap}
 .seg.seg3 label{flex:1 1 30%;min-width:140px;font-weight:600;font-size:15px}

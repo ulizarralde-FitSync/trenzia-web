@@ -48,16 +48,48 @@
    </div>
 
    <div class="field" id="op">
-    <label for="op-buscar">Oposición</label>
+    <span class="label" id="op-l">Oposición</span>
 
-    <!-- Buscador (combobox ARIA): se escribe y se filtra la lista, como en la app. -->
-    <div id="op-lista-w">
-     <input id="op-buscar" type="text" role="combobox" autocomplete="off" autocapitalize="off" spellcheck="false"
-            aria-autocomplete="list" aria-expanded="false" aria-controls="op-lista" aria-describedby="op-h"
-            placeholder="Cargando…" disabled>
-     <p class="help" id="op-h">Escribe para buscar: «bomberos Bilbao», «Ertzaintza», «Guardia Civil»…</p>
-     <ul id="op-lista" role="listbox" aria-label="Oposiciones" hidden></ul>
-     <p id="op-elegida" class="elegida" hidden><span>Has elegido <strong></strong>.</span> <button type="button" class="link" id="op-cambiar">Cambiar</button></p>
+    <!-- La elegida: su tarjeta, marcada, con «Cambiar». -->
+    <div id="op-elegida" class="tarjeta marcada" hidden>
+     <span class="t-texto"><span class="t-nombre"></span><span class="t-sub"></span></span>
+     <button type="button" class="link" id="op-cambiar">Cambiar</button>
+    </div>
+
+    <!-- El selector de la pantalla «Cuerpo de oposición» de la app
+         (cuerpo_selector_screen.dart): buscador, chips de tipo y ámbito,
+         comunidad autónoma y tarjetas. A diferencia de la app, salen también
+         los cuerpos sin baremos. -->
+    <div id="op-lista-w" role="group" aria-labelledby="op-l">
+     <input id="op-buscar" type="search" autocomplete="off" autocapitalize="off" spellcheck="false"
+            aria-label="Buscar oposición" aria-controls="op-tarjetas" placeholder="Cargando…" disabled>
+
+     <span class="label sub" id="f-tipo-l">Tipo</span>
+     <div class="chips" id="f-tipo" role="group" aria-labelledby="f-tipo-l">
+      <button type="button" class="chip" data-v="" aria-pressed="true">Todos</button>
+      <button type="button" class="chip" data-v="bomberos" aria-pressed="false">Bomberos</button>
+      <button type="button" class="chip" data-v="policia" aria-pressed="false">Policía</button>
+      <button type="button" class="chip" data-v="ejercito" aria-pressed="false">Ejército</button>
+     </div>
+
+     <span class="label sub" id="f-ambito-l">Ámbito</span>
+     <div class="chips" id="f-ambito" role="group" aria-labelledby="f-ambito-l">
+      <button type="button" class="chip" data-v="" aria-pressed="true">Todos</button>
+      <button type="button" class="chip" data-v="estatal" aria-pressed="false">Estatal</button>
+      <button type="button" class="chip" data-v="autonomico" aria-pressed="false">Autonómico</button>
+      <button type="button" class="chip" data-v="provincial" aria-pressed="false">Provincial</button>
+      <button type="button" class="chip" data-v="local" aria-pressed="false">Local</button>
+     </div>
+
+     <label for="f-ccaa" class="label sub">Comunidad autónoma</label>
+     <select id="f-ccaa">
+      <option value="">Todas</option>
+      <option value="__estatal__">Estatal</option>
+     </select>
+
+     <p class="help" id="op-cuenta" aria-live="polite"></p>
+     <ul id="op-tarjetas" class="tarjetas" aria-label="Oposiciones"></ul>
+     <p id="op-vacio" class="vacio" hidden>Sin resultados con esos filtros.</p>
      <span class="err" data-err="cuerpo_code"></span>
      <button type="button" class="link" id="op-nueva-abrir">¿No encuentras tu oposición?</button>
     </div>
@@ -217,23 +249,120 @@
     return `Policía Local de ${terr}`;
   }
 
+  // ── Búsqueda: copia de fitsync-backend/supabase/functions/_shared/buscar_cuerpos.ts ──
+  // (su test fija los casos: «bomberos comunidad murcia», «bomberos barcelona»,
+  // «mur», «bomberos generalitat», «ertzaina»…). Palabra a palabra; relleno
+  // fuera; los sinónimos de bomberos filtran el tipo; las de ámbito filtran el
+  // ámbito (salvo que el cuerpo la lleve en el nombre, y entonces va primero);
+  // desde 4 letras una palabra vale a medias, y la que se está escribiendo,
+  // desde 1.
+  const RELLENO = ["de","del","la","el","los","las","y","comunidad","region","ayuntamiento","ayto","cuerpo","oposicion"];
+  const PAL_AMBITO = { autonomico:"autonomico", autonomica:"autonomico", comunidad:"autonomico", generalitat:"autonomico",
+    provincial:"provincial", diputacion:"provincial", consorcio:"provincial", foral:"provincial",
+    ayuntamiento:"local", ayto:"local", municipal:"local", local:"local" };
+  const PAL_BOMBEROS = ["bomberos","bombero","bombers","bombeiros"];
+  const VARIANTES = { ertzaina:["ertzaintza"], ertzainas:["ertzaintza"], vizcaya:["bizkaia"], bizkaia:["vizcaya"],
+    guipuzcoa:["gipuzkoa"], gipuzkoa:["guipuzcoa"], alava:["araba"], araba:["alava"] };
+  const CLAVES = [...new Set([...Object.keys(PAL_AMBITO), ...RELLENO, ...PAL_BOMBEROS])];
+  const MIN_PREFIJO = 4;
+  const NOMBRE_AMBITO = { estatal: "Estatal", autonomico: "Autonómico", provincial: "Provincial", local: "Local" };
+  const CCAA_ESTATAL = "__estatal__";
+  const palabras = (s) => searchNormalize(s || "").split(/[^a-z0-9]+/).filter(Boolean);
+  function claseDeClave(k) {
+    if (PAL_BOMBEROS.includes(k)) return { clase: "bomberos" };
+    return PAL_AMBITO[k] ? { clase: "ambito", ambit: PAL_AMBITO[k] } : { clase: "relleno" };
+  }
+  function clasificar(t) {
+    if (CLAVES.includes(t)) return claseDeClave(t);
+    if (t.length >= MIN_PREFIJO) {
+      const k = CLAVES.find((k) => k.startsWith(t) || (k.length >= MIN_PREFIJO && t.startsWith(k)));
+      if (k) return claseDeClave(k);
+    }
+    return { clase: "texto" };
+  }
+  function analizar(query) {
+    const c = { textos: [], ambitos: new Set(), clavesAmbito: [], bomberos: false };
+    const ps = palabras(query);
+    const escribiendo = ps.length > 0 && !/[\s]$/.test(query || "");
+    ps.forEach((t, i) => {
+      const ultima = escribiendo && i === ps.length - 1;
+      const k = ultima && t.length < MIN_PREFIJO && !CLAVES.includes(t) ? { clase: "texto" } : clasificar(t);
+      if (k.clase === "bomberos") c.bomberos = true;
+      else if (k.clase === "ambito") { c.ambitos.add(k.ambit); c.clavesAmbito.push(t); }
+      else if (k.clase === "texto") c.textos.push({ t, formas: [t, ...(VARIANTES[t] || [])], aMedias: ultima });
+    });
+    return c;
+  }
+  function coincide(x, ps) {
+    const tx = typeof x === "string" ? { t: x, formas: [x], aMedias: false } : x;
+    return tx.formas.some((f) => tx.aMedias || f.length >= MIN_PREFIJO ? ps.some((p) => p.startsWith(f)) : ps.includes(f));
+  }
+  function buscarCuerpos(cuerpos, f) {
+    const q = analizar(f.query);
+    const out = [];
+    for (const c of cuerpos) {
+      if (f.tipo && c.tipo !== f.tipo) continue;
+      if (q.bomberos && c.tipo !== "bomberos") continue;
+      if (f.ambito && c.ambit !== f.ambito) continue;
+      if (f.ccaa === CCAA_ESTATAL ? c.ccaa != null : f.ccaa && c.ccaa !== f.ccaa) continue;
+      const principales = palabras(`${c.short} ${c.name} ${c.region || ""}`);
+      const clavesEnNombre = q.clavesAmbito.filter((t) => coincide(t, principales)).length;
+      if (q.ambitos.size && !q.ambitos.has(c.ambit) && clavesEnNombre === 0) continue;
+      const todas = [...principales, ...palabras(`${c.ccaa || ""} ${NOMBRE_AMBITO[c.ambit] || c.ambit}`)];
+      if (!q.textos.every((t) => coincide(t, todas))) continue;
+      out.push({ c, puntos: q.textos.filter((t) => coincide(t, principales)).length + clavesEnNombre });
+    }
+    return out
+      .sort((a, b) => b.puntos - a.puntos || a.c.short.localeCompare(b.c.short, "es") || a.c.ambit.localeCompare(b.c.ambit))
+      .map((x) => x.c);
+  }
+  const P_POLICIA = ["policia","policias","policial"];
+  const PARTICULAS = ["de","del","la","el","los","las","y"];
+  function deducirPropuesta(query) {
+    let tipo = null, ambit = null, pendientes = [];
+    const territorio = [];
+    for (const w of query.trim().split(/\s+/).filter(Boolean)) {
+      const ps = palabras(w);
+      if (!ps.length) continue;
+      const t = ps.join("");
+      if (P_POLICIA.includes(t)) { tipo = tipo || "policia_local"; pendientes = []; continue; }
+      const k = clasificar(t);
+      if (k.clase === "bomberos") { tipo = "bomberos"; pendientes = []; continue; }
+      if (k.clase === "ambito") { ambit = k.ambit; pendientes = []; continue; }
+      if (k.clase === "relleno") {
+        if (PARTICULAS.includes(t) && territorio.length) pendientes.push(w); else pendientes = [];
+        continue;
+      }
+      territorio.push(...pendientes, w);
+      pendientes = [];
+    }
+    if (tipo === "policia_local") ambit = "local";
+    return { tipo, ambit, territorio: territorio.join(" ") };
+  }
+
   // ── Estado de la oposición ──
   // modo "lista": `elegido` es un cuerpo del catálogo (o una sugerencia).
   // modo "nueva": «¿No encuentras tu oposición?».
   const op = { modo: "lista", elegido: null, sugRespondidas: false };
-  const buscar = $("op-buscar"), lista = $("op-lista");
-  let catalogo = []; // [{grupo, opciones:[{code,label,norm}]}]
-  let activa = -1;   // índice de la opción resaltada con el teclado
+  const filtro = { tipo: "", ambito: "", ccaa: "" };
+  const buscar = $("op-buscar"), tarjetas = $("op-tarjetas");
+  let catalogo = [];
+
+  const subtitulo = (c) => `${NOMBRE_AMBITO[c.ambit] || c.ambit}${c.region ? ` · ${c.region}` : ""}`;
 
   fetch(API + "?accion=catalogo")
     .then((r) => r.ok ? r.json() : Promise.reject(r.status))
     .then((d) => {
-      catalogo = d.grupos.map((g) => ({
-        grupo: g.grupo,
-        opciones: g.opciones.map((o) => ({ ...o, norm: searchNormalize(`${o.label} ${o.texto || ""}`) })),
-      }));
+      // Un backend anterior responde sin `cuerpos`: se trata como un fallo de
+      // carga (aviso y «¿No encuentras?»), no como una lista vacía.
+      if (!Array.isArray(d.cuerpos) || d.cuerpos.length === 0) throw new Error("sin cuerpos");
+      catalogo = d.cuerpos;
+      const ccaa = [...new Set(catalogo.map((c) => c.ccaa).filter(Boolean))]
+        .sort((a, b) => searchNormalize(a).localeCompare(searchNormalize(b)));
+      for (const cc of ccaa) $("f-ccaa").add(new Option(cc, cc));
       buscar.disabled = false;
-      buscar.placeholder = "Busca tu oposición";
+      buscar.placeholder = "Busca por nombre, comunidad o ciudad…";
+      pintar();
     })
     .catch(() => {
       // Sin lista, al menos se puede describir.
@@ -241,77 +370,44 @@
       abrirNueva();
     });
 
-  function opcionesVisibles() {
-    const q = searchNormalize(buscar.value.trim());
-    return catalogo
-      .map((g) => ({ grupo: g.grupo, opciones: q ? g.opciones.filter((o) => o.norm.includes(q)) : g.opciones }))
-      .filter((g) => g.opciones.length);
-  }
-
-  function pintarLista() {
-    const grupos = opcionesVisibles();
-    lista.textContent = "";
-    let i = 0;
-    for (const g of grupos) {
-      const cab = document.createElement("li");
-      cab.className = "grupo";
-      cab.setAttribute("role", "presentation");
-      cab.textContent = g.grupo;
-      lista.appendChild(cab);
-      for (const o of g.opciones) {
-        const li = document.createElement("li");
-        li.id = `op-opt-${i++}`;
-        li.setAttribute("role", "option");
-        li.dataset.code = o.code;
-        li.textContent = o.label;
-        lista.appendChild(li);
-      }
-    }
-    if (!grupos.length) {
+  function pintar() {
+    const r = buscarCuerpos(catalogo, { query: buscar.value, tipo: filtro.tipo, ambito: filtro.ambito, ccaa: filtro.ccaa });
+    tarjetas.textContent = "";
+    for (const c of r) {
       const li = document.createElement("li");
-      li.className = "vacio";
-      li.setAttribute("role", "presentation");
-      li.textContent = "No aparece. Pulsa «¿No encuentras tu oposición?» para describirla.";
-      lista.appendChild(li);
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "tarjeta";
+      b.dataset.code = c.code;
+      const t = document.createElement("span");
+      t.className = "t-texto";
+      const n = document.createElement("span");
+      n.className = "t-nombre";
+      n.textContent = c.short;
+      const s = document.createElement("span");
+      s.className = "t-sub";
+      s.textContent = subtitulo(c);
+      t.append(n, s);
+      b.append(t);
+      li.append(b);
+      tarjetas.append(li);
     }
-    activa = -1;
-    buscar.removeAttribute("aria-activedescendant");
+    const vacio = catalogo.length > 0 && r.length === 0;
+    $("op-vacio").hidden = !vacio;
+    $("op-cuenta").textContent = catalogo.length ? (r.length === 1 ? "1 oposición" : `${r.length} oposiciones`) : "";
+    // Sin resultados, «¿No encuentras tu oposición?» es lo siguiente que se ve.
+    $("op-nueva-abrir").classList.toggle("destacado", vacio);
   }
 
-  function abrirLista() {
-    if (buscar.disabled) return;
-    pintarLista();
-    lista.hidden = false;
-    buscar.setAttribute("aria-expanded", "true");
-  }
-  function cerrarLista() {
-    lista.hidden = true;
-    buscar.setAttribute("aria-expanded", "false");
-    buscar.removeAttribute("aria-activedescendant");
-    activa = -1;
-  }
-  function opcionesDOM() {
-    return [...lista.querySelectorAll('[role="option"]')];
-  }
-  function resaltar(n) {
-    const ops = opcionesDOM();
-    if (!ops.length) return;
-    activa = (n + ops.length) % ops.length;
-    ops.forEach((o, k) => o.setAttribute("aria-selected", String(k === activa)));
-    buscar.setAttribute("aria-activedescendant", ops[activa].id);
-    ops[activa].scrollIntoView({ block: "nearest" });
-  }
-  function elegir(code, label) {
+  function elegir(code, labelSiNoEsta) {
+    const c = catalogo.find((x) => x.code === code);
     op.modo = "lista";
-    op.elegido = { code, label };
-    buscar.value = "";
-    cerrarLista();
-    buscar.hidden = true;
-    $("op-h").hidden = true;
+    op.elegido = { code, label: c ? c.short : labelSiNoEsta };
     const e = $("op-elegida");
-    e.querySelector("strong").textContent = label;
+    e.querySelector(".t-nombre").textContent = op.elegido.label;
+    e.querySelector(".t-sub").textContent = c ? subtitulo(c) : "";
     e.hidden = false;
-    $("op-nueva-abrir").hidden = true;
+    $("op-lista-w").hidden = true;
     $("op-nueva").hidden = true;
     $("op-sug").hidden = true;
     document.querySelector('[data-err="cuerpo_code"]').textContent = "";
@@ -319,31 +415,37 @@
   function quitarEleccion() {
     op.elegido = null;
     $("op-elegida").hidden = true;
-    buscar.hidden = false;
-    $("op-h").hidden = false;
-    $("op-nueva-abrir").hidden = false;
   }
 
-  buscar.addEventListener("input", () => { op.elegido = null; abrirLista(); });
-  buscar.addEventListener("focus", abrirLista);
+  buscar.addEventListener("input", pintar);
+  // Enter en el buscador no envía el formulario: con un solo resultado, lo elige.
   buscar.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowDown") { e.preventDefault(); if (lista.hidden) abrirLista(); resaltar(activa + 1); }
-    else if (e.key === "ArrowUp") { e.preventDefault(); if (lista.hidden) abrirLista(); resaltar(activa - 1); }
-    else if (e.key === "Enter") {
-      const ops = opcionesDOM();
-      // Enter con una opción resaltada (o con una sola en la lista) la elige, no envía.
-      const o = activa >= 0 ? ops[activa] : ops.length === 1 && !lista.hidden ? ops[0] : null;
-      if (o) { e.preventDefault(); elegir(o.dataset.code, o.textContent); }
-    } else if (e.key === "Escape") { cerrarLista(); }
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+    const bs = tarjetas.querySelectorAll("button.tarjeta");
+    if (bs.length === 1) bs[0].click();
   });
-  // mousedown (no click): así el campo no pierde el foco antes de elegir.
-  lista.addEventListener("mousedown", (e) => e.preventDefault());
-  lista.addEventListener("click", (e) => {
-    const o = e.target.closest('[role="option"]');
-    if (o) elegir(o.dataset.code, o.textContent);
+  for (const [id, clave] of [["f-tipo", "tipo"], ["f-ambito", "ambito"]]) {
+    $(id).addEventListener("click", (e) => {
+      const b = e.target.closest(".chip");
+      if (!b) return;
+      // Como en la app: tocar el activo lo quita (vuelve a «Todos»).
+      filtro[clave] = b.dataset.v && filtro[clave] === b.dataset.v ? "" : b.dataset.v;
+      for (const x of $(id).querySelectorAll(".chip")) x.setAttribute("aria-pressed", String(x.dataset.v === filtro[clave]));
+      pintar();
+    });
+  }
+  $("f-ccaa").addEventListener("change", (e) => { filtro.ccaa = e.target.value; pintar(); });
+  tarjetas.addEventListener("click", (e) => {
+    const b = e.target.closest("button.tarjeta");
+    if (b) elegir(b.dataset.code);
   });
-  buscar.addEventListener("blur", () => setTimeout(cerrarLista, 150));
-  $("op-cambiar").addEventListener("click", () => { quitarEleccion(); buscar.focus(); });
+  $("op-cambiar").addEventListener("click", () => {
+    quitarEleccion();
+    $("op-lista-w").hidden = false;
+    pintar();
+    buscar.focus();
+  });
 
   // ── «¿No encuentras tu oposición?» ──
   function abrirNueva() {
@@ -352,6 +454,12 @@
     $("op-lista-w").hidden = true;
     $("op-nueva").hidden = false;
     document.querySelector('[data-err="cuerpo_code"]').textContent = "";
+    // Lo que se buscó rellena lo que se pueda: «bomberos ayuntamiento getafe»
+    // → Bomberos, Ayuntamiento, «getafe». No pisa lo que ya se haya escrito.
+    const d = deducirPropuesta(buscar.value);
+    if (d.tipo && !valor("op_tipo")) document.querySelector(`[name=op_tipo][value=${d.tipo}]`).checked = true;
+    if (d.ambit && d.tipo === "bomberos" && !valor("op_ambit")) document.querySelector(`[name=op_ambit][value=${d.ambit}]`).checked = true;
+    if (d.territorio && !$("op-territorio").value.trim()) $("op-territorio").value = d.territorio;
     actualizarNueva();
     const primero = document.querySelector("[name=op_tipo]:checked") || document.querySelector("[name=op_tipo]");
     primero.focus();
@@ -361,6 +469,7 @@
     $("op-nueva").hidden = true;
     $("op-sug").hidden = true;
     $("op-lista-w").hidden = false;
+    pintar();
     buscar.focus();
   }
   $("op-nueva-abrir").addEventListener("click", abrirNueva);
@@ -424,7 +533,7 @@
       b.type = "button";
       b.className = "secondary";
       b.textContent = s.label;
-      b.addEventListener("click", () => { elegir(s.code, s.label); $("op-lista-w").hidden = false; enviar(); });
+      b.addEventListener("click", () => { elegir(s.code, s.label); enviar(); });
       cont.appendChild(b);
     }
     $("op-sug-no").textContent = `No, ninguna: guardar como «${d.nombre}»`;
@@ -461,7 +570,7 @@
   const FOCO = {
     plataforma: () => form.querySelector("[name=plataforma]"),
     examen: () => $("examen_mes"),
-    cuerpo_code: () => (op.modo === "nueva" ? null : buscar.hidden ? $("op-cambiar") : buscar),
+    cuerpo_code: () => (op.modo === "nueva" ? null : !$("op-elegida").hidden ? $("op-cambiar") : buscar),
     cuerpo_tipo: () => document.querySelector("[name=op_tipo]"),
     cuerpo_ambit: () => document.querySelector("[name=op_ambit]"),
     cuerpo_territorio: () => $("op-territorio"),
@@ -479,7 +588,7 @@
 
   // Lo obligatorio de la oposición, en la página (el servidor lo vuelve a mirar).
   function faltaOposicion() {
-    if (op.modo === "lista") return op.elegido ? {} : { cuerpo_code: "Busca y elige tu oposición, o pulsa «¿No encuentras tu oposición?»." };
+    if (op.modo === "lista") return op.elegido ? {} : { cuerpo_code: "Toca tu oposición en la lista, o pulsa «¿No encuentras tu oposición?»." };
     const tipo = valor("op_tipo");
     if (!tipo) return { cuerpo_tipo: "Elige si es de bomberos, de policía local u otra." };
     if (tipo === "otra") return $("op-otra").value.trim() ? {} : { cuerpo_otra: "Escribe a qué oposición te presentas." };
