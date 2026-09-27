@@ -250,20 +250,28 @@
   }
 
   // ── Búsqueda: copia de fitsync-backend/supabase/functions/_shared/buscar_cuerpos.ts ──
-  // (su test fija los casos: «bomberos comunidad murcia», «bomberos toledo provincial»…)
-  // Palabra a palabra; las de relleno no cuentan; las de ámbito filtran el
-  // ámbito (salvo que el cuerpo la lleve en el nombre: «policia foral»); con 4
-  // letras o más una palabra vale como principio de otra.
+  // (su test fija los casos: «bomberos comunidad murcia», «bomberos barcelona»,
+  // «mur», «bomberos generalitat», «ertzaina»…). Palabra a palabra; relleno
+  // fuera; los sinónimos de bomberos filtran el tipo; las de ámbito filtran el
+  // ámbito (salvo que el cuerpo la lleve en el nombre, y entonces va primero);
+  // desde 4 letras una palabra vale a medias, y la que se está escribiendo,
+  // desde 1.
   const RELLENO = ["de","del","la","el","los","las","y","comunidad","region","ayuntamiento","ayto","cuerpo","oposicion"];
   const PAL_AMBITO = { autonomico:"autonomico", autonomica:"autonomico", comunidad:"autonomico", generalitat:"autonomico",
     provincial:"provincial", diputacion:"provincial", consorcio:"provincial", foral:"provincial",
     ayuntamiento:"local", ayto:"local", municipal:"local", local:"local" };
-  const CLAVES = [...new Set([...Object.keys(PAL_AMBITO), ...RELLENO])];
+  const PAL_BOMBEROS = ["bomberos","bombero","bombers","bombeiros"];
+  const VARIANTES = { ertzaina:["ertzaintza"], ertzainas:["ertzaintza"], vizcaya:["bizkaia"], bizkaia:["vizcaya"],
+    guipuzcoa:["gipuzkoa"], gipuzkoa:["guipuzcoa"], alava:["araba"], araba:["alava"] };
+  const CLAVES = [...new Set([...Object.keys(PAL_AMBITO), ...RELLENO, ...PAL_BOMBEROS])];
   const MIN_PREFIJO = 4;
   const NOMBRE_AMBITO = { estatal: "Estatal", autonomico: "Autonómico", provincial: "Provincial", local: "Local" };
   const CCAA_ESTATAL = "__estatal__";
   const palabras = (s) => searchNormalize(s || "").split(/[^a-z0-9]+/).filter(Boolean);
-  const claseDeClave = (k) => PAL_AMBITO[k] ? { clase: "ambito", ambit: PAL_AMBITO[k] } : { clase: "relleno" };
+  function claseDeClave(k) {
+    if (PAL_BOMBEROS.includes(k)) return { clase: "bomberos" };
+    return PAL_AMBITO[k] ? { clase: "ambito", ambit: PAL_AMBITO[k] } : { clase: "relleno" };
+  }
   function clasificar(t) {
     if (CLAVES.includes(t)) return claseDeClave(t);
     if (t.length >= MIN_PREFIJO) {
@@ -273,33 +281,42 @@
     return { clase: "texto" };
   }
   function analizar(query) {
-    const c = { textos: [], ambitos: new Set(), clavesAmbito: [] };
-    for (const t of palabras(query)) {
-      const k = clasificar(t);
-      if (k.clase === "ambito") { c.ambitos.add(k.ambit); c.clavesAmbito.push(t); }
-      else if (k.clase === "texto") c.textos.push(t);
-    }
+    const c = { textos: [], ambitos: new Set(), clavesAmbito: [], bomberos: false };
+    const ps = palabras(query);
+    const escribiendo = ps.length > 0 && !/[\s]$/.test(query || "");
+    ps.forEach((t, i) => {
+      const ultima = escribiendo && i === ps.length - 1;
+      const k = ultima && t.length < MIN_PREFIJO && !CLAVES.includes(t) ? { clase: "texto" } : clasificar(t);
+      if (k.clase === "bomberos") c.bomberos = true;
+      else if (k.clase === "ambito") { c.ambitos.add(k.ambit); c.clavesAmbito.push(t); }
+      else if (k.clase === "texto") c.textos.push({ t, formas: [t, ...(VARIANTES[t] || [])], aMedias: ultima });
+    });
     return c;
   }
-  const coincide = (t, ps) => t.length >= MIN_PREFIJO ? ps.some((p) => p.startsWith(t)) : ps.includes(t);
+  function coincide(x, ps) {
+    const tx = typeof x === "string" ? { t: x, formas: [x], aMedias: false } : x;
+    return tx.formas.some((f) => tx.aMedias || f.length >= MIN_PREFIJO ? ps.some((p) => p.startsWith(f)) : ps.includes(f));
+  }
   function buscarCuerpos(cuerpos, f) {
     const q = analizar(f.query);
     const out = [];
     for (const c of cuerpos) {
       if (f.tipo && c.tipo !== f.tipo) continue;
+      if (q.bomberos && c.tipo !== "bomberos") continue;
       if (f.ambito && c.ambit !== f.ambito) continue;
       if (f.ccaa === CCAA_ESTATAL ? c.ccaa != null : f.ccaa && c.ccaa !== f.ccaa) continue;
       const principales = palabras(`${c.short} ${c.name} ${c.region || ""}`);
-      if (q.ambitos.size && !q.ambitos.has(c.ambit) && !q.clavesAmbito.some((t) => coincide(t, principales))) continue;
+      const clavesEnNombre = q.clavesAmbito.filter((t) => coincide(t, principales)).length;
+      if (q.ambitos.size && !q.ambitos.has(c.ambit) && clavesEnNombre === 0) continue;
       const todas = [...principales, ...palabras(`${c.ccaa || ""} ${NOMBRE_AMBITO[c.ambit] || c.ambit}`)];
       if (!q.textos.every((t) => coincide(t, todas))) continue;
-      out.push({ c, puntos: q.textos.filter((t) => coincide(t, principales)).length });
+      out.push({ c, puntos: q.textos.filter((t) => coincide(t, principales)).length + clavesEnNombre });
     }
     return out
       .sort((a, b) => b.puntos - a.puntos || a.c.short.localeCompare(b.c.short, "es") || a.c.ambit.localeCompare(b.c.ambit))
       .map((x) => x.c);
   }
-  const P_BOMBEROS = ["bomberos","bombero","bombers","bombeiros"], P_POLICIA = ["policia","policias","policial"];
+  const P_POLICIA = ["policia","policias","policial"];
   const PARTICULAS = ["de","del","la","el","los","las","y"];
   function deducirPropuesta(query) {
     let tipo = null, ambit = null, pendientes = [];
@@ -308,9 +325,9 @@
       const ps = palabras(w);
       if (!ps.length) continue;
       const t = ps.join("");
-      if (P_BOMBEROS.includes(t)) { tipo = "bomberos"; pendientes = []; continue; }
       if (P_POLICIA.includes(t)) { tipo = tipo || "policia_local"; pendientes = []; continue; }
       const k = clasificar(t);
+      if (k.clase === "bomberos") { tipo = "bomberos"; pendientes = []; continue; }
       if (k.clase === "ambito") { ambit = k.ambit; pendientes = []; continue; }
       if (k.clase === "relleno") {
         if (PARTICULAS.includes(t) && territorio.length) pendientes.push(w); else pendientes = [];
@@ -336,7 +353,10 @@
   fetch(API + "?accion=catalogo")
     .then((r) => r.ok ? r.json() : Promise.reject(r.status))
     .then((d) => {
-      catalogo = d.cuerpos || [];
+      // Un backend anterior responde sin `cuerpos`: se trata como un fallo de
+      // carga (aviso y «¿No encuentras?»), no como una lista vacía.
+      if (!Array.isArray(d.cuerpos) || d.cuerpos.length === 0) throw new Error("sin cuerpos");
+      catalogo = d.cuerpos;
       const ccaa = [...new Set(catalogo.map((c) => c.ccaa).filter(Boolean))]
         .sort((a, b) => searchNormalize(a).localeCompare(searchNormalize(b)));
       for (const cc of ccaa) $("f-ccaa").add(new Option(cc, cc));
