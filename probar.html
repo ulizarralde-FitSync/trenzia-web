@@ -214,6 +214,21 @@
       return;
     }
     const plat = form.querySelector("[name=plataforma]:checked");
+    // Lo obligatorio, aquí también: un envío muy rápido el servidor lo trata como
+    // un robot y responde «ok» sin guardar, y la página diría «revisa tu correo».
+    const faltan = {};
+    if (!$("nombre").value.trim()) faltan.nombre = "Escribe tu nombre.";
+    if (!$("email").value.trim()) faltan.email = "Escribe tu correo.";
+    if (!plat) faltan.plataforma = "Elige si tu móvil es Android o iPhone.";
+    if (!$("mismo_email").checked && !$("email_tienda").value.trim()) faltan.email_tienda = "Escribe el correo de tu cuenta de la tienda, o marca que es el mismo.";
+    if (!sel.value) faltan.cuerpo_code = "Elige tu oposición.";
+    if (!$("compromiso").checked) faltan.compromiso = "Necesitamos este compromiso para la prueba.";
+    if (!$("edad").checked) faltan.edad = "La app es para mayores de 16 años.";
+    if (!$("privacidad").checked) faltan.privacidad = "Tienes que aceptar la política de privacidad.";
+    if (Object.keys(faltan).length) {
+      pintarErrores(faltan);
+      return;
+    }
     const body = {
       accion: "alta",
       nombre: $("nombre").value,
