@@ -47,16 +47,64 @@
     <span class="err" data-err="email_tienda"></span>
    </div>
 
-   <div class="field">
-    <label for="cuerpo_code">Oposición</label>
-    <select id="cuerpo_code" name="cuerpo_code" required>
-     <option value="">Cargando…</option>
-    </select>
-    <span class="err" data-err="cuerpo_code"></span>
-    <div id="otra-w" hidden style="margin-top:10px">
-     <label for="cuerpo_otra" class="opt">¿Cuál?</label>
-     <input id="cuerpo_otra" name="cuerpo_otra" type="text" maxlength="80">
-     <span class="err" data-err="cuerpo_otra"></span>
+   <div class="field" id="op">
+    <label for="op-buscar">Oposición</label>
+
+    <!-- Buscador (combobox ARIA): se escribe y se filtra la lista, como en la app. -->
+    <div id="op-lista-w">
+     <input id="op-buscar" type="text" role="combobox" autocomplete="off" autocapitalize="off" spellcheck="false"
+            aria-autocomplete="list" aria-expanded="false" aria-controls="op-lista" aria-describedby="op-h"
+            placeholder="Cargando…" disabled>
+     <p class="help" id="op-h">Escribe para buscar: «bomberos Bilbao», «Ertzaintza», «Guardia Civil»…</p>
+     <ul id="op-lista" role="listbox" aria-label="Oposiciones" hidden></ul>
+     <p id="op-elegida" class="elegida" hidden><span>Has elegido <strong></strong>.</span> <button type="button" class="link" id="op-cambiar">Cambiar</button></p>
+     <span class="err" data-err="cuerpo_code"></span>
+     <button type="button" class="link" id="op-nueva-abrir">¿No encuentras tu oposición?</button>
+    </div>
+
+    <!-- «¿No encuentras tu oposición?»: como en la app (custom_convocatoria). -->
+    <div id="op-nueva" class="box" hidden>
+     <h2 style="font-size:18px">¿No encuentras tu oposición?</h2>
+     <span class="label" id="op-tipo-l">Es de…</span>
+     <div class="seg seg3" role="radiogroup" aria-labelledby="op-tipo-l">
+      <label><input type="radio" name="op_tipo" value="bomberos"> Bomberos</label>
+      <label><input type="radio" name="op_tipo" value="policia_local"> Policía Local</label>
+      <label><input type="radio" name="op_tipo" value="otra"> Otra</label>
+     </div>
+     <span class="err" data-err="cuerpo_tipo"></span>
+
+     <div id="op-ambit-w" hidden style="margin-top:14px">
+      <span class="label" id="op-ambit-l">De qué administración</span>
+      <div class="seg seg3" role="radiogroup" aria-labelledby="op-ambit-l">
+       <label><input type="radio" name="op_ambit" value="local"> Ayuntamiento</label>
+       <label><input type="radio" name="op_ambit" value="provincial"> Diputación / Consorcio</label>
+       <label><input type="radio" name="op_ambit" value="autonomico"> Comunidad autónoma</label>
+      </div>
+      <span class="err" data-err="cuerpo_ambit"></span>
+     </div>
+
+     <div id="op-terr-w" hidden style="margin-top:14px">
+      <label for="op-territorio" id="op-terr-l">Municipio</label>
+      <input id="op-territorio" type="text" maxlength="50" autocomplete="off">
+      <span class="err" data-err="cuerpo_territorio"></span>
+     </div>
+
+     <div id="op-otra-w" hidden style="margin-top:14px">
+      <label for="op-otra">¿Cuál?</label>
+      <input id="op-otra" type="text" maxlength="80" autocomplete="off">
+      <span class="err" data-err="cuerpo_otra"></span>
+     </div>
+
+     <p id="op-preview" class="help" aria-live="polite" hidden>Se guardará como: <strong></strong></p>
+     <button type="button" class="link" id="op-nueva-cerrar">Volver a la lista</button>
+    </div>
+
+    <!-- «¿Es alguna de estas?», antes de enviar una que no está en la lista. -->
+    <div id="op-sug" class="box" role="group" aria-labelledby="op-sug-l" tabindex="-1" hidden>
+     <p id="op-sug-l" style="font-weight:700">¿Es alguna de estas?</p>
+     <p class="help" style="margin:-8px 0 12px">Ya las conocemos. Si es una de ellas, elígela.</p>
+     <div id="op-sug-lista" class="sug-lista"></div>
+     <button type="button" class="secondary" id="op-sug-no"></button>
     </div>
    </div>
 
@@ -148,32 +196,238 @@
   const hoy = new Date();
   for (let a = hoy.getFullYear(); a <= hoy.getFullYear() + 3; a++) $("examen_anio").add(new Option(String(a), String(a)));
 
-  // ── Catálogo de oposiciones: el mismo que usa la app, servido por la función ──
-  const sel = $("cuerpo_code");
-  function opcionOtra() {
-    sel.add(new Option("Otra (escríbela)", "OTRA"));
+  // ── Copia de la lógica de la app, solo para buscar y para la vista previa ──
+  // El original está en fitsync-backend/supabase/functions/_shared/cuerpos_propuestos.ts
+  // (puerto de la app y de propose_shared_cuerpo). Lo que se GUARDA lo calcula
+  // siempre la función; esto solo enseña lo mismo mientras se escribe.
+  const NORM = { "á":"a","à":"a","ä":"a","â":"a","ã":"a","é":"e","è":"e","ë":"e","ê":"e","í":"i","ì":"i","ï":"i","î":"i",
+    "ó":"o","ò":"o","ö":"o","ô":"o","õ":"o","ú":"u","ù":"u","ü":"u","û":"u","ñ":"n","ç":"c" };
+  const searchNormalize = (s) => [...s.toLowerCase()].map((c) => NORM[c] || c).join("");
+  const initcap = (s) => s.toLowerCase().replace(/(^|[^\p{L}\p{N}'’.·:_])(\p{L})/gu, (_m, a, l) => a + l.toUpperCase());
+  const normalizarTerritorio = (t) => {
+    const s = t.trim().replace(/\s+/g, " ");
+    return s === s.toLowerCase() || s === s.toUpperCase() ? initcap(s) : s;
+  };
+  const slugTerritorio = (t) => t.normalize("NFD").replace(/\p{M}/gu, "").toUpperCase().replace(/[^A-Z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+  function sharedCuerpoName(tipo, ambit, territorio) {
+    const terr = territorio.trim().replace(/\s+/g, " ");
+    if (tipo === "bomberos" && ambit === "autonomico") return `Bomberos de ${terr}`;
+    if (tipo === "bomberos" && ambit === "provincial") return `Bomberos Provinciales de ${terr}`;
+    if (tipo === "bomberos") return `Bomberos del Ayto. de ${terr}`;
+    return `Policía Local de ${terr}`;
   }
+
+  // ── Estado de la oposición ──
+  // modo "lista": `elegido` es un cuerpo del catálogo (o una sugerencia).
+  // modo "nueva": «¿No encuentras tu oposición?».
+  const op = { modo: "lista", elegido: null, sugRespondidas: false };
+  const buscar = $("op-buscar"), lista = $("op-lista");
+  let catalogo = []; // [{grupo, opciones:[{code,label,norm}]}]
+  let activa = -1;   // índice de la opción resaltada con el teclado
+
   fetch(API + "?accion=catalogo")
     .then((r) => r.ok ? r.json() : Promise.reject(r.status))
     .then((d) => {
-      sel.options[0].text = "Elige tu oposición";
-      for (const g of d.grupos) {
-        const og = document.createElement("optgroup");
-        og.label = g.grupo;
-        for (const o of g.opciones) og.appendChild(new Option(o.label, o.code));
-        sel.appendChild(og);
-      }
-      opcionOtra();
+      catalogo = d.grupos.map((g) => ({
+        grupo: g.grupo,
+        opciones: g.opciones.map((o) => ({ ...o, norm: searchNormalize(`${o.label} ${o.texto || ""}`) })),
+      }));
+      buscar.disabled = false;
+      buscar.placeholder = "Busca tu oposición";
     })
     .catch(() => {
-      sel.options[0].text = "No hemos podido cargar la lista: elige «Otra»";
-      opcionOtra();
+      // Sin lista, al menos se puede describir.
+      buscar.placeholder = "No hemos podido cargar la lista";
+      abrirNueva();
     });
-  sel.addEventListener("change", () => {
-    const otra = sel.value === "OTRA";
-    $("otra-w").hidden = !otra;
-    if (otra) $("cuerpo_otra").focus();
+
+  function opcionesVisibles() {
+    const q = searchNormalize(buscar.value.trim());
+    return catalogo
+      .map((g) => ({ grupo: g.grupo, opciones: q ? g.opciones.filter((o) => o.norm.includes(q)) : g.opciones }))
+      .filter((g) => g.opciones.length);
+  }
+
+  function pintarLista() {
+    const grupos = opcionesVisibles();
+    lista.textContent = "";
+    let i = 0;
+    for (const g of grupos) {
+      const cab = document.createElement("li");
+      cab.className = "grupo";
+      cab.setAttribute("role", "presentation");
+      cab.textContent = g.grupo;
+      lista.appendChild(cab);
+      for (const o of g.opciones) {
+        const li = document.createElement("li");
+        li.id = `op-opt-${i++}`;
+        li.setAttribute("role", "option");
+        li.dataset.code = o.code;
+        li.textContent = o.label;
+        lista.appendChild(li);
+      }
+    }
+    if (!grupos.length) {
+      const li = document.createElement("li");
+      li.className = "vacio";
+      li.setAttribute("role", "presentation");
+      li.textContent = "No aparece. Pulsa «¿No encuentras tu oposición?» para describirla.";
+      lista.appendChild(li);
+    }
+    activa = -1;
+    buscar.removeAttribute("aria-activedescendant");
+  }
+
+  function abrirLista() {
+    if (buscar.disabled) return;
+    pintarLista();
+    lista.hidden = false;
+    buscar.setAttribute("aria-expanded", "true");
+  }
+  function cerrarLista() {
+    lista.hidden = true;
+    buscar.setAttribute("aria-expanded", "false");
+    buscar.removeAttribute("aria-activedescendant");
+    activa = -1;
+  }
+  function opcionesDOM() {
+    return [...lista.querySelectorAll('[role="option"]')];
+  }
+  function resaltar(n) {
+    const ops = opcionesDOM();
+    if (!ops.length) return;
+    activa = (n + ops.length) % ops.length;
+    ops.forEach((o, k) => o.setAttribute("aria-selected", String(k === activa)));
+    buscar.setAttribute("aria-activedescendant", ops[activa].id);
+    ops[activa].scrollIntoView({ block: "nearest" });
+  }
+  function elegir(code, label) {
+    op.modo = "lista";
+    op.elegido = { code, label };
+    buscar.value = "";
+    cerrarLista();
+    buscar.hidden = true;
+    $("op-h").hidden = true;
+    const e = $("op-elegida");
+    e.querySelector("strong").textContent = label;
+    e.hidden = false;
+    $("op-nueva-abrir").hidden = true;
+    $("op-nueva").hidden = true;
+    $("op-sug").hidden = true;
+    document.querySelector('[data-err="cuerpo_code"]').textContent = "";
+  }
+  function quitarEleccion() {
+    op.elegido = null;
+    $("op-elegida").hidden = true;
+    buscar.hidden = false;
+    $("op-h").hidden = false;
+    $("op-nueva-abrir").hidden = false;
+  }
+
+  buscar.addEventListener("input", () => { op.elegido = null; abrirLista(); });
+  buscar.addEventListener("focus", abrirLista);
+  buscar.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowDown") { e.preventDefault(); if (lista.hidden) abrirLista(); resaltar(activa + 1); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); if (lista.hidden) abrirLista(); resaltar(activa - 1); }
+    else if (e.key === "Enter") {
+      const ops = opcionesDOM();
+      // Enter con una opción resaltada (o con una sola en la lista) la elige, no envía.
+      const o = activa >= 0 ? ops[activa] : ops.length === 1 && !lista.hidden ? ops[0] : null;
+      if (o) { e.preventDefault(); elegir(o.dataset.code, o.textContent); }
+    } else if (e.key === "Escape") { cerrarLista(); }
   });
+  // mousedown (no click): así el campo no pierde el foco antes de elegir.
+  lista.addEventListener("mousedown", (e) => e.preventDefault());
+  lista.addEventListener("click", (e) => {
+    const o = e.target.closest('[role="option"]');
+    if (o) elegir(o.dataset.code, o.textContent);
+  });
+  buscar.addEventListener("blur", () => setTimeout(cerrarLista, 150));
+  $("op-cambiar").addEventListener("click", () => { quitarEleccion(); buscar.focus(); });
+
+  // ── «¿No encuentras tu oposición?» ──
+  function abrirNueva() {
+    op.modo = "nueva";
+    quitarEleccion();
+    $("op-lista-w").hidden = true;
+    $("op-nueva").hidden = false;
+    document.querySelector('[data-err="cuerpo_code"]').textContent = "";
+    actualizarNueva();
+    const primero = document.querySelector("[name=op_tipo]:checked") || document.querySelector("[name=op_tipo]");
+    primero.focus();
+  }
+  function cerrarNueva() {
+    op.modo = "lista";
+    $("op-nueva").hidden = true;
+    $("op-sug").hidden = true;
+    $("op-lista-w").hidden = false;
+    buscar.focus();
+  }
+  $("op-nueva-abrir").addEventListener("click", abrirNueva);
+  $("op-nueva-cerrar").addEventListener("click", cerrarNueva);
+
+  const valor = (name) => (document.querySelector(`[name=${name}]:checked`) || {}).value || "";
+  const ETIQ_TERR = { local: "Municipio", provincial: "Provincia o consorcio", autonomico: "Comunidad autónoma" };
+
+  function actualizarNueva() {
+    const tipo = valor("op_tipo");
+    const ambit = tipo === "policia_local" ? "local" : valor("op_ambit");
+    $("op-ambit-w").hidden = tipo !== "bomberos";
+    $("op-terr-w").hidden = !(tipo === "policia_local" || (tipo === "bomberos" && ambit));
+    $("op-otra-w").hidden = tipo !== "otra";
+    $("op-terr-l").textContent = ETIQ_TERR[ambit] || "Municipio";
+    // Vista previa: el mismo nombre que daría la app.
+    const terr = $("op-territorio").value;
+    let nombre = "";
+    if ((tipo === "bomberos" && ambit) || tipo === "policia_local") {
+      if (terr.trim().length >= 3) nombre = sharedCuerpoName(tipo, ambit, normalizarTerritorio(terr));
+    } else if (tipo === "otra") {
+      nombre = $("op-otra").value.trim();
+    }
+    const p = $("op-preview");
+    p.hidden = !nombre;
+    p.querySelector("strong").textContent = nombre;
+    op.sugRespondidas = false;
+    $("op-sug").hidden = true;
+  }
+  $("op-nueva").addEventListener("change", actualizarNueva);
+  $("op-nueva").addEventListener("input", actualizarNueva);
+
+  // ── «¿Es alguna de estas?» ──
+  // Devuelve true si hay que esperar a que la persona conteste.
+  async function preguntarSugerencias() {
+    const tipo = valor("op_tipo");
+    if (op.modo !== "nueva" || tipo === "otra" || op.sugRespondidas) return false;
+    const ambit = tipo === "policia_local" ? "local" : valor("op_ambit");
+    const qs = new URLSearchParams({ accion: "sugerir", tipo, ambit, territorio: $("op-territorio").value });
+    let d;
+    try {
+      const r = await fetch(`${API}?${qs}`);
+      d = await r.json().catch(() => ({}));
+      if (r.status === 400 && d.errores) { pintarErrores(d.errores); return true; }
+      if (!r.ok) return false; // sin sugerencias no se bloquea el alta
+    } catch {
+      return false;
+    }
+    if (!d.sugerencias || !d.sugerencias.length) return false;
+    const cont = $("op-sug-lista");
+    cont.textContent = "";
+    for (const s of d.sugerencias) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "secondary";
+      b.textContent = s.label;
+      b.addEventListener("click", () => { elegir(s.code, s.label); $("op-lista-w").hidden = false; enviar(); });
+      cont.appendChild(b);
+    }
+    $("op-sug-no").textContent = `No, ninguna: guardar como «${d.nombre}»`;
+    const caja = $("op-sug");
+    caja.hidden = false;
+    caja.focus();
+    caja.scrollIntoView({ block: "center" });
+    return true;
+  }
+  $("op-sug-no").addEventListener("click", () => { op.sugRespondidas = true; $("op-sug").hidden = true; enviar(); });
 
   // ── El correo de la tienda: la ayuda cambia con la plataforma ──
   const AYUDA = {
@@ -196,18 +450,44 @@
     document.querySelectorAll("[data-err]").forEach((s) => (s.textContent = ""));
     $("general").textContent = "";
   }
+  // Dónde poner el foco para cada error (lo que no está aquí es el id del campo).
+  const FOCO = {
+    plataforma: () => form.querySelector("[name=plataforma]"),
+    examen: () => $("examen_mes"),
+    cuerpo_code: () => (op.modo === "nueva" ? null : buscar.hidden ? $("op-cambiar") : buscar),
+    cuerpo_tipo: () => document.querySelector("[name=op_tipo]"),
+    cuerpo_ambit: () => document.querySelector("[name=op_ambit]"),
+    cuerpo_territorio: () => $("op-territorio"),
+    cuerpo_otra: () => $("op-otra"),
+  };
   function pintarErrores(errores) {
     let primero = null;
     for (const [campo, msg] of Object.entries(errores)) {
       const s = document.querySelector(`[data-err="${campo}"]`);
       if (s) s.textContent = msg;
-      if (!primero) primero = campo === "plataforma" ? form.querySelector("[name=plataforma]") : $(campo === "examen" ? "examen_mes" : campo);
+      if (!primero) primero = FOCO[campo] ? FOCO[campo]() : $(campo);
     }
     if (primero) primero.focus();
   }
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  // Lo obligatorio de la oposición, en la página (el servidor lo vuelve a mirar).
+  function faltaOposicion() {
+    if (op.modo === "lista") return op.elegido ? {} : { cuerpo_code: "Busca y elige tu oposición, o pulsa «¿No encuentras tu oposición?»." };
+    const tipo = valor("op_tipo");
+    if (!tipo) return { cuerpo_tipo: "Elige si es de bomberos, de policía local u otra." };
+    if (tipo === "otra") return $("op-otra").value.trim() ? {} : { cuerpo_otra: "Escribe a qué oposición te presentas." };
+    const ambit = tipo === "policia_local" ? "local" : valor("op_ambit");
+    if (!ambit) return { cuerpo_ambit: "Elige si es de ayuntamiento, de diputación o consorcio, o de la comunidad autónoma." };
+    const terr = normalizarTerritorio($("op-territorio").value);
+    if (terr.length < 3 || slugTerritorio(terr).length < 3) {
+      return { cuerpo_territorio: `Escribe ${ETIQ_TERR[ambit].toLowerCase()} (al menos 3 letras).` };
+    }
+    return {};
+  }
+
+  form.addEventListener("submit", (e) => { e.preventDefault(); enviar(); });
+
+  async function enviar() {
     limpiarErrores();
     const mes = $("examen_mes").value, anio = $("examen_anio").value;
     if ((mes && !anio) || (!mes && anio)) {
@@ -222,7 +502,7 @@
     if (!$("email").value.trim()) faltan.email = "Escribe tu correo.";
     if (!plat) faltan.plataforma = "Elige si tu móvil es Android o iPhone.";
     if (!$("mismo_email").checked && !$("email_tienda").value.trim()) faltan.email_tienda = "Escribe el correo de tu cuenta de la tienda, o marca que es el mismo.";
-    if (!sel.value) faltan.cuerpo_code = "Elige tu oposición.";
+    Object.assign(faltan, faltaOposicion());
     if (!$("compromiso").checked) faltan.compromiso = "Necesitamos este compromiso para la prueba.";
     if (!$("edad").checked) faltan.edad = "La app es para mayores de 16 años.";
     if (!$("privacidad").checked) faltan.privacidad = "Tienes que aceptar la política de privacidad.";
@@ -230,6 +510,15 @@
       pintarErrores(faltan);
       return;
     }
+    const boton = $("enviar");
+    boton.disabled = true;
+    boton.textContent = "Comprobando…";
+    const esperar = await preguntarSugerencias();
+    boton.disabled = false;
+    boton.textContent = "Quiero probar Trenzia";
+    if (esperar) return;
+
+    const tipo = op.modo === "nueva" ? valor("op_tipo") : "";
     const body = {
       accion: "alta",
       nombre: $("nombre").value,
@@ -237,8 +526,11 @@
       plataforma: plat ? plat.value : "",
       mismo_email: $("mismo_email").checked,
       email_tienda: $("email_tienda").value,
-      cuerpo_code: sel.value,
-      cuerpo_otra: $("cuerpo_otra").value,
+      cuerpo_code: op.modo === "nueva" ? "NUEVA" : op.elegido.code,
+      cuerpo_tipo: tipo,
+      cuerpo_ambit: tipo === "bomberos" ? valor("op_ambit") : tipo === "policia_local" ? "local" : "",
+      cuerpo_territorio: tipo === "bomberos" || tipo === "policia_local" ? $("op-territorio").value : "",
+      cuerpo_otra: tipo === "otra" ? $("op-otra").value : "",
       examen: mes && anio ? `${anio}-${mes}` : "",
       conocido: $("conocido").value,
       compromiso: $("compromiso").checked,
@@ -249,7 +541,6 @@
       web: $("web").value,
       ms: Date.now() - abierto,
     };
-    const boton = $("enviar");
     boton.disabled = true;
     boton.textContent = "Enviando…";
     try {
@@ -273,7 +564,7 @@
       boton.disabled = false;
       boton.textContent = "Quiero probar Trenzia";
     }
-  });
+  }
 
   // ── «¿Ya te apuntaste?»: manda el enlace de baja y borrado ──
   $("form-enlace").addEventListener("submit", async (e) => {
