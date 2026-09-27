@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>Tu opinión · Trenzia</title>
+<link rel="stylesheet" href="probar.css">
+</head>
+<body>
+<main>
+ <a class="brand" href="./"><img src="logo.svg" alt="" width="44" height="44"><span>Trenzia</span></a>
+
+ <!-- Encuestas de los días 3, 7 y 14 de la prueba (encargo 29). Las preguntas
+      NO están aquí: las da la función (beta-testers?accion=encuesta), que las
+      saca de _shared/beta_encuestas.ts. Cambiar una pregunta no toca esta
+      página. Como en probar-gestionar.html, abrir la página no guarda nada:
+      solo el botón. -->
+ <p class="lead" id="cargando">Cargando la encuesta…</p>
+
+ <form id="encuesta" novalidate hidden>
+  <h1 id="titulo"></h1>
+  <p class="lead" id="intro"></p>
+  <div id="preguntas"></div>
+  <div class="msg bad" id="error" role="alert"></div>
+  <button class="primary" id="enviar" type="submit">Enviar</button>
+  <p class="help">Es voluntaria. Si vuelves a abrir el enlace, puedes cambiar tus respuestas.</p>
+ </form>
+
+ <section id="resultado" tabindex="-1" aria-live="polite" hidden></section>
+
+ <footer>
+  <p>
+   <a href="privacidad.html">Política de privacidad</a>
+   <a href="terminos.html">Términos de uso</a>
+   <a href="aviso-legal.html">Aviso legal</a>
+  </p>
+  <p>Contacto: <a href="mailto:soporte@trenzia.es">soporte@trenzia.es</a></p>
+ </footer>
+</main>
+
+<script>
+(() => {
+  "use strict";
+  const API = "https://zbmtqhipmnsztplraeqk.supabase.co/functions/v1/beta-testers";
+  const q = new URLSearchParams(location.search);
+  const id = q.get("id") || "";
+  const dia = q.get("dia") || "";
+  const t = q.get("t") || "";
+  // El token no se queda en la barra de direcciones ni en el historial.
+  if (t) history.replaceState(null, "", location.pathname);
+
+  const $ = (s) => document.getElementById(s);
+  const form = $("encuesta");
+  const res = $("resultado");
+
+  function mostrar(titulo, texto, enlace) {
+    $("cargando").hidden = true;
+    form.hidden = true;
+    res.hidden = false;
+    res.textContent = "";
+    const h = document.createElement("h1");
+    h.textContent = titulo;
+    const p = document.createElement("p");
+    p.textContent = texto;
+    res.append(h, p);
+    if (enlace) {
+      const a = document.createElement("a");
+      a.href = enlace[1];
+      a.textContent = enlace[0];
+      const pa = document.createElement("p");
+      pa.appendChild(a);
+      res.appendChild(pa);
+    }
+    res.focus();
+  }
+
+  const INVALIDO = ["Este enlace no es válido", "Puede que se haya copiado incompleto. Usa el enlace del correo que te enviamos."];
+  const NO_DISPONIBLE = ["Esta encuesta todavía no está abierta", "Te la enviaremos por correo cuando toque. Si crees que es un error, escríbenos a soporte@trenzia.es."];
+  const BAJA = ["Te diste de baja", "Ya no estás en la prueba, así que no te pedimos opinión. Gracias por tu interés en Trenzia."];
+
+  if (!id || !dia || !t) {
+    mostrar(...INVALIDO);
+    return;
+  }
+
+  let encuesta = null;
+
+  function crear(tag, props, hijos) {
+    const e = document.createElement(tag);
+    Object.assign(e, props || {});
+    (hijos || []).forEach((h) => e.append(h));
+    return e;
+  }
+
+  // Una pregunta de opciones o de escala: botones de radio con la etiqueta
+  // entera pulsable (.seg de probar.css). La escala de 0 a 10 en dos filas.
+  function radios(p, previa) {
+    const valores = p.tipo === "opciones"
+      ? p.opciones.map((o) => [o.valor, o.texto])
+      : Array.from({ length: p.max - p.min + 1 }, (_, i) => [String(p.min + i), String(p.min + i)]);
+    const grupo = crear("div", { className: p.tipo === "escala" ? "seg escala" : "seg seg3", role: "radiogroup" });
+    grupo.setAttribute("aria-labelledby", "q-" + p.id);
+    for (const [valor, texto] of valores) {
+      const input = crear("input", { type: "radio", name: p.id, value: valor, checked: previa != null && String(previa) === valor });
+      grupo.append(crear("label", {}, [input, texto]));
+    }
+    const nodos = [grupo];
+    if (p.extremos) {
+      nodos.push(crear("div", { className: "extremos" }, [crear("span", { textContent: p.extremos[0] }), crear("span", { textContent: p.extremos[1] })]));
+    }
+    return nodos;
+  }
+
+  function pintar(e, respuestas) {
+    encuesta = e;
+    $("titulo").textContent = e.titulo;
+    $("intro").textContent = e.intro;
+    const cont = $("preguntas");
+    cont.textContent = "";
+    for (const p of e.preguntas) {
+      const previa = respuestas ? respuestas[p.id] : undefined;
+      const etiqueta = crear("div", { className: "label", id: "q-" + p.id, textContent: p.texto });
+      if (!p.obligatoria) etiqueta.append(" ", crear("span", { className: "opt", textContent: "(opcional)" }));
+      const campo = crear("div", { className: "field" }, [etiqueta]);
+      if (p.tipo === "texto") {
+        const ta = crear("textarea", { name: p.id, rows: 4, maxLength: e.max_texto, value: previa || "" });
+        ta.setAttribute("aria-labelledby", "q-" + p.id);
+        campo.append(ta);
+      } else {
+        campo.append(...radios(p, previa));
+      }
+      campo.append(crear("span", { className: "err", id: "err-" + p.id }));
+      cont.append(campo);
+    }
+    $("cargando").hidden = true;
+    form.hidden = false;
+  }
+
+  function recoger() {
+    const r = {};
+    for (const p of encuesta.preguntas) {
+      if (p.tipo === "texto") {
+        const v = form.elements[p.id].value.trim();
+        if (v) r[p.id] = v;
+      } else {
+        const marcado = form.querySelector(`input[name="${p.id}"]:checked`);
+        if (marcado) r[p.id] = p.tipo === "escala" ? Number(marcado.value) : marcado.value;
+      }
+    }
+    return r;
+  }
+
+  function errores(es) {
+    for (const p of encuesta.preguntas) $("err-" + p.id).textContent = (es && es[p.id]) || "";
+    const primero = encuesta.preguntas.find((p) => es && es[p.id]);
+    if (primero) $("q-" + primero.id).scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  async function cargar() {
+    try {
+      const r = await fetch(`${API}?accion=encuesta&id=${encodeURIComponent(id)}&dia=${encodeURIComponent(dia)}&t=${encodeURIComponent(t)}`);
+      const d = await r.json().catch(() => ({}));
+      if (d.estado === "ok") return pintar(d.encuesta, d.respuestas);
+      if (d.estado === "invalido") return mostrar(...INVALIDO);
+      if (d.estado === "no_disponible") return mostrar(...NO_DISPONIBLE);
+      if (d.estado === "baja") return mostrar(...BAJA);
+      throw new Error(d.message || "respuesta inesperada");
+    } catch {
+      mostrar("No hemos podido cargar la encuesta", "Revisa tu conexión y vuelve a abrir el enlace del correo.");
+    }
+  }
+
+  form.addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    $("error").textContent = "";
+    const respuestas = recoger();
+    const faltan = {};
+    for (const p of encuesta.preguntas) if (p.obligatoria && !(p.id in respuestas)) faltan[p.id] = "Esta es obligatoria.";
+    errores(faltan);
+    if (Object.keys(faltan).length) return;
+
+    const boton = $("enviar");
+    boton.disabled = true;
+    try {
+      const r = await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accion: "opinar", id: Number(id), dia: Number(dia), t, respuestas }),
+      });
+      const d = await r.json().catch(() => ({}));
+      if (d.estado === "guardado") {
+        return mostrar("¡Gracias!", "Hemos guardado tus respuestas. Si quieres cambiar algo, vuelve a abrir el enlace del correo.");
+      }
+      if (d.error === "validacion") {
+        errores(d.errores);
+        boton.disabled = false;
+        return;
+      }
+      if (d.estado === "invalido") return mostrar(...INVALIDO);
+      if (d.estado === "no_disponible") return mostrar(...NO_DISPONIBLE);
+      if (d.estado === "baja") return mostrar(...BAJA);
+      throw new Error(d.message || "respuesta inesperada");
+    } catch {
+      boton.disabled = false;
+      $("error").textContent = "No hemos podido guardarlas. Revisa tu conexión e inténtalo de nuevo: lo que has escrito sigue aquí.";
+    }
+  });
+
+  cargar();
+})();
+</script>
+</body>
+</html>
