@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prueba Trenzia antes que nadie</title>
+<meta name="description" content="Apúntate para probar Trenzia, la app para preparar las pruebas físicas de tu oposición, antes de que salga en App Store y Google Play.">
+<link rel="stylesheet" href="probar.css">
+</head>
+<body>
+<main>
+ <a class="brand" href="./"><img src="logo.svg" alt="" width="44" height="44"><span>Trenzia</span></a>
+
+ <div id="hecho" class="msg ok" role="status" aria-live="polite" tabindex="-1" hidden></div>
+
+ <section id="alta">
+  <h1>Prueba Trenzia <em>antes que nadie</em>.</h1>
+  <p class="lead">Buscamos opositores que usen la app durante la prueba cerrada y nos cuenten qué les sobra y qué les falta. Es gratis. A cambio te pedimos que la uses al menos 14 días seguidos.</p>
+
+  <form id="form" novalidate>
+   <div class="field">
+    <label for="nombre">Nombre</label>
+    <input id="nombre" name="nombre" type="text" autocomplete="given-name" maxlength="80" required>
+    <span class="err" data-err="nombre"></span>
+   </div>
+
+   <div class="field">
+    <label for="email">Correo electrónico</label>
+    <input id="email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="254" required>
+    <span class="err" data-err="email"></span>
+   </div>
+
+   <div class="field">
+    <span class="label" id="plataforma-l">Tu móvil</span>
+    <div class="seg" role="radiogroup" aria-labelledby="plataforma-l">
+     <label><input type="radio" name="plataforma" value="android" required> Android</label>
+     <label><input type="radio" name="plataforma" value="ios"> iPhone</label>
+    </div>
+    <span class="err" data-err="plataforma"></span>
+   </div>
+
+   <div class="field">
+    <label for="email_tienda" id="tienda-l">Correo de tu cuenta de Google o de tu Apple ID</label>
+    <label class="check"><input type="checkbox" id="mismo_email" name="mismo_email"> <span>Es el mismo correo que el de arriba</span></label>
+    <input id="email_tienda" name="email_tienda" type="email" autocomplete="off" inputmode="email" maxlength="254" aria-describedby="tienda-h">
+    <p class="help" id="tienda-h">Para darte acceso a la prueba necesitamos el correo de la cuenta con la que instalas apps en el móvil. Solo lo usamos para invitarte.</p>
+    <span class="err" data-err="email_tienda"></span>
+   </div>
+
+   <div class="field">
+    <label for="cuerpo_code">Oposición</label>
+    <select id="cuerpo_code" name="cuerpo_code" required>
+     <option value="">Cargando…</option>
+    </select>
+    <span class="err" data-err="cuerpo_code"></span>
+    <div id="otra-w" hidden style="margin-top:10px">
+     <label for="cuerpo_otra" class="opt">¿Cuál?</label>
+     <input id="cuerpo_otra" name="cuerpo_otra" type="text" maxlength="80">
+     <span class="err" data-err="cuerpo_otra"></span>
+    </div>
+   </div>
+
+   <div class="field">
+    <span class="label" id="examen-l">Fecha aproximada del examen <span class="opt">(opcional)</span></span>
+    <div class="row" role="group" aria-labelledby="examen-l">
+     <select id="examen_mes" aria-label="Mes"><option value="">Mes</option></select>
+     <select id="examen_anio" aria-label="Año"><option value="">Año</option></select>
+    </div>
+    <span class="err" data-err="examen"></span>
+   </div>
+
+   <div class="field">
+    <label for="conocido">¿Cómo nos has conocido? <span class="opt">(opcional)</span></label>
+    <select id="conocido" name="conocido">
+     <option value="">—</option>
+     <option value="academia">En mi academia</option>
+     <option value="instagram">Instagram</option>
+     <option value="tiktok">TikTok</option>
+     <option value="amigo">Me lo ha dicho alguien</option>
+     <option value="google">Buscando en Google</option>
+     <option value="otro">De otra forma</option>
+    </select>
+    <span class="err" data-err="conocido"></span>
+   </div>
+
+   <div class="field">
+    <label class="check"><input type="checkbox" id="compromiso" name="compromiso"> <span>Usaré la app al menos 14 días seguidos.</span></label>
+    <span class="err" data-err="compromiso"></span>
+    <label class="check"><input type="checkbox" id="edad" name="edad"> <span>Tengo 16 años o más.</span></label>
+    <span class="err" data-err="edad"></span>
+    <label class="check"><input type="checkbox" id="privacidad" name="privacidad"> <span>He leído la <a href="privacidad.html#lista-de-probadores" target="_blank" rel="noopener">política de privacidad</a>.</span></label>
+    <span class="err" data-err="privacidad"></span>
+    <label class="check"><input type="checkbox" id="novedades" name="novedades"> <span>Quiero recibir novedades de Trenzia. <span class="opt">(opcional)</span></span></label>
+   </div>
+
+   <div class="hp" aria-hidden="true">
+    <label for="web">No rellenes este campo</label>
+    <input id="web" name="web" type="text" tabindex="-1" autocomplete="off">
+   </div>
+
+   <div id="general" class="msg bad" role="alert"></div>
+   <button class="primary" type="submit" id="enviar">Quiero probar Trenzia</button>
+   <p class="help" style="text-align:center;margin-top:12px">Te mandaremos un correo para confirmar. Si no lo ves en unos minutos, mira en correo no deseado.</p>
+  </form>
+ </section>
+
+ <details id="ya">
+  <summary>¿Ya te apuntaste y quieres darte de baja o borrar tus datos?</summary>
+  <p style="margin-top:14px">Escribe el correo con el que te apuntaste y te mandaremos un enlace para gestionarlo. También puedes escribir a <a href="mailto:privacidad@trenzia.es">privacidad@trenzia.es</a>.</p>
+  <form id="form-enlace" novalidate>
+   <div class="field">
+    <label for="email-enlace">Correo electrónico</label>
+    <input id="email-enlace" type="email" autocomplete="email" inputmode="email" maxlength="254" required>
+    <span class="err" id="err-enlace"></span>
+   </div>
+   <div class="hp" aria-hidden="true"><input id="web-enlace" type="text" tabindex="-1" autocomplete="off"></div>
+   <button class="secondary" type="submit" id="enviar-enlace">Mandarme el enlace</button>
+  </form>
+  <div id="hecho-enlace" class="msg ok" role="status" aria-live="polite" hidden style="margin-top:16px"></div>
+ </details>
+
+ <footer>
+  <p>
+   <a href="privacidad.html">Política de privacidad</a>
+   <a href="terminos.html">Términos de uso</a>
+  </p>
+  <p>Contacto: <a href="mailto:soporte@trenzia.es">soporte@trenzia.es</a></p>
+ </footer>
+</main>
+
+<script>
+(() => {
+  "use strict";
+  const API = "https://zbmtqhipmnsztplraeqk.supabase.co/functions/v1/beta-testers";
+  const abierto = Date.now();
+  const $ = (id) => document.getElementById(id);
+  const form = $("form");
+
+  // ?ref= de una academia o campaña: se manda con el alta y no se enseña.
+  const ref = new URLSearchParams(location.search).get("ref") || "";
+  // probar.html#ya viene de «pedir el enlace otra vez».
+  if (location.hash === "#ya") $("ya").open = true;
+
+  // ── Fecha del examen: de este mes a 3 años vista ──
+  const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+  MESES.forEach((m, i) => $("examen_mes").add(new Option(m[0].toUpperCase() + m.slice(1), String(i + 1).padStart(2, "0"))));
+  const hoy = new Date();
+  for (let a = hoy.getFullYear(); a <= hoy.getFullYear() + 3; a++) $("examen_anio").add(new Option(String(a), String(a)));
+
+  // ── Catálogo de oposiciones: el mismo que usa la app, servido por la función ──
+  const sel = $("cuerpo_code");
+  function opcionOtra() {
+    sel.add(new Option("Otra (escríbela)", "OTRA"));
+  }
+  fetch(API + "?accion=catalogo")
+    .then((r) => r.ok ? r.json() : Promise.reject(r.status))
+    .then((d) => {
+      sel.options[0].text = "Elige tu oposición";
+      for (const g of d.grupos) {
+        const og = document.createElement("optgroup");
+        og.label = g.grupo;
+        for (const o of g.opciones) og.appendChild(new Option(o.label, o.code));
+        sel.appendChild(og);
+      }
+      opcionOtra();
+    })
+    .catch(() => {
+      sel.options[0].text = "No hemos podido cargar la lista: elige «Otra»";
+      opcionOtra();
+    });
+  sel.addEventListener("change", () => {
+    const otra = sel.value === "OTRA";
+    $("otra-w").hidden = !otra;
+    if (otra) $("cuerpo_otra").focus();
+  });
+
+  // ── El correo de la tienda: la ayuda cambia con la plataforma ──
+  const AYUDA = {
+    android: ["Correo de tu cuenta de Google", "El de la cuenta de Google con la que usas Google Play en el móvil. Lo necesitamos para darte acceso a la prueba en Google Play; solo lo usamos para eso."],
+    ios: ["Correo de tu Apple ID", "El de tu Apple ID, el que usas en la App Store. Lo necesitamos para invitarte por TestFlight, la app de Apple para probar apps antes de que salgan; solo lo usamos para eso."],
+  };
+  form.addEventListener("change", (e) => {
+    if (e.target.name === "plataforma") {
+      const [t, h] = AYUDA[e.target.value];
+      $("tienda-l").textContent = t;
+      $("tienda-h").textContent = h;
+    }
+  });
+  $("mismo_email").addEventListener("change", (e) => {
+    $("email_tienda").disabled = e.target.checked;
+    if (e.target.checked) $("email_tienda").value = "";
+  });
+
+  function limpiarErrores() {
+    document.querySelectorAll("[data-err]").forEach((s) => (s.textContent = ""));
+    $("general").textContent = "";
+  }
+  function pintarErrores(errores) {
+    let primero = null;
+    for (const [campo, msg] of Object.entries(errores)) {
+      const s = document.querySelector(`[data-err="${campo}"]`);
+      if (s) s.textContent = msg;
+      if (!primero) primero = campo === "plataforma" ? form.querySelector("[name=plataforma]") : $(campo === "examen" ? "examen_mes" : campo);
+    }
+    if (primero) primero.focus();
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    limpiarErrores();
+    const mes = $("examen_mes").value, anio = $("examen_anio").value;
+    if ((mes && !anio) || (!mes && anio)) {
+      pintarErrores({ examen: "Elige el mes y el año, o ninguno de los dos." });
+      return;
+    }
+    const plat = form.querySelector("[name=plataforma]:checked");
+    const body = {
+      accion: "alta",
+      nombre: $("nombre").value,
+      email: $("email").value,
+      plataforma: plat ? plat.value : "",
+      mismo_email: $("mismo_email").checked,
+      email_tienda: $("email_tienda").value,
+      cuerpo_code: sel.value,
+      cuerpo_otra: $("cuerpo_otra").value,
+      examen: mes && anio ? `${anio}-${mes}` : "",
+      conocido: $("conocido").value,
+      compromiso: $("compromiso").checked,
+      edad: $("edad").checked,
+      privacidad: $("privacidad").checked,
+      novedades: $("novedades").checked,
+      ref,
+      web: $("web").value,
+      ms: Date.now() - abierto,
+    };
+    const boton = $("enviar");
+    boton.disabled = true;
+    boton.textContent = "Enviando…";
+    try {
+      const r = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      const d = await r.json().catch(() => ({}));
+      if (r.ok) {
+        $("alta").hidden = true;
+        $("ya").hidden = true;
+        const h = $("hecho");
+        h.hidden = false;
+        h.innerHTML = "<h1>Revisa tu correo</h1><p></p><p>Si no lo ves en unos minutos, <strong>mira en correo no deseado</strong>. Y si está ahí, márcalo como «no es spam»: así te llegarán bien las instrucciones de instalación.</p><p>El enlace vale 7 días.</p>";
+        h.querySelector("p").textContent = `Te hemos mandado un correo a ${body.email.trim()}. Pulsa el botón «Confirmo que quiero probar Trenzia» para guardar tu plaza.`;
+        window.scrollTo(0, 0);
+        h.focus();
+        return;
+      }
+      if (d.errores) pintarErrores(d.errores);
+      else $("general").textContent = d.message || "Algo ha fallado. Inténtalo de nuevo en unos minutos.";
+    } catch {
+      $("general").textContent = "No hemos podido conectar. Revisa tu conexión e inténtalo de nuevo.";
+    } finally {
+      boton.disabled = false;
+      boton.textContent = "Quiero probar Trenzia";
+    }
+  });
+
+  // ── «¿Ya te apuntaste?»: manda el enlace de baja y borrado ──
+  $("form-enlace").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    $("err-enlace").textContent = "";
+    const boton = $("enviar-enlace");
+    boton.disabled = true;
+    try {
+      const r = await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accion: "enlace", email: $("email-enlace").value, web: $("web-enlace").value, ms: Date.now() - abierto }),
+      });
+      const d = await r.json().catch(() => ({}));
+      if (r.ok) {
+        $("form-enlace").hidden = true;
+        const h = $("hecho-enlace");
+        h.hidden = false;
+        h.textContent = "Si ese correo está en la lista, te acabamos de mandar el enlace. Si no lo ves en unos minutos, mira en correo no deseado.";
+      } else {
+        $("err-enlace").textContent = (d.errores && d.errores.email) || d.message || "Algo ha fallado. Inténtalo de nuevo.";
+      }
+    } catch {
+      $("err-enlace").textContent = "No hemos podido conectar. Inténtalo de nuevo.";
+    } finally {
+      boton.disabled = false;
+    }
+  });
+})();
+</script>
+</body>
+</html>

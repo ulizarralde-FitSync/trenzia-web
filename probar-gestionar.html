@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>Tu inscripción · Trenzia</title>
+<link rel="stylesheet" href="probar.css">
+</head>
+<body>
+<main>
+ <a class="brand" href="./"><img src="logo.svg" alt="" width="44" height="44"><span>Trenzia</span></a>
+
+ <!-- Como en probar-confirmar.html: nada cambia al abrir la página; solo los botones. -->
+ <section id="elegir">
+  <h1>Tu inscripción en la prueba</h1>
+  <p class="lead">Elige qué quieres hacer.</p>
+
+  <div class="box">
+   <h2>Darme de baja</h2>
+   <p>No te volveremos a escribir. Tus datos se borran solos a los 30 días.</p>
+   <button class="secondary" id="baja" type="button">Darme de baja</button>
+  </div>
+
+  <div class="box">
+   <h2>Borrar mis datos ahora</h2>
+   <p>Borramos ya todo lo que nos diste al apuntarte. No se puede deshacer.</p>
+   <button class="secondary danger" id="borrar" type="button">Borrar mis datos</button>
+  </div>
+
+  <p class="help">Si ya te habíamos invitado, darte de baja de la lista no quita la app de tu móvil: puedes desinstalarla cuando quieras. ¿Dudas? <a href="mailto:privacidad@trenzia.es">privacidad@trenzia.es</a></p>
+ </section>
+
+ <section id="resultado" tabindex="-1" aria-live="polite" hidden></section>
+
+ <footer>
+  <p>
+   <a href="privacidad.html">Política de privacidad</a>
+   <a href="terminos.html">Términos de uso</a>
+  </p>
+  <p>Contacto: <a href="mailto:soporte@trenzia.es">soporte@trenzia.es</a></p>
+ </footer>
+</main>
+
+<script>
+(() => {
+  "use strict";
+  const API = "https://zbmtqhipmnsztplraeqk.supabase.co/functions/v1/beta-testers";
+  const q = new URLSearchParams(location.search);
+  const id = q.get("id") || "";
+  const t = q.get("t") || "";
+  if (t) history.replaceState(null, "", location.pathname);
+
+  const elegir = document.getElementById("elegir");
+  const res = document.getElementById("resultado");
+
+  function mostrar(titulo, texto, enlace) {
+    elegir.hidden = true;
+    res.hidden = false;
+    res.textContent = "";
+    const h = document.createElement("h1");
+    h.textContent = titulo;
+    const p = document.createElement("p");
+    p.textContent = texto;
+    res.append(h, p);
+    if (enlace) {
+      const a = document.createElement("a");
+      a.href = enlace[1];
+      a.textContent = enlace[0];
+      const pa = document.createElement("p");
+      pa.appendChild(a);
+      res.appendChild(pa);
+    }
+    res.focus();
+  }
+
+  const INVALIDO = ["Este enlace no es válido", "Puede que se haya copiado incompleto. Usa el enlace del último correo que te enviamos, o pídelo de nuevo.", ["Pedir el enlace otra vez", "probar.html#ya"]];
+
+  if (!id || !t) {
+    mostrar(...INVALIDO);
+    return;
+  }
+
+  async function llamar(accion, boton) {
+    const botones = document.querySelectorAll("#elegir button");
+    botones.forEach((b) => (b.disabled = true));
+    try {
+      const r = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ accion, id: Number(id), t }) });
+      const d = await r.json().catch(() => ({}));
+      switch (d.estado) {
+        case "baja":
+          mostrar("Te has dado de baja", "No te volveremos a escribir. Tus datos se borran solos a los 30 días. Si cambias de idea, puedes apuntarte otra vez.", ["Volver a apuntarme", "probar.html"]);
+          return;
+        case "borrado":
+          mostrar("Datos borrados", "Hemos borrado todo lo que nos diste al apuntarte. Gracias por tu interés en Trenzia.");
+          return;
+        case "invalido":
+          mostrar(...INVALIDO);
+          return;
+      }
+      throw new Error(d.message || "respuesta inesperada");
+    } catch {
+      botones.forEach((b) => (b.disabled = false));
+      alert("No hemos podido hacerlo. Revisa tu conexión e inténtalo de nuevo.");
+    }
+  }
+
+  document.getElementById("baja").addEventListener("click", (e) => llamar("baja", e.currentTarget));
+  document.getElementById("borrar").addEventListener("click", (e) => {
+    if (confirm("¿Seguro? Se borran tus datos y no se puede deshacer.")) llamar("borrar", e.currentTarget);
+  });
+})();
+</script>
+</body>
+</html>
