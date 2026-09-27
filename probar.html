@@ -241,10 +241,17 @@
     return s === s.toLowerCase() || s === s.toUpperCase() ? initcap(s) : s;
   };
   const slugTerritorio = (t) => t.normalize("NFD").replace(/\p{M}/gu, "").toUpperCase().replace(/[^A-Z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+  const FORALES = { bizkaia: "Bizkaia", vizcaya: "Bizkaia", gipuzkoa: "Gipuzkoa", guipuzcoa: "Gipuzkoa",
+    alava: "Álava", araba: "Álava", arabaalava: "Álava", alavaaraba: "Álava" };
   function sharedCuerpoName(tipo, ambit, territorio) {
     const terr = territorio.trim().replace(/\s+/g, " ");
     if (tipo === "bomberos" && ambit === "autonomico") return `Bomberos de ${terr}`;
-    if (tipo === "bomberos" && ambit === "provincial") return `Bomberos Provinciales de ${terr}`;
+    if (tipo === "bomberos" && ambit === "provincial") {
+      // Foral (27/09): los provinciales de Bizkaia, Gipuzkoa y Álava son los de
+      // la Diputación Foral, con su nombre oficial aunque se escriba «Vizcaya».
+      const foral = FORALES[searchNormalize(terr).replace(/[^a-z0-9]/g, "")];
+      return foral ? `Bomberos Diputación Foral de ${foral}` : `Bomberos Provinciales de ${terr}`;
+    }
     if (tipo === "bomberos") return `Bomberos del Ayto. de ${terr}`;
     return `Policía Local de ${terr}`;
   }
