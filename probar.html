@@ -387,8 +387,15 @@
     const p = $("op-preview");
     p.hidden = !nombre;
     p.querySelector("strong").textContent = nombre;
-    op.sugRespondidas = false;
-    $("op-sug").hidden = true;
+    // Las sugerencias ya enseñadas solo dejan de valer si cambia lo que se
+    // describe. Un `change` que llega solo porque el campo pierde el foco (al
+    // saltar al panel de sugerencias) no cuenta.
+    const clave = [tipo, ambit, normalizarTerritorio(terr), $("op-otra").value.trim()].join("|");
+    if (clave !== op.clave) {
+      op.clave = clave;
+      op.sugRespondidas = false;
+      $("op-sug").hidden = true;
+    }
   }
   $("op-nueva").addEventListener("change", actualizarNueva);
   $("op-nueva").addEventListener("input", actualizarNueva);
