@@ -20,8 +20,8 @@
  -->
  <section id="pedir">
   <h1>Confirma tu plaza</h1>
-  <p class="lead">Pulsa el botón para confirmar que quieres probar Trenzia.</p>
-  <button class="primary" id="confirmar" type="button">Confirmo que quiero probar Trenzia</button>
+  <p class="lead">Pulsa el botón para confirmar que este correo es tuyo y reservar tu plaza.</p>
+  <button class="primary" id="confirmar" type="button">Confirmar mi plaza</button>
  </section>
 
  <section id="resultado" tabindex="-1" aria-live="polite" hidden></section>
@@ -30,6 +30,7 @@
   <p>
    <a href="privacidad.html">Política de privacidad</a>
    <a href="terminos.html">Términos de uso</a>
+   <a href="aviso-legal.html">Aviso legal</a>
   </p>
   <p>Contacto: <a href="mailto:soporte@trenzia.es">soporte@trenzia.es</a></p>
  </footer>
@@ -69,7 +70,6 @@
     res.focus();
   }
 
-  const MOVIL = { android: "tu Android", ios: "tu iPhone" };
   const OTRA_VEZ = ["Volver a apuntarme", "probar.html"];
 
   if (!t) {
@@ -84,20 +84,12 @@
     try {
       const r = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ accion: "confirmar", t }) });
       const d = await r.json().catch(() => ({}));
-      const movil = MOVIL[d.plataforma] || "tu móvil";
       switch (d.estado) {
         case "confirmado":
-          mostrar("¡Confirmado! Gracias.", [
-            `Ya estás en la lista de probadores de Trenzia. Cuando empiece la prueba te escribiremos con las instrucciones para instalar la app en ${movil}.`,
-            "Si no ves nuestros correos, mira en correo no deseado.",
-            "Recuerda tu compromiso: usar la app al menos 14 días seguidos. Es lo que nos permite publicarla.",
-          ]);
+          mostrar("Plaza reservada", ["Te escribiremos cuando la app esté lista para instalar."]);
           return;
         case "ya_confirmado":
-          mostrar("Ya estabas confirmado", [
-            `No tienes que hacer nada más. Te escribiremos con las instrucciones para instalar la app en ${movil}.`,
-            "Si no ves nuestros correos, mira en correo no deseado.",
-          ]);
+          mostrar("Tu plaza ya estaba reservada", ["Te escribiremos cuando la app esté lista para instalar."]);
           return;
         case "caducado":
           mostrar("Este enlace ha caducado", ["El enlace de confirmación vale 7 días. Vuelve a apuntarte con el mismo correo y te mandaremos uno nuevo."], OTRA_VEZ);
@@ -112,7 +104,7 @@
       throw new Error(d.message || "respuesta inesperada");
     } catch {
       b.disabled = false;
-      b.textContent = "Confirmo que quiero probar Trenzia";
+      b.textContent = "Confirmar mi plaza";
       alert("No hemos podido confirmar. Revisa tu conexión e inténtalo de nuevo.");
     }
   });

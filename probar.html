@@ -72,7 +72,7 @@
    <div class="field">
     <label for="conocido">¿Cómo nos has conocido? <span class="opt">(opcional)</span></label>
     <select id="conocido" name="conocido">
-     <option value="">—</option>
+     <option value="">Elige una opción</option>
      <option value="academia">En mi academia</option>
      <option value="instagram">Instagram</option>
      <option value="tiktok">TikTok</option>
@@ -123,6 +123,7 @@
   <p>
    <a href="privacidad.html">Política de privacidad</a>
    <a href="terminos.html">Términos de uso</a>
+   <a href="aviso-legal.html">Aviso legal</a>
   </p>
   <p>Contacto: <a href="mailto:soporte@trenzia.es">soporte@trenzia.es</a></p>
  </footer>
@@ -259,8 +260,7 @@
         $("ya").hidden = true;
         const h = $("hecho");
         h.hidden = false;
-        h.innerHTML = "<h1>Revisa tu correo</h1><p></p><p>Si no lo ves en unos minutos, <strong>mira en correo no deseado</strong>. Y si está ahí, márcalo como «no es spam»: así te llegarán bien las instrucciones de instalación.</p><p>El enlace vale 7 días.</p>";
-        h.querySelector("p").textContent = `Te hemos mandado un correo a ${body.email.trim()}. Pulsa el botón «Confirmo que quiero probar Trenzia» para guardar tu plaza.`;
+        h.innerHTML = "<h1>Te hemos enviado un correo</h1><p>Confírmalo para reservar tu plaza.</p><p>Si no lo ves en unos minutos, <strong>mira en correo no deseado</strong>.</p>";
         window.scrollTo(0, 0);
         h.focus();
         return;
