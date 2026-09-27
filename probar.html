@@ -350,7 +350,14 @@
 
   const subtitulo = (c) => `${NOMBRE_AMBITO[c.ambit] || c.ambit}${c.region ? ` · ${c.region}` : ""}`;
 
-  fetch(API + "?accion=catalogo")
+  // VERSIÓN DEL FORMATO DEL CATÁLOGO. El navegador guarda la respuesta una hora
+  // (Cache-Control de beta-testers): si cambia el formato y la URL no, quien ya
+  // la tenía en caché recibe la vieja y ve «No hemos podido cargar la lista».
+  // SÚBELA cada vez que cambie la forma de la respuesta de ?accion=catalogo.
+  //   1: { grupos }            (hasta el 27/09)
+  //   2: { cuerpos, grupos }   (selector como la app, 27/09)
+  const CATALOGO_V = 2;
+  fetch(API + "?accion=catalogo&v=" + CATALOGO_V)
     .then((r) => r.ok ? r.json() : Promise.reject(r.status))
     .then((d) => {
       // Un backend anterior responde sin `cuerpos`: se trata como un fallo de
