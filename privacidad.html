@@ -10,7 +10,7 @@
  hr{border:0;border-top:1px solid #e6e6e9;margin:32px 0}
  .box{border:1px solid #e3e3e6;border-radius:10px;padding:18px 20px;background:#fafafa;margin:20px 0}
 </style></head><body><h1>Política de Privacidad de Trenzia</h1>
-<p><strong>Última actualización: 28 de septiembre de 2026 · Versión 1.4</strong></p>
+<p><strong>Última actualización: 29 de septiembre de 2026 · Versión 1.5</strong></p>
 <h2 id="responsable-del-tratamiento">1. Responsable del tratamiento</h2>
 <table>
 <colgroup>
@@ -219,8 +219,8 @@
 </thead>
 <tbody>
 <tr class="odd">
-<td>Analítica de producto propia</td>
-<td>Eventos de uso (pantallas abiertas, acciones realizadas), plataforma (iOS/Android) y el identificador interno del usuario. Tabla analytics_events. No usamos identificadores publicitarios ni compartimos estos datos con fines de publicidad</td>
+<td>Analítica de producto (solo si la aceptas)</td>
+<td>Si marcas la casilla de analítica la primera vez que abres la app, registramos eventos de uso (pantallas abiertas, acciones realizadas), la plataforma (iOS/Android), la versión de la app y el identificador interno del usuario. Los recibe PostHog, en su servidor de la Unión Europea, con la dirección IP descartada y sin grabación de sesiones. Si no la aceptas, no se envía ningún evento de analítica. No usamos identificadores publicitarios ni compartimos estos datos con fines de publicidad</td>
 </tr>
 <tr class="even">
 <td>Token de notificaciones push</td>
@@ -235,8 +235,8 @@
 <td>Función invocada, número de tokens y coste estimado, para controlar el gasto y aplicar límites. Tabla ai_usage_log</td>
 </tr>
 <tr class="odd">
-<td>Diagnóstico de errores y rendimiento</td>
-<td>Cuando la app se cierra de forma inesperada o funciona lenta, se registran el informe del fallo, el modelo y sistema operativo del dispositivo, la versión de la app, un identificador de instalación y el identificador interno del usuario. Sirve solo para corregir errores. Se activa con Firebase Crashlytics y Firebase Performance a partir de la versión que lo incorpore</td>
+<td>Diagnóstico de errores</td>
+<td>Cuando la app se cierra de forma inesperada o falla, se envía a Sentry el informe técnico del fallo, el modelo y sistema operativo del dispositivo y la versión de la app. No incluye tu correo, tu nombre ni tu identificador de usuario, y no se guarda tu dirección IP. Sirve solo para corregir errores y no depende de la casilla de analítica. No usamos Firebase Crashlytics ni Firebase Performance</td>
 </tr>
 <tr class="even">
 <td>Registros técnicos del servidor</td>
@@ -331,14 +331,14 @@
 </tr>
 <tr class="odd">
 <td>7</td>
-<td>Entender cómo se usa la app para mejorarla y corregir errores</td>
-<td>Analítica propia (3.5)</td>
-<td>Interés legítimo — art. 6.1.f (analítica propia, sin cesión a terceros ni publicidad). Puedes oponerte: apartado 8</td>
+<td>Entender cómo se usa la app para mejorarla</td>
+<td>Analítica de producto (3.5)</td>
+<td>Consentimiento, art. 6.1.a (casilla sin marcar al abrir la app). Puedes retirarlo en cualquier momento desde los ajustes de la app o escribiendo a privacidad@trenzia.es. Sin cesión a anunciantes ni publicidad</td>
 </tr>
 <tr class="even">
 <td>8</td>
 <td>Garantizar la seguridad, prevenir el abuso, controlar el coste de la IA y corregir errores de la app</td>
-<td>Logs técnicos, ai_usage_log, diagnóstico de errores y rendimiento (3.5)</td>
+<td>Logs técnicos, ai_usage_log y diagnóstico de errores (3.5)</td>
 <td>Interés legítimo — art. 6.1.f</td>
 </tr>
 <tr class="odd">
@@ -417,10 +417,16 @@
 <td>Unión Europea y Estados Unidos</td>
 </tr>
 <tr class="even">
-<td>Google Ireland Ltd. / Google LLC (Firebase Crashlytics y Performance)</td>
-<td>Informes de fallos y de rendimiento de la app</td>
-<td>Datos de diagnóstico del apartado 3.5 (sin email ni nombre)</td>
-<td>Unión Europea y Estados Unidos</td>
+<td>Functional Software, Inc. (Sentry)</td>
+<td>Recogida de los informes de fallos de la app</td>
+<td>Datos de diagnóstico del apartado 3.5 (sin email, nombre ni identificador de usuario)</td>
+<td>Datos almacenados en la Unión Europea (Fráncfort). Empresa con sede en Estados Unidos</td>
+</tr>
+<tr class="odd">
+<td>PostHog Inc.</td>
+<td>Analítica de producto, solo si aceptas la casilla de analítica</td>
+<td>Eventos de uso del apartado 3.5 e identificador interno del usuario (sin dirección IP)</td>
+<td>Datos almacenados en la Unión Europea (PostHog Cloud EU, Fráncfort). Empresa con sede en Estados Unidos</td>
 </tr>
 <tr class="odd">
 <td>Resend y el proveedor de correo SMTP que se configure</td>
@@ -458,7 +464,8 @@
 <p>Los datos se almacenan en la Unión Europea. Sin embargo, algunas de las operaciones descritas implican transferir datos a Estados Unidos:</p>
 <ul>
 <li>El entrenador IA y la generación de planes, porque las peticiones se procesan en la infraestructura de Anthropic.</li>
-<li>La entrega de notificaciones push y el diagnóstico de errores, a través de Firebase.</li>
+<li>La entrega de notificaciones push, a través de Firebase.</li>
+<li>El diagnóstico de errores (Sentry) y la analítica de producto (PostHog): los datos se almacenan en la Unión Europea, pero son empresas con sede en Estados Unidos y su personal puede acceder a ellos de forma puntual.</li>
 <li>El envío de correos del servicio, a través de Resend.</li>
 <li>El soporte técnico del desarrollador externo, con sede en Filipinas, país sin decisión de adecuación: esta transferencia se ampara en las Cláusulas Contractuales Tipo firmadas con él.</li>
 <li>La gestión de suscripciones y la distribución de la app, a través de Apple, Google y (en el futuro) RevenueCat.</li>
@@ -502,8 +509,12 @@
 <td>Según la configuración del proveedor de infraestructura (entre 1 y 90 días)</td>
 </tr>
 <tr class="even">
-<td>Analítica de producto (analytics_events)</td>
-<td>24 meses, con borrado o anonimización automática posterior</td>
+<td>Analítica de producto (PostHog)</td>
+<td>12 meses, con borrado automático posterior</td>
+</tr>
+<tr class="odd">
+<td>Informes de fallos (Sentry)</td>
+<td>30 días</td>
 </tr>
 <tr class="odd">
 <td>Registro de consumo de IA (ai_usage_log)</td>
@@ -585,7 +596,7 @@
 </tr>
 <tr class="odd">
 <td>Oposición</td>
-<td>Oponerte al tratamiento basado en nuestro interés legítimo, en particular a la analítica de producto</td>
+<td>Oponerte al tratamiento basado en nuestro interés legítimo, en particular al diagnóstico de errores</td>
 </tr>
 <tr class="even">
 <td>Limitación</td>
@@ -593,7 +604,7 @@
 </tr>
 <tr class="odd">
 <td>Retirada del consentimiento</td>
-<td>Retirar en cualquier momento el consentimiento prestado para los datos de salud, el coach IA, el perfil de personalidad o las notificaciones, sin efecto retroactivo sobre la licitud del tratamiento anterior</td>
+<td>Retirar en cualquier momento el consentimiento prestado para los datos de salud, el coach IA, el perfil de personalidad, la analítica o las notificaciones, sin efecto retroactivo sobre la licitud del tratamiento anterior</td>
 </tr>
 <tr class="even">
 <td>No ser objeto de decisiones automatizadas</td>
@@ -630,6 +641,7 @@
 <li>Versión 1.2 (27 de septiembre de 2026): la aplicación pasa a llamarse Trenzia (antes FitSync), el sitio web pasa a trenzia.es y el correo de privacidad pasa a privacidad@trenzia.es. No cambian los datos que tratamos, las finalidades, las bases jurídicas ni los proveedores.</li>
 <li>Versión 1.3 (27 de septiembre de 2026): se añade la lista de probadores de la web (apartados 2, 3.8, finalidad 11 y plazos de conservación), se indica expresamente que al invitarte a la beta comunicamos a Google o Apple el correo de tu cuenta de la tienda, y se añade el proveedor del correo de trenzia.es. No cambia nada del tratamiento de los datos de la app.</li>
 <li>Versión 1.4 (28 de septiembre de 2026): se añaden los comentarios que se envían desde la app, el seguimiento de los 14 días de la prueba cerrada y las encuestas a los probadores (apartados 2 y 3.9, finalidades 11 y 12 y plazos de conservación). No cambia el resto del tratamiento de los datos de la app.</li>
+<li>Versión 1.5 (29 de septiembre de 2026): se sustituyen Firebase Crashlytics y Firebase Performance por Sentry para el diagnóstico de errores, y se incorpora PostHog para la analítica de producto, que solo se activa si marcas la casilla de analítica (apartados 3.5, 4, 5, 5.1, 6 y 8). No cambia el resto del tratamiento de los datos de la app.</li>
 </ul>
 <hr />
 <h2 id="contacto">11. Contacto</h2>
