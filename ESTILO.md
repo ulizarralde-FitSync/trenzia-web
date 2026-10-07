@@ -40,7 +40,7 @@ En `probar.css` están como variables: `--o` (naranja), `--k` (fondo), `--line`,
 
 ## Formas y componentes
 
-- **Botón principal:** fondo naranja, texto blanco en negrita a 17 px, forma de píldora (`border-radius: 999px`), relleno de 13 a 14 px por 22 a 26 px.
+- **Botón principal:** fondo naranja, texto blanco en negrita a 19 px (no menos: con 19 px en negrita cuenta como texto grande y el contraste blanco sobre naranja, 3,1 a 1, cumple; a 17 px no cumple. Decisión de Urko, 07/10), forma de píldora (`border-radius: 999px`), relleno de 13 a 14 px por 22 a 26 px.
 - **Botón secundario:** transparente, borde `#CFCFD4`, también en píldora.
 - **Etiqueta "Próximamente":** borde y texto naranjas, píldora, 14 px.
 - **Tarjetas y cajas:** borde de 1 px `#2A2A2E`, esquinas de 12 px, relleno de 18 a 20 px. Las tarjetas de la lista del selector de oposición, más compactas: 14 × 16 px.
