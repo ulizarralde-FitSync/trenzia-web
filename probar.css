@@ -30,7 +30,7 @@ textarea:focus,input:focus,select:focus,button:focus-visible{outline:2px solid v
 .check input{margin-top:5px;width:18px;height:18px;flex:none;accent-color:var(--o)}
 .err{display:block;color:var(--err);font-size:14px;margin-top:6px}
 .err:empty{display:none}
-button.primary{display:inline-block;width:100%;font:inherit;font-size:17px;font-weight:700;color:#fff;background:var(--o);border:0;border-radius:999px;padding:14px 22px;cursor:pointer}
+button.primary{display:inline-block;width:100%;font:inherit;font-size:19px;font-weight:700;color:#fff;background:var(--o);border:0;border-radius:999px;padding:14px 22px;cursor:pointer}
 button.primary[disabled]{opacity:.6;cursor:wait}
 button.secondary{font:inherit;font-size:16px;font-weight:600;color:#fff;background:transparent;border:1px solid var(--soft);border-radius:999px;padding:12px 20px;cursor:pointer;width:100%}
 button.danger{border-color:var(--err);color:var(--err)}
