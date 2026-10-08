@@ -1,0 +1,3 @@
+# nota.js es el cálculo de la app, compilado por ella: se guarda y se publica
+# tal cual, sin convertir los finales de línea.
+oposiciones/nota.js -text

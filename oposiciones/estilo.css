@@ -1,0 +1,116 @@
+/* /oposiciones/ (encargos web-01 y web-05). Colores, tamaños y componentes de
+   trenzia-web/ESTILO.md; las páginas de probadores son la referencia
+   (640 px, h1 de 30 px). En el prototipo va dentro de cada HTML; en el
+   repo, como estilo.css compartido. */
+:root{--o:#FF5A1F;--k:#0C0C0C;--line:#2A2A2E;--muted:#9A9AA2;--soft:#CFCFD4;--list:#E6E6EA;--field:#16161A;--err:#FF8A7A;--ok:#7DDC9A;--azul:#8FC7FF}
+*{box-sizing:border-box}
+body{margin:0;background:var(--k);color:#fff;font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6}
+main{max-width:640px;margin:0 auto;padding:24px 16px 48px}
+a{color:#fff}
+.proto{border:1px dashed #FFD54A;color:#FFE38A;border-radius:12px;padding:10px 14px;font-size:14px;margin:0 0 24px}
+.proto b{color:#FFD54A}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:28px;text-decoration:none}
+.brand svg{width:44px;height:44px}
+.brand span{font-size:28px;font-weight:700;letter-spacing:-.5px;color:#fff}
+.volver{display:inline-block;font-size:14px;color:var(--muted);text-decoration:none;margin:0 0 12px}
+h1{font-size:30px;line-height:1.2;margin:0 0 10px}
+h1 em{font-style:normal;color:var(--o)}
+.lead{font-size:18px;color:var(--soft);margin:0 0 24px}
+h2{font-size:20px;line-height:1.3;margin:32px 0 12px}
+input,select{width:100%;background:var(--field);border:1px solid var(--line);border-radius:8px;color:#fff;font-size:16px;padding:11px 12px;font-family:inherit}
+input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--o);outline-offset:2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0;padding:0;list-style:none}
+.chip{border:1px solid var(--line);border-radius:999px;padding:5px 13px;font-size:14px;color:var(--list);background:var(--field);font-family:inherit;cursor:pointer}
+.chip[aria-pressed=true]{border-color:var(--o);color:var(--o);background:rgba(255,90,31,.12)}
+.grupo{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:28px 0 8px}
+.subgrupo{font-size:14px;font-weight:400;color:var(--soft);margin:16px 0 8px}
+.card{display:block;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:0 0 10px;color:#fff;text-decoration:none}
+a.card{box-shadow:inset 3px 0 0 var(--o)}
+.card-cab{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.card h4{font-size:16px;margin:0 0 2px;line-height:1.35}
+.card p{margin:0;font-size:14px;color:var(--muted)}
+.flecha{color:var(--o);font-weight:700}
+.convs{list-style:none;padding:0;margin:8px 0 0;font-size:14px}
+.convs li{display:flex;justify-content:space-between;gap:8px;padding:6px 0 0;margin-top:6px;border-top:1px solid var(--line);color:var(--list)}
+.sin{font-size:14px;color:var(--muted);margin:8px 0 0;padding-top:6px;border-top:1px solid var(--line)}
+.est{flex:none;font-size:12.5px;border-radius:999px;padding:2px 10px;border:1px solid;white-space:nowrap;align-self:flex-start}
+.est.inscripcion_abierta,.est.inscripcion{color:var(--azul);border-color:rgba(143,199,255,.5)}
+.est.pruebas_pendientes,.est.pendientes{color:var(--ok);border-color:rgba(125,220,154,.5)}
+.est.proximamente,.est.pronto{color:var(--o);border-color:rgba(255,90,31,.6)}
+.est.anulada,.est.suspendida,.est.cerrada{color:var(--muted);border-color:var(--line)}
+/* El buscador solo con JavaScript; la clase «js» la pone la cabecera antes de pintar, así no mueve la lista al cargar. */
+#filtros{display:none}
+.js #filtros{display:block}
+.vacio{color:var(--muted);font-size:15px;margin:24px 0}
+.conv{display:block;width:100%;text-align:left;background:transparent;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 8px;color:#fff;font:inherit;cursor:pointer}
+.conv[aria-checked=true]{border-color:var(--o);box-shadow:inset 3px 0 0 var(--o)}
+.conv b{font-size:16px}
+/* Con un nombre largo, la etiqueta de estado baja de línea en vez de apretar el texto. */
+.conv .card-cab,.convs li{flex-wrap:wrap;row-gap:4px}
+.conv p{margin:2px 0 0;font-size:14px;color:var(--muted)}
+.aviso{border:1px solid var(--line);border-left:3px solid var(--o);border-radius:10px;padding:12px 14px;font-size:14px;color:var(--soft);margin:4px 0 0}
+.aviso.cerrada{border-left-color:var(--muted)}
+.aviso b{color:#fff}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--field)}
+.seg button{background:transparent;border:0;color:var(--list);font:inherit;font-size:15px;padding:6px 16px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed=true]{background:rgba(255,90,31,.14);color:var(--o)}
+.edad{max-width:120px;margin-left:10px}
+.prueba{border:1px solid var(--line);border-radius:12px;padding:16px;margin:12px 0 0}
+.prueba-cab{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.prueba h3{font-size:16px;margin:0;line-height:1.35}
+.cond{font-size:14px;color:var(--muted);margin:4px 0 12px}
+.entrada{display:flex;gap:10px;align-items:center}
+.entrada input{max-width:150px}
+.unidad{color:var(--muted);font-size:15px}
+.pts{font-size:22px;font-weight:700;white-space:nowrap}
+.pts small{font-size:13px;color:var(--muted);font-weight:400}
+.barra{height:6px;border-radius:999px;background:var(--line);margin:14px 0 8px;overflow:hidden}
+.barra i{display:block;height:100%;background:var(--o);width:0}
+.msg{font-size:14px;color:var(--soft);min-height:22px;margin:0}
+.msg.ok{color:var(--ok)}.msg.no{color:var(--err)}
+details{margin-top:10px}
+summary{cursor:pointer;font-size:14px;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-top:6px}
+td,th{padding:5px 6px;border-bottom:1px solid var(--line);text-align:left}
+th{color:var(--muted);font-weight:400}
+tr.aqui td{color:var(--o);font-weight:700}
+.total{border:1px solid var(--line);border-radius:12px;padding:16px;margin:16px 0 24px}
+.total-cab{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.total .pts{font-size:30px}
+.regla{list-style:none;padding:0;margin:10px 0 0;font-size:14px}
+.regla li{margin:4px 0;color:var(--soft)}
+.regla li::before{content:"○ ";color:var(--muted)}
+.regla li.ok::before{content:"✓ ";color:var(--ok)}
+.regla li.no::before{content:"✕ ";color:var(--err)}
+.veredicto{margin:12px 0 0;font-size:15px;color:#fff}
+.btn{display:inline-block;background:var(--o);color:#fff;font-weight:700;font-size:19px;border-radius:999px;padding:13px 24px;text-decoration:none}
+.fuente{font-size:14px;color:var(--muted);margin-top:24px}
+footer{border-top:1px solid var(--line);margin-top:40px;padding-top:20px;font-size:14px;color:var(--muted)}
+
+/* web-01: HTML estático (sin JavaScript todo se lee) y avisos. */
+.ejemplo{border:1px solid #FFD54A;background:rgba(255,213,74,.08);color:#FFE38A;border-radius:10px;padding:10px 14px;font-size:14px;margin:12px 0}
+.ejemplo b{color:#FFD54A}
+.avisos{list-style:none;padding:0;margin:12px 0 0}
+.avisos li{border:1px solid var(--line);border-left:3px solid var(--o);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--soft);margin:0 0 8px}
+.avisos li.verificacion,.avisos li.fecha{border-left-color:var(--muted)}
+.conv-detalle{margin:8px 0 0}
+.conv-detalle[hidden]{display:none}
+.ficha{margin:8px 0 0;font-size:14px;color:var(--muted)}
+.ficha div{margin:2px 0}
+.ficha b{color:var(--soft);font-weight:600}
+.marcas-prueba{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:10px 0 0}
+.marcas-prueba h4{font-size:16px;margin:0 0 4px}
+.marcas-prueba p{margin:2px 0;font-size:14px;color:var(--soft)}
+.marcas-prueba .quien{color:var(--muted)}
+.tabla-scroll{max-width:100%;overflow-x:auto}
+.sin-js{font-size:14px;color:var(--muted)}
+.calc[hidden]{display:none}
+.fecha-nac{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0 0}
+.fecha-nac label{font-size:14px;color:var(--soft)}
+.fecha-nac input{max-width:190px}
+.nota-edad{font-size:14px;color:var(--muted);margin:8px 0 0}
+.lineal{font-size:14px;color:var(--muted);margin:4px 0 0}
+footer a{color:#fff}
+/* Enlaces del pie separados: en móvil se parten en varias líneas y tienen que poder tocarse (24 px). */
+.pie-enlaces{display:flex;flex-wrap:wrap;gap:6px 18px}
+.pie-enlaces a{display:inline-block;min-height:24px;line-height:24px}

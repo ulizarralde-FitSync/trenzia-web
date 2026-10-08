@@ -48,6 +48,19 @@ En `probar.css` están como variables: `--o` (naranja), `--k` (fondo), `--line`,
 - **Chips de filtro:** píldora con borde `#2A2A2E`. Seleccionado: borde y texto naranjas y fondo naranja suave.
 - **Foco (accesibilidad):** contorno de 2 px, blanco en los botones de la portada y naranja en los formularios. No se quita nunca.
 
+### Pruebas físicas por oposición (`/oposiciones/`)
+
+Mismas medidas que las páginas de probadores (640 px, h1 de 30 px). Su estilo está en `oposiciones/estilo.css`.
+
+- **Tarjeta de organismo** (índice): como las del selector de oposición, 14 × 16 px. Si tiene página, lleva la barra naranja a la izquierda (`box-shadow: inset`) y una flecha `›` naranja.
+- **Etiqueta de estado de la convocatoria:** píldora de 12,5 px con borde y texto del mismo color: azul `#8FC7FF` para «Inscripción abierta», verde (el color de correcto) para «Pruebas pendientes», naranja para «Próximamente» y gris `#9A9AA2` para «Cerrada», «Anulada» y «Suspendida». El texto es el estado tal como llega de la app; si no tiene fecha, añade «, sin fecha».
+- **Selector de convocatorias:** una tarjeta-botón por convocatoria, una sola elegida (`role="radio"`). La elegida, con borde naranja y la barra naranja a la izquierda.
+- **Avisos:** caja de 14 px con borde `#2A2A2E` y borde izquierdo de 3 px: gris para «sin fecha» y «no revisado por Trenzia», naranja para los demás. Siempre va el último: «Lo que vale es la convocatoria oficial».
+- **Tablas de marcas:** dentro de un desplegable («Ver la tabla oficial»), dos columnas (Marca y Puntos) con una línea `#2A2A2E` entre filas. Si la prueba puntúa en escala lineal, la tabla tiene solo dos filas y debajo la frase «Entre medias, proporcional (dos decimales)».
+- **Calculadora:** una caja por prueba con el campo de la marca (16 px, máximo 150 px de ancho), los puntos en grande (22 px, negrita), una barra de progreso naranja de 6 px y un mensaje de 14 px en verde (apto) o rojo claro (no apto). Debajo, la caja del total (30 px) con la regla de la convocatoria en una lista con ✓, ✕ u ○.
+- **Sexo:** control segmentado en píldora; el elegido, con fondo naranja suave y texto naranja.
+- **Botón «Prepáralas con Trenzia»:** el botón principal, a `probar.html?oposicion=CODIGO`.
+
 ## Maquetación
 
 - Una sola columna centrada: 720 px de ancho máximo en la portada y 640 px en las páginas de probadores.
@@ -61,6 +74,7 @@ En `probar.css` están como variables: `--o` (naranja), `--k` (fondo), `--line`,
 - HTML y CSS a mano, sin frameworks ni librerías.
 - Nada cargado de otros servidores (fuentes, scripts, analítica, formularios de terceros). Afecta a la política de privacidad: coméntalo antes. La única conexión es la de las páginas de probadores con nuestro propio servidor (Supabase), que es donde se guardan los datos del formulario.
 - Las páginas de probadores comparten `probar.css`. La portada lleva su estilo dentro del propio HTML.
+- **`oposiciones/` no se edita a mano:** la genera el generador de la web a partir del archivo de la app (`oposiciones.json` y `nota.js`, que es el cálculo de la app y no se toca). También escribe su bloque de `sitemap.xml`. Para cambiar textos o estilo, se cambia el generador y se vuelve a generar. La calculadora funciona en el navegador: no se conecta a nada ni guarda nada.
 - Las páginas legales (privacidad, términos, aviso legal, eliminar cuenta) van en fondo blanco y texto `#1A1A1A` para leerse mejor, con 760 px de ancho máximo. El naranja `#FF5A1F` va en la línea bajo el título y en el borde izquierdo de las citas; los enlaces, en un naranja más oscuro (`#D1490F`) para que se lean sobre blanco.
 
 ## Reglas para colaborar

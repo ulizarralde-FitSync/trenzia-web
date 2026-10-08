@@ -215,6 +215,7 @@
  </details>
 
  <footer>
+  <p><a href="/oposiciones/">Pruebas físicas por oposición</a></p>
   <p>
    <a href="privacidad.html">Política de privacidad</a>
    <a href="terminos.html">Términos de uso</a>
@@ -233,7 +234,11 @@
   const form = $("form");
 
   // ?ref= de una academia o campaña: se manda con el alta y no se enseña.
-  const ref = new URLSearchParams(location.search).get("ref") || "";
+  // ?oposicion=CODIGO viene del botón de /oposiciones/: esa oposición sale ya
+  // elegida y, si no hay otro ?ref=, el alta lleva ref=guia-CODIGO.
+  const params = new URLSearchParams(location.search);
+  const oposicionPedida = /^[A-Z0-9_]{1,34}$/.test(params.get("oposicion") || "") ? params.get("oposicion") : "";
+  const ref = params.get("ref") || (oposicionPedida ? `guia-${oposicionPedida}` : "");
   // probar.html#ya viene de «pedir el enlace otra vez».
   if (location.hash === "#ya") $("ya").open = true;
 
@@ -392,6 +397,7 @@
       buscar.disabled = false;
       buscar.placeholder = "Busca por nombre, comunidad o ciudad…";
       pintar();
+      if (oposicionPedida && catalogo.some((c) => c.code === oposicionPedida)) elegir(oposicionPedida);
     })
     .catch(() => {
       // Sin lista, al menos se puede describir.
