@@ -38,6 +38,9 @@ a.card{box-shadow:inset 3px 0 0 var(--o)}
 .est.pruebas_pendientes,.est.pendientes{color:var(--ok);border-color:rgba(125,220,154,.5)}
 .est.proximamente,.est.pronto{color:var(--o);border-color:rgba(255,90,31,.6)}
 .est.anulada,.est.suspendida,.est.cerrada{color:var(--muted);border-color:var(--line)}
+/* El buscador solo con JavaScript; la clase «js» la pone la cabecera antes de pintar, así no mueve la lista al cargar. */
+#filtros{display:none}
+.js #filtros{display:block}
 .vacio{color:var(--muted);font-size:15px;margin:24px 0}
 .conv{display:block;width:100%;text-align:left;background:transparent;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 8px;color:#fff;font:inherit;cursor:pointer}
 .conv[aria-checked=true]{border-color:var(--o);box-shadow:inset 3px 0 0 var(--o)}

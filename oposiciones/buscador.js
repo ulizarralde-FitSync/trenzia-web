@@ -40,6 +40,5 @@
   chips("data-f-tipo", (v) => (fTipo = v));
   chips("data-f-estado", (v) => (fEstado = v));
   q.addEventListener("input", pinta);
-  document.getElementById("filtros").hidden = false;
   pinta();
 })();
