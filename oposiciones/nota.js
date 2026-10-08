@@ -23,9 +23,11 @@ var TrenziaNota = (() => {
   var entrada_exports = {};
   __export(entrada_exports, {
     datosDeMotor: () => datosDeMotor,
+    distingueEdad: () => distingueEdad,
     edadEn: () => edadEn,
     elegirBaremo: () => elegirBaremo,
     elegirTramos: () => elegirTramos,
+    necesitaEdad: () => necesitaEdad,
     notaDeConvocatoria: () => notaDeConvocatoria,
     parseScoringRules: () => parseScoringRules,
     pickBaremeFor: () => pickBaremeFor,
@@ -331,31 +333,43 @@ var TrenziaNota = (() => {
       scored_by: "lineal"
     };
   }
-  function notaDeConvocatoria(pruebas, scoringModel, rules) {
+  function filaDeRegla(b) {
     var _a;
+    return b.points_max === null ? { test_type: b.test_type, puntos: null, solo_apto: true, is_apto: b.mark === null ? null : b.is_apto } : { test_type: b.test_type, puntos: b.mark === null ? null : (_a = b.puntos) != null ? _a : 0 };
+  }
+  function notaDeConvocatoria(pruebas, scoringModel, rules, opciones = {}) {
+    var _a, _b;
+    const totals = aggregateScore(pruebas, scoringModel, (_a = rules == null ? void 0 : rules.nota) != null ? _a : "suma");
+    if (opciones.completa) {
+      const conBaremo = pruebas.filter((b) => b.has_bareme);
+      const aptoEnTodas = scoringModel === "binary" || !rules || rules.min_points_per_test == null && rules.min_total_points == null;
+      const minPrueba = (_b = rules == null ? void 0 : rules.min_points_per_test) != null ? _b : null;
+      const eliminan = conBaremo.filter(
+        (b) => {
+          var _a2;
+          return b.mark !== null && (aptoEnTodas || b.points_max === null ? !b.is_apto : minPrueba !== null && ((_a2 = b.puntos) != null ? _a2 : 0) < minPrueba);
+        }
+      ).map((b) => b.test_type);
+      const faltanPuntos = scoringModel === "points" && rules && conBaremo.length > 0 ? evaluateGlobalRule(conBaremo.map(filaDeRegla), rules).points_to_apto : null;
+      const sinVeredicto = { totals, apto_global: null, points_to_apto: faltanPuntos, tests_below_min: eliminan };
+      if (opciones.noAptoSeguro && eliminan.length > 0) return { ...sinVeredicto, apto_global: false };
+      if (pruebas.length === 0 || conBaremo.length < pruebas.length) return sinVeredicto;
+      if (aptoEnTodas) {
+        const sinMarca = pruebas.some((b) => b.mark === null);
+        return { ...sinVeredicto, apto_global: sinMarca ? null : eliminan.length === 0 };
+      }
+    }
     let aptoGlobal = null;
     let pointsToApto = null;
     let testsBelowMin = [];
     if (scoringModel === "points" && rules && pruebas.some((b) => b.has_bareme)) {
-      const v = evaluateGlobalRule(
-        pruebas.filter((b) => b.has_bareme).map(
-          (b) => {
-            var _a2;
-            return (
-              // Una prueba de solo apto dentro de una convocatoria por puntos (la
-              // apnea de Murcia) no suma, pero no ser apto elimina (encargo 40).
-              b.points_max === null ? { test_type: b.test_type, puntos: null, solo_apto: true, is_apto: b.mark === null ? null : b.is_apto } : { test_type: b.test_type, puntos: b.mark === null ? null : (_a2 = b.puntos) != null ? _a2 : 0 }
-            );
-          }
-        ),
-        rules
-      );
+      const v = evaluateGlobalRule(pruebas.filter((b) => b.has_bareme).map(filaDeRegla), rules);
       aptoGlobal = v.apto_global;
       pointsToApto = v.points_to_apto;
       testsBelowMin = v.tests_below_min;
     }
     return {
-      totals: aggregateScore(pruebas, scoringModel, (_a = rules == null ? void 0 : rules.nota) != null ? _a : "suma"),
+      totals,
       apto_global: aptoGlobal,
       points_to_apto: pointsToApto,
       tests_below_min: testsBelowMin
@@ -414,6 +428,12 @@ var TrenziaNota = (() => {
     const min = (_b = f.edad_min) != null ? _b : null;
     const max = (_c = f.edad_max) != null ? _c : null;
     return (min === null || p.edad >= min) && (max === null || p.edad <= max);
+  }
+  function necesitaEdad(c) {
+    return c.pruebas.some((p) => {
+      var _a;
+      return p.baremos.some(distingueEdad) || ((_a = p.tramos) != null ? _a : []).some(distingueEdad);
+    });
   }
   function anchura(f) {
     var _a, _b;
@@ -548,7 +568,7 @@ var TrenziaNota = (() => {
         max_total_points: g.max_total,
         ...g.tipo === "media" ? { nota: "media" } : {}
       };
-      if (rules.min_points_per_test === null && rules.min_total_points === null && rules.max_total_points === null) rules = null;
+      if (rules.min_points_per_test === null && rules.min_total_points === null && rules.max_total_points === null && rules.nota !== "media") rules = null;
     }
     return { scoringModel: c.nota.modelo, baremos, tramos, rules };
   }

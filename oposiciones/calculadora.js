@@ -36,7 +36,7 @@
   }
   function pintaEdad(c) {
     const caja = $("edad-caja");
-    if (!W.necesitaEdad(c)) { caja.innerHTML = ""; return; }
+    if (!N.necesitaEdad(c)) { caja.innerHTML = ""; return; }
     const ref = c.edad_referencia || {};
     if (ref.fecha) {
       const sinConfirmar = ref.confirmada === false ? ` ${T.SIN_CONFIRMAR}.` : "";
@@ -75,7 +75,7 @@
   function pintaPruebas() {
     const c = convs[conv];
     if (!W.tieneMarcas(c)) return pintaCalculadora();
-    const necesita = W.necesitaEdad(c);
+    const necesita = N.necesitaEdad(c);
     const edad = necesita ? edadActual(c) : null;
     if ($("edad-dice")) $("edad-dice").textContent = edad != null ? `${edad} años` : "";
     if (necesita && edad == null) {
@@ -128,7 +128,7 @@
 
   function calcula() {
     const c = convs[conv];
-    const edad = W.necesitaEdad(c) ? edadActual(c) : null;
+    const edad = N.necesitaEdad(c) ? edadActual(c) : null;
     const marcas = {}, leidas = {};
     for (const p of c.pruebas) {
       const b = p.baremos[0];
@@ -179,12 +179,9 @@
     if (res.pruebas.some((p) => p.baremo && p.soloApto && res.modelo === "points")) {
       li.push(`<li class="${n.porDebajo.length ? "no" : n.completas ? "ok" : ""}">Apto en las pruebas que no dan puntos</li>`);
     }
-    if (!regla || res.modelo !== "points") li.push(`<li class="${!n.completas ? "" : n.apto ? "ok" : "no"}">Apto en todas las pruebas</li>`);
+    if (!regla || res.modelo !== "points") li.push(`<li class="${n.porDebajo.length ? "no" : !n.completas ? "" : n.apto ? "ok" : "no"}">Apto en todas las pruebas</li>`);
     $("regla").innerHTML = li.join("");
-    $("veredicto").textContent = n.faltanBaremos ? "No podemos decirte si apruebas: alguna prueba no tiene marca para tu sexo o tu edad."
-      : n.apto === true ? "Con estas marcas aprobarías las pruebas físicas."
-      : n.apto === false ? "Con estas marcas no aprobarías las pruebas físicas."
-      : `Escribe tus marcas en las ${n.total} pruebas para saber si apruebas.`;
+    $("veredicto").textContent = T.veredicto(n, (codigo) => (cat[codigo] && cat[codigo].nombre) || codigo);
   }
 
   document.querySelectorAll("[data-sexo]").forEach((b) => b.addEventListener("click", () => {

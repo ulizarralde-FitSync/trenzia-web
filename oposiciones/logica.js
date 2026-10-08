@@ -1,13 +1,14 @@
-// Lógica de la web para el buscador y la calculadora (encargo web-05, 08/10/2026).
+// Lógica de la web para el buscador y la calculadora (encargos web-05 y web-06, 08/10/2026).
 //
 // Todo el cálculo es de nota.js (TrenziaNota), el código de la app, sin tocar:
 // traducir la convocatoria (datosDeMotor), elegir baremo y tabla por sexo y
 // edad y puntuar cada prueba (puntuarPrueba, elegirTramos), la nota de toda la
-// convocatoria con su regla (notaDeConvocatoria) y la edad (edadEn).
+// convocatoria con su regla y el veredicto (notaDeConvocatoria), la edad
+// (edadEn) y si hay que pedirla (necesitaEdad, distingueEdad).
 //
-// Aquí solo queda lo que necesita la página para pintar: si hay que pedir la
-// edad, qué convocatoria se enseña primero, leer lo que escribe la persona y el
-// texto de ayuda «te faltan…». Ninguna de esas cosas cambia una nota.
+// Aquí solo queda lo que necesita la página para pintar: qué convocatoria se
+// enseña primero, leer lo que escribe la persona y el texto de ayuda «te
+// faltan…». Ninguna de esas cosas cambia una nota.
 //
 // Se carga igual en el navegador (deja `TrenziaWeb`) y en Node (module.exports)
 // para que las pruebas usen exactamente este código.
@@ -19,17 +20,6 @@ var TrenziaWeb = (function () {
   function edadEn(N, nacimiento, referencia) {
     if (!nacimiento || !referencia) return null;
     try { return N.edadEn(nacimiento, referencia); } catch (e) { return null; }
-  }
-
-  // ── ¿Hay que pedir la edad? ─────────────────────────────────────────────────
-  // Mismo criterio que nota.js al elegir filas (distingueEdad): 16 a 99 años, o
-  // sin edades, quiere decir «cualquiera». nota.js no lo exporta; solo decide si
-  // la página pregunta la edad, no qué baremo toca.
-  function tieneEdad(f) {
-    return (f.edad_min != null && f.edad_min > 16) || (f.edad_max != null && f.edad_max < 99);
-  }
-  function necesitaEdad(conv) {
-    return conv.pruebas.some((p) => p.baremos.some(tieneEdad) || p.tramos.some(tieneEdad));
   }
 
   // ── Puntuar a una persona ───────────────────────────────────────────────────
@@ -66,29 +56,32 @@ var TrenziaWeb = (function () {
       };
     });
 
-    const conBaremo = pruebas.filter((p) => p.baremo);
-    const filas = conBaremo.map((p) => ({
-      test_type: p.codigo, has_bareme: true, mark: p.r.mark, puntos: p.puntos, points_max: p.puntosMax, is_apto: p.r.is_apto,
-    }));
-    const n = N.notaDeConvocatoria(filas, motor.scoringModel, motor.rules);
-    const conMarca = filas.filter((f) => f.mark != null).length;
-    const aptas = filas.filter((f) => f.is_apto).length;
-    const completas = conMarca === filas.length;
+    // A nota.js van TODAS las pruebas, también las que no tienen baremo para
+    // este sexo o esta edad (has_bareme: false): con completa, sin baremo no
+    // hay veredicto; con noAptoSeguro, una prueba que elimina da «no apto»
+    // aunque falten otras. El veredicto es siempre el de nota.js.
+    const filas = pruebas.map((p) => p.baremo
+      ? { test_type: p.codigo, has_bareme: true, mark: p.r.mark, puntos: p.puntos, points_max: p.puntosMax, is_apto: p.r.is_apto }
+      : { test_type: p.codigo, has_bareme: false, mark: null, puntos: null, points_max: null, is_apto: false });
+    const n = N.notaDeConvocatoria(filas, motor.scoringModel, motor.rules, { completa: true, noAptoSeguro: true });
+    const conBaremo = filas.filter((f) => f.has_bareme);
+    const conMarca = conBaremo.filter((f) => f.mark != null).length;
+    const completas = conMarca === conBaremo.length;
+    const sinBaremo = filas.length - conBaremo.length;
+    const apto = n.apto_global;
     const nota = {
       tipo: motor.rules && motor.rules.nota === "media" ? "media" : "suma",
-      completas, conMarca, total: filas.length, aptas,
+      completas, conMarca, total: conBaremo.length, aptas: conBaremo.filter((f) => f.is_apto).length,
       valor: n.totals.tests_with_mark ? n.totals.total_score : null,
       maximo: n.totals.max_score,
       faltan: n.points_to_apto,
+      // Las pruebas que eliminan, según nota.js.
       porDebajo: [...n.tests_below_min],
-      // Con regla, el veredicto es el de nota.js. Sin regla (solo apto o no
-      // apto, o puntos sin mínimos), nota.js no da veredicto: se aprueba con
-      // apto en todas, como dicen esas bases.
-      apto: motor.rules ? n.apto_global : (completas ? aptas === filas.length : null),
+      apto,
+      // Solo para elegir el texto del veredicto, no lo cambian:
+      sinBaremo,
+      noAptoSeguro: apto === false && (!completas || sinBaremo > 0),
     };
-    // Si alguna prueba no tiene marca para este sexo o edad, la nota de las
-    // demás no dice si se aprueba: no se afirma nada.
-    if (conBaremo.length < pruebas.length) { nota.apto = null; nota.faltanBaremos = true; }
     return { modelo: motor.scoringModel, pruebas, nota };
   }
 
@@ -160,6 +153,6 @@ var TrenziaWeb = (function () {
     return { apto: true };
   }
 
-  return { edadEn, tieneEdad, necesitaEdad, puntuar, convocatoriaPorDefecto, tieneMarcas, leeMarca, queFalta };
+  return { edadEn, puntuar, convocatoriaPorDefecto, tieneMarcas, leeMarca, queFalta };
 })();
 if (typeof module !== "undefined") module.exports = TrenziaWeb;

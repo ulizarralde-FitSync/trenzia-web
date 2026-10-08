@@ -56,17 +56,17 @@ var TrenziaTextos = (function () {
     return unidad ?? "";
   }
 
-  function sexoEdad(f) {
+  /** «Hombres», «Mujeres, de 18 a 29 años»… conEdad: si la fila es un tramo de edad (distingueEdad de nota.js). */
+  function sexoEdad(f, conEdad) {
     const s = f.sexo === "M" ? "Hombres" : f.sexo === "F" ? "Mujeres" : "Todos";
-    const conEdad = TrenziaWebTieneEdad(f);
     if (!conEdad) return s;
     if (f.edad_min != null && f.edad_max != null) return `${s}, de ${f.edad_min} a ${f.edad_max} años`;
     if (f.edad_min != null) return `${s}, desde ${f.edad_min} años`;
     return `${s}, hasta ${f.edad_max} años`;
   }
-  // Mismo criterio que logica.js y nota.js (16 a 99 no es un tramo de edad).
-  function TrenziaWebTieneEdad(f) {
-    return (f.edad_min != null && f.edad_min > 16) || (f.edad_max != null && f.edad_max < 99);
+  /** «A», «A y B», «A, B y C». */
+  function lista(xs) {
+    return xs.length <= 1 ? (xs[0] ?? "") : `${xs.slice(0, -1).join(", ")} y ${xs[xs.length - 1]}`;
   }
 
   // A qué fecha cuentan las bases la edad (formato, 5.1).
@@ -125,6 +125,24 @@ var TrenziaTextos = (function () {
     return out;
   }
 
-  return { estado, estadoCompleto, tipo, ambito, fecha, num, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR };
+  /**
+   * La frase del veredicto. Solo elige el texto: si se aprueba o no lo dice
+   * nota.js (nota.apto) y qué pruebas eliminan también (nota.porDebajo).
+   * nombre: código de prueba → nombre que ve la persona.
+   */
+  function veredicto(nota, nombre) {
+    if (nota.noAptoSeguro) {
+      const una = nota.porDebajo.length === 1;
+      const cuales = lista(nota.porDebajo.map(nombre));
+      const aunque = nota.completas ? "aunque alguna prueba no tenga marca para tu sexo o tu edad" : "aunque te falten otras";
+      return `Con ${una ? "esta marca" : "estas marcas"} en ${cuales} no aprobarías: ${una ? "esa prueba elimina" : "esas pruebas eliminan"} por sí ${una ? "sola" : "solas"}, ${aunque}.`;
+    }
+    if (nota.apto === true) return "Con estas marcas aprobarías las pruebas físicas.";
+    if (nota.apto === false) return "Con estas marcas no aprobarías las pruebas físicas.";
+    if (nota.sinBaremo > 0) return "No podemos decirte si apruebas: alguna prueba no tiene marca para tu sexo o tu edad.";
+    return `Escribe tus marcas en las ${nota.total} pruebas para saber si apruebas.`;
+  }
+
+  return { estado, estadoCompleto, tipo, ambito, fecha, num, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto };
 })();
 if (typeof module !== "undefined") module.exports = TrenziaTextos;
