@@ -30,6 +30,7 @@ Allow: /
 Disallow: /probar-confirmar.html
 Disallow: /probar-gestionar.html
 Disallow: /opinion.html
+Disallow: /guia-trenzia.pdf
 
 # Todos los demás, buscadores incluidos.
 User-agent: *
@@ -38,5 +39,6 @@ Allow: /
 Disallow: /probar-confirmar.html
 Disallow: /probar-gestionar.html
 Disallow: /opinion.html
+Disallow: /guia-trenzia.pdf
 
 Sitemap: https://trenzia.es/sitemap.xml
