@@ -60,6 +60,8 @@ var TrenziaTextos = (function () {
   function sexoEdad(f, conEdad) {
     const s = f.sexo === "M" ? "Hombres" : f.sexo === "F" ? "Mujeres" : "Todos";
     if (!conEdad) return s;
+    // 99 es «sin límite» (formato, 3.7): el último grupo de edad queda abierto.
+    if (f.edad_min != null && (f.edad_max == null || f.edad_max >= 99)) return `${s}, ${f.edad_min} años o más`;
     if (f.edad_min != null && f.edad_max != null) return `${s}, de ${f.edad_min} a ${f.edad_max} años`;
     if (f.edad_min != null) return `${s}, desde ${f.edad_min} años`;
     return `${s}, hasta ${f.edad_max} años`;
@@ -96,6 +98,8 @@ var TrenziaTextos = (function () {
     if (b.metrica === "Time") que = c ? `Tiempo (${c})` : "Tiempo";
     else if (b.metrica === "Reps") que = c ? `Repeticiones con ${c}` : "Repeticiones";
     else if (b.metrica === "Periods") que = "Periodos completados, en medios periodos";
+    else if (b.metrica === "Distance") que = `Distancia en ${unidad ?? "cm"}`;
+    else if (b.metrica === "Height") que = `Altura en ${unidad ?? "cm"}`;
     else que = `Marca en ${unidad ?? ""}`.trim();
     const mejor = b.sentido === "Up" ? "más es mejor" : "menos es mejor";
     const apto = `apto ${b.sentido === "Up" ? "desde" : "hasta"} ${marca(Number(b.marca_apto), b.metrica, unidad)}`;
@@ -126,6 +130,21 @@ var TrenziaTextos = (function () {
   }
 
   /**
+   * Si las bases aplican un coeficiente a los puntos (Cuenca: 0,05), la frase
+   * que lo explica, con el coeficiente y el máximo sacados del archivo; si no,
+   * null. Ejemplo: «La nota de la prueba física es la suma de los puntos × 0,05 (máximo 3).»
+   */
+  function coeficiente(conv) {
+    const ks = [...new Set(conv.pruebas.flatMap((p) => p.baremos.map((b) => Number(b.coeficiente ?? 1) || 1)))];
+    if (ks.every((k) => k === 1)) return null;
+    const g = conv.nota && conv.nota.regla_global;
+    const como = g && g.tipo === "media" ? "la media de los puntos" : "la suma de los puntos";
+    const por = ks.length === 1 ? `× ${num(ks[0])}` : "× el coeficiente de cada prueba";
+    const max = g && g.max_total != null ? ` (máximo ${num(g.max_total)})` : "";
+    return `La nota de la prueba física es ${como} ${por}${max}.`;
+  }
+
+  /**
    * La frase del veredicto. Solo elige el texto: si se aprueba o no lo dice
    * nota.js (nota.apto) y qué pruebas eliminan también (nota.porDebajo).
    * nombre: código de prueba → nombre que ve la persona.
@@ -143,6 +162,6 @@ var TrenziaTextos = (function () {
     return `Escribe tus marcas en las ${nota.total} pruebas para saber si apruebas.`;
   }
 
-  return { estado, estadoCompleto, tipo, ambito, fecha, num, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto };
+  return { estado, estadoCompleto, tipo, ambito, fecha, num, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
 })();
 if (typeof module !== "undefined") module.exports = TrenziaTextos;

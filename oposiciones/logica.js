@@ -50,6 +50,10 @@ var TrenziaWeb = (function () {
       return {
         codigo: p.codigo, prueba: p, baremo: original, marca, r: r.prueba, tabla,
         lineal: p.puntuacion === "lineal",
+        // El coeficiente de las bases (Cuenca: 0,05). Los puntos de nota.js ya lo
+        // llevan aplicado; la página los divide por él solo para enseñarlos en la
+        // escala de las bases (de 5 a 10).
+        coef: Number(original.coeficiente ?? 1) || 1,
         // Ya con el coeficiente de las bases: nota.js lo aplica.
         puntos: r.prueba.puntos, puntosMax: r.prueba.points_max, puntosMin: r.prueba.min_points,
         soloApto: !!original.solo_apto || r.prueba.points_max == null,
@@ -117,6 +121,7 @@ var TrenziaWeb = (function () {
     }
     if (metrica === "Reps" && !Number.isInteger(v)) return NaN;
     if (metrica === "Periods" && !Number.isInteger(v * 2)) return NaN;
+    if ((metrica === "Distance" || metrica === "Height") && !Number.isInteger(v)) return NaN; // centímetros enteros
     return v;
   }
 

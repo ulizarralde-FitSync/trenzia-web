@@ -95,11 +95,12 @@
         return `<section class="prueba"><h3>${esc(nombre)}</h3><p class="msg">No hay marca para ${sexo === "M" ? "hombres" : "mujeres"}${edad != null ? ` de ${edad} años` : ""} en esta prueba.</p></section>`;
       }
       const b = p.baremo, uni = cat[p.codigo] && cat[p.codigo].unidad;
-      const ayuda = b.metrica === "Time" ? "p. ej. 31,5 o 3:45" : b.metrica === "Periods" ? "p. ej. 9,5" : b.metrica === "Reps" ? "p. ej. 30" : "";
+      const ayuda = b.metrica === "Time" ? "p. ej. 31,5 o 3:45" : b.metrica === "Periods" ? "p. ej. 9,5" : b.metrica === "Reps" ? "p. ej. 30" : b.metrica === "Distance" ? "p. ej. 245" : b.metrica === "Height" ? "p. ej. 55" : "";
+      const entero = b.metrica === "Reps" || b.metrica === "Distance" || b.metrica === "Height";
       return `<section class="prueba" aria-labelledby="t-${p.codigo}">
         <div class="prueba-cab"><h3 id="t-${p.codigo}">${esc(nombre)}</h3><span class="pts" id="pts-${p.codigo}"></span></div>
         <p class="cond">${esc(T.condicion(b, uni))}</p>
-        <div class="entrada"><input id="in-${p.codigo}" inputmode="decimal" autocomplete="off" placeholder="${ayuda}" value="${esc(marcasTxt[p.codigo] ?? "")}" aria-label="Tu marca en ${esc(nombre)}, en ${esc(T.unidadCampo(b.metrica, uni))}" aria-describedby="msg-${p.codigo}"><span class="unidad">${esc(T.unidadCampo(b.metrica, uni))}</span></div>
+        <div class="entrada"><input id="in-${p.codigo}" inputmode="${entero ? "numeric" : "decimal"}" autocomplete="off" placeholder="${ayuda}" value="${esc(marcasTxt[p.codigo] ?? "")}" aria-label="Tu marca en ${esc(nombre)}, en ${esc(T.unidadCampo(b.metrica, uni))}" aria-describedby="msg-${p.codigo}"><span class="unidad">${esc(T.unidadCampo(b.metrica, uni))}</span></div>
         <div class="barra" aria-hidden="true"><i id="bar-${p.codigo}"></i></div>
         <p class="msg" id="msg-${p.codigo}" aria-live="polite"></p>
       </section>`;
@@ -116,13 +117,13 @@
   function mensaje(p, marcaTxt) {
     const b = p.baremo, met = b.metrica, uni = cat[p.codigo] && cat[p.codigo].unidad;
     if (marcaTxt && Number.isNaN(p.marcaLeida)) {
-      return { cls: "msg no", txt: met === "Reps" ? "Escribe un número entero de repeticiones." : met === "Periods" ? "Escribe los periodos en medios (9 o 9,5)." : met === "Time" ? "Escribe segundos (31,5) o minutos y segundos (3:45)." : "Escribe solo el número." };
+      return { cls: "msg no", txt: met === "Reps" ? "Escribe un número entero de repeticiones." : met === "Periods" ? "Escribe los periodos en medios (9 o 9,5)." : met === "Time" ? "Escribe segundos (31,5) o minutos y segundos (3:45)." : met === "Distance" || met === "Height" ? "Escribe los centímetros, sin decimales." : "Escribe solo el número." };
     }
     const q = W.queFalta(p);
     if (!q) return { cls: "msg", txt: "Escribe tu marca." };
     if (!q.apto) return { cls: "msg no", txt: `No apto. ${faltan(q.falta, met, uni)} para el apto.` };
     if (q.maximo) return { cls: "msg ok", txt: "Apto con la nota máxima." };
-    if (q.falta != null) return { cls: "msg ok", txt: `Apto. Con ${T.cantidad(q.falta, met, uni)} ${q.up ? "más" : "menos"} subes a ${T.num(q.puntos)} puntos.` };
+    if (q.falta != null) return { cls: "msg ok", txt: `Apto. Con ${T.cantidad(q.falta, met, uni)} ${q.up ? "más" : "menos"} subes a ${T.num(q.puntos / p.coef)} puntos.` };
     return { cls: "msg ok", txt: "Apto." };
   }
 
@@ -142,7 +143,8 @@
       p.marcaLeida = leidas[p.codigo];
       const ptsEl = $("pts-" + p.codigo), bar = $("bar-" + p.codigo), msg = $("msg-" + p.codigo);
       if (!p.soloApto && res.modelo === "points") {
-        ptsEl.innerHTML = `${p.puntos == null ? "–" : T.num(p.puntos)}<small> / ${T.num(p.puntosMax)}</small>`;
+        // En la escala de las bases: los puntos de nota.js llevan el coeficiente (Cuenca: 0,05).
+        ptsEl.innerHTML = `${p.puntos == null ? "–" : T.num(p.puntos / p.coef)}<small> / ${T.num(p.puntosMax / p.coef)}</small>`;
         const span = p.puntosMax - (p.puntosMin ?? 0);
         bar.style.width = p.r.is_apto && p.puntos != null && span > 0 ? `${Math.max(4, ((p.puntos - p.puntosMin) / span) * 100)}%` : "0";
       } else {
@@ -162,11 +164,14 @@
     if (res.modelo === "points") {
       const etiqueta = n.tipo === "media" ? "Tu media" : "Tu nota";
       $("total-titulo").textContent = etiqueta;
-      $("tot").innerHTML = `${n.valor == null ? "–" : T.num(n.valor)}<small> / ${T.num(n.maximo)}</small>`;
+      $("tot").innerHTML = `${n.valor == null ? "–" : T.num(n.valor)}<small> de ${T.num(n.maximo)}</small>`;
     } else {
       $("total-titulo").textContent = "Pruebas aptas";
       $("tot").innerHTML = `${n.aptas}<small> de ${n.total}</small>`;
     }
+    const coef = T.coeficiente(c);
+    $("coef").textContent = coef ?? "";
+    $("coef").hidden = !coef;
     const li = [];
     if (regla && regla.min_por_prueba != null) {
       li.push(`<li class="${n.porDebajo.length ? "no" : n.completas ? "ok" : ""}">Al menos ${T.num(regla.min_por_prueba)} puntos en cada prueba</li>`);
