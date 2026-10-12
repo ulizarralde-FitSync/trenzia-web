@@ -174,8 +174,9 @@ var TrenziaNota = (() => {
       puntos = mark <= maxMark ? maxBase : minBase + (aptoMark - mark) / (aptoMark - maxMark) * (maxBase - minBase);
     }
     puntos = Math.round(puntos * 100) / 100;
+    const puntosBases = puntos;
     if (k !== 1) puntos = Math.round(puntos * k * 1e4) / 1e4;
-    return { puntos, label: labelForPoints(puntos, minPoints, maxPoints) };
+    return { puntos, puntos_bases: puntosBases, label: labelForPoints(puntos, minPoints, maxPoints) };
   }
   function tramosScaleFor(testSubtype, rowsOfType) {
     if (!rowsOfType || rowsOfType.length === 0) return null;
@@ -241,7 +242,27 @@ var TrenziaNota = (() => {
   }
 
   // supabase/functions/_shared/puntuar_prueba.ts
+  function coeficienteDe(baremo) {
+    var _a;
+    const k = Number((_a = baremo.score_coefficient_applied) != null ? _a : 1);
+    return k > 0 && k <= 1 ? k : 1;
+  }
+  function aEscalaDeLasBases(puntos, k) {
+    if (puntos === null) return null;
+    return k === 1 ? puntos : Math.round(puntos / k * 100) / 100;
+  }
   function puntuarConBaremo(p) {
+    const r = puntuarEnLaEscalaDelBaremo(p);
+    const k = coeficienteDe(p.baremo);
+    return {
+      ...r,
+      coeficiente: k,
+      puntos_bases: aEscalaDeLasBases(r.puntos, k),
+      min_points_bases: aEscalaDeLasBases(r.min_points, k),
+      points_max_bases: aEscalaDeLasBases(r.points_max, k)
+    };
+  }
+  function puntuarEnLaEscalaDelBaremo(p) {
     var _a, _b, _c;
     const { marca, baremo, scoringModel } = p;
     const aptoMark = Number(baremo.marca_apto);

@@ -34,6 +34,10 @@ var TrenziaWeb = (function () {
     // sabe de qué baremo del archivo sale el que elige nota.js.
     const origen = [];
     for (const p of conv.pruebas) for (const b of p.baremos) origen.push(b);
+    // Lo mismo con los tramos (las pruebas lineales no llevan): de cada fila de
+    // la tabla que usa nota.js, el tramo del archivo, con los puntos de las bases.
+    const origenTramos = [];
+    for (const p of conv.pruebas) if (p.puntuacion !== "lineal") for (const t of p.tramos) origenTramos.push(t);
 
     const pruebas = conv.pruebas.slice().sort((a, b) => a.orden - b.orden).map((p) => {
       const marca = marcas[p.codigo] ?? null;
@@ -43,19 +47,19 @@ var TrenziaWeb = (function () {
       });
       if (!r.baremo) return { codigo: p.codigo, prueba: p, baremo: null };
       const original = origen[motor.baremos.indexOf(r.baremo)];
-      // La tabla con la que ha puntuado nota.js, para «te faltan…».
+      // La tabla con la que ha puntuado nota.js, para «te faltan…», con los
+      // puntos de cada escalón tal como los dan las bases (los del archivo).
       const tabla = r.prueba.scored_by === "tramos"
         ? N.pickTramosFor(r.baremo.test_subtype, N.elegirTramos(motor.tramos.filter((t) => t.test_type === p.codigo), { sexo, edad }))
+          .map((t) => ({ ...t, puntos_bases: origenTramos[motor.tramos.indexOf(t)].puntos }))
         : null;
       return {
         codigo: p.codigo, prueba: p, baremo: original, marca, r: r.prueba, tabla,
         lineal: p.puntuacion === "lineal",
-        // El coeficiente de las bases (Cuenca: 0,05). Los puntos de nota.js ya lo
-        // llevan aplicado; la página los divide por él solo para enseñarlos en la
-        // escala de las bases (de 5 a 10).
-        coef: Number(original.coeficiente ?? 1) || 1,
-        // Ya con el coeficiente de las bases: nota.js lo aplica.
+        // Para la nota: los puntos de nota.js, ya con el coeficiente de las bases.
         puntos: r.prueba.puntos, puntosMax: r.prueba.points_max, puntosMin: r.prueba.min_points,
+        // Para enseñar: los mismos en la escala de las bases (Cuenca: de 5 a 10), también de nota.js.
+        puntosBases: r.prueba.puntos_bases, puntosMaxBases: r.prueba.points_max_bases, puntosMinBases: r.prueba.min_points_bases,
         soloApto: !!original.solo_apto || r.prueba.points_max == null,
       };
     });
@@ -142,7 +146,7 @@ var TrenziaWeb = (function () {
     if (!p.baremo || p.marca == null || p.r.label === "Sin marca") return null;
     const b = p.baremo, up = b.sentido === "Up", m = p.marca, met = b.metrica;
     if (p.tabla && p.r.scored_by === "tramos") {
-      const f = p.tabla.map((t) => ({ u: Number(t.metric_value), pts: Number(t.points) }))
+      const f = p.tabla.map((t) => ({ u: Number(t.metric_value), pts: Number(t.puntos_bases) }))
         .sort((x, y) => (up ? y.u - x.u : x.u - y.u)); // de mejor a peor
       if (!p.r.is_apto) {
         const apto = f[f.length - 1].u;
