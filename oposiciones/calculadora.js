@@ -123,7 +123,7 @@
     if (!q) return { cls: "msg", txt: "Escribe tu marca." };
     if (!q.apto) return { cls: "msg no", txt: `No apto. ${faltan(q.falta, met, uni)} para el apto.` };
     if (q.maximo) return { cls: "msg ok", txt: "Apto con la nota máxima." };
-    if (q.falta != null) return { cls: "msg ok", txt: `Apto. Con ${T.cantidad(q.falta, met, uni)} ${q.up ? "más" : "menos"} subes a ${T.num(q.puntos / p.coef)} puntos.` };
+    if (q.falta != null) return { cls: "msg ok", txt: `Apto. Con ${T.cantidad(q.falta, met, uni)} ${q.up ? "más" : "menos"} subes a ${T.num(q.puntos)} puntos.` };
     return { cls: "msg ok", txt: "Apto." };
   }
 
@@ -143,8 +143,8 @@
       p.marcaLeida = leidas[p.codigo];
       const ptsEl = $("pts-" + p.codigo), bar = $("bar-" + p.codigo), msg = $("msg-" + p.codigo);
       if (!p.soloApto && res.modelo === "points") {
-        // En la escala de las bases: los puntos de nota.js llevan el coeficiente (Cuenca: 0,05).
-        ptsEl.innerHTML = `${p.puntos == null ? "–" : T.num(p.puntos / p.coef)}<small> / ${T.num(p.puntosMax / p.coef)}</small>`;
+        // En la escala de las bases (Cuenca: de 5 a 10), como los da nota.js.
+        ptsEl.innerHTML = `${p.puntosBases == null ? "–" : T.num(p.puntosBases)}<small> / ${T.num(p.puntosMaxBases)}</small>`;
         const span = p.puntosMax - (p.puntosMin ?? 0);
         bar.style.width = p.r.is_apto && p.puntos != null && span > 0 ? `${Math.max(4, ((p.puntos - p.puntosMin) / span) * 100)}%` : "0";
       } else {
