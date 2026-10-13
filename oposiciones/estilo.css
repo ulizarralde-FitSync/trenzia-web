@@ -114,3 +114,4 @@ footer a{color:#fff}
 /* Enlaces del pie separados: en móvil se parten en varias líneas y tienen que poder tocarse (24 px). */
 .pie-enlaces{display:flex;flex-wrap:wrap;gap:6px 18px}
 .pie-enlaces a{display:inline-block;min-height:24px;line-height:24px}
+footer p:not(.pie-enlaces) a+a{margin-left:14px}
