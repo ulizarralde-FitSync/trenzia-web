@@ -15,7 +15,11 @@ var TrenziaTextos = (function () {
   const legible = (s) => String(s ?? "").replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase());
   const estado = (e) => ESTADO[e] ?? legible(e);
   // El estado se pinta tal cual llega del archivo, sin calcular nada (A-08).
-  const estadoCompleto = (c) => `${estado(c.estado)}${c.estado_sin_fecha ? ", sin fecha" : ""}`;
+  // Con `aviso` (A-20), el aviso sustituye al texto del estado donde se le enseña a
+  // una persona (web-18); el estado del archivo sigue sirviendo para filtrar.
+  const estadoCompleto = (c) => c.aviso ? String(c.aviso).trim().replace(/\.$/, "") : `${estado(c.estado)}${c.estado_sin_fecha ? ", sin fecha" : ""}`;
+  /** La clase de la etiqueta de estado: la del estado o, con aviso, «aviso». */
+  const claseEstado = (c) => (c.aviso ? "aviso" : c.estado);
   const TIPO = { bomberos: "Bomberos", policia: "Policía", policia_local: "Policía local", ejercito: "Ejército" };
   const tipo = (t) => TIPO[t] ?? legible(t);
   const AMBITO = { municipal: "Ayuntamiento", local: "Ayuntamiento", provincial: "Diputación o consorcio", autonomico: "Comunidad autónoma", estatal: "Estatal" };
@@ -123,7 +127,7 @@ var TrenziaTextos = (function () {
   function avisos(conv, convocatorias, opciones) {
     const out = [];
     const nombreDe = (clave) => (convocatorias.find((c) => c.clave === clave) || {}).nombre_oficial || clave;
-    if (conv.estado_sin_fecha) out.push({ tipo: "fecha", texto: `${estado(conv.estado)}, sin fecha.` });
+    if (conv.estado_sin_fecha && !conv.aviso) out.push({ tipo: "fecha", texto: `${estado(conv.estado)}, sin fecha.` });
     // El aviso de la app sobre la convocatoria (A-20), tal cual, con su punto final.
     if (conv.aviso) out.push({ tipo: "aviso", texto: conPunto(conv.aviso) });
     if (conv.marcas && conv.marcas.relacion === "referencia") {
@@ -191,6 +195,6 @@ var TrenziaTextos = (function () {
     return n === 1 ? `Falta 1 prueba oficial que aún no calculamos: ${lista_}.` : `Faltan ${n} pruebas oficiales que aún no calculamos: ${lista_}.`;
   }
 
-  return { faltanPruebas, conPunto, condicionTexto, estado, estadoCompleto, tipo, ambito, fecha, num, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
+  return { faltanPruebas, conPunto, condicionTexto, estado, estadoCompleto, claseEstado, tipo, ambito, fecha, num, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
 })();
 if (typeof module !== "undefined") module.exports = TrenziaTextos;
