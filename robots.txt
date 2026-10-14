@@ -1,31 +1,32 @@
 # trenzia.es · reglas para rastreadores (RFC 9309)
 #
-# Uso por IA (decisión de Urko, 28/09): buscar y citar, sí; entrenar modelos, no.
+# Uso por IA (decisión de Urko, 14/10): buscar, citar y entrenar, sí, salvo CCBot, meta-externalagent y Bytespider.
 # Content-Signal: https://contentsignals.org/
 #
 # Las páginas con enlace personal (confirmar, gestionar la inscripción,
-# encuestas) llevan token y noindex: no se rastrean.
+# encuestas) llevan token y noindex: no se rastrean. La guía para probadores
+# solo se enlaza desde los correos.
 
-# Entrenamiento de modelos: no.
-User-agent: GPTBot
-User-agent: ClaudeBot
-User-agent: anthropic-ai
-User-agent: Google-Extended
-User-agent: Applebot-Extended
+# Rastreadores que no nos traen citas: no.
 User-agent: CCBot
 User-agent: meta-externalagent
 User-agent: Bytespider
 Content-Signal: search=yes, ai-input=yes, ai-train=no
 Disallow: /
 
-# Búsqueda y respuestas de asistentes: sí.
+# Búsqueda, respuestas de asistentes y entrenamiento de modelos: sí.
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: anthropic-ai
+User-agent: Google-Extended
+User-agent: Applebot-Extended
 User-agent: OAI-SearchBot
 User-agent: ChatGPT-User
 User-agent: Claude-SearchBot
 User-agent: Claude-User
 User-agent: PerplexityBot
 User-agent: Perplexity-User
-Content-Signal: search=yes, ai-input=yes, ai-train=no
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
 Allow: /
 Disallow: /probar-confirmar.html
 Disallow: /probar-gestionar.html
@@ -34,7 +35,7 @@ Disallow: /guia-trenzia.pdf
 
 # Todos los demás, buscadores incluidos.
 User-agent: *
-Content-Signal: search=yes, ai-input=yes, ai-train=no
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
 Allow: /
 Disallow: /probar-confirmar.html
 Disallow: /probar-gestionar.html
