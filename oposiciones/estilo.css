@@ -19,6 +19,7 @@ h1 em{font-style:normal;color:var(--o)}
 /* Web-13: respuesta directa, fecha visible y preguntas frecuentes. */
 .directa{font-size:16px;color:var(--list);margin:0 0 6px}
 .actualizado{font-size:14px;color:var(--muted);margin:0 0 16px}
+.sin-marca{font-size:14px;color:var(--muted)}
 .faq{margin-top:40px}
 .faq h3{font-size:16px;margin:20px 0 4px;line-height:1.35}
 .faq p{font-size:15px;color:var(--soft);margin:0;overflow-wrap:anywhere} /* las URL largas de las bases se parten */
