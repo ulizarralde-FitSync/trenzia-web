@@ -28,6 +28,8 @@ var TrenziaTextos = (function () {
   }
 
   function num(n) { return String(Math.round(n * 100) / 100).replace(".", ","); }
+  /** Un texto libre del archivo como frase: con punto final si no lo trae. */
+  const conPunto = (s) => { const t = String(s).trim(); return /[.!?…]$/.test(t) ? t : `${t}.`; };
 
   /** Una marca con su unidad: «52 s», «7:10», «22 repeticiones», «9,5 periodos», «2,15 m». */
   function marca(v, metrica, unidad) {
@@ -91,9 +93,15 @@ var TrenziaTextos = (function () {
     return null;
   }
 
+  /** La condición de un baremo: el texto de las bases si viene (A-20), si no «100 m»; null sin condición. */
+  function condicionTexto(cond) {
+    if (!cond) return null;
+    return cond.texto || `${num(cond.valor)} ${cond.unidad}`;
+  }
+
   /** Cómo se mide y qué hace falta para el apto, en una frase. */
   function condicion(b, unidad) {
-    const c = b.condicion ? `${num(b.condicion.valor)} ${b.condicion.unidad}` : null;
+    const c = condicionTexto(b.condicion);
     let que;
     if (b.metrica === "Time") que = c ? `Tiempo (${c})` : "Tiempo";
     else if (b.metrica === "Reps") que = c ? `Repeticiones con ${c}` : "Repeticiones";
@@ -116,6 +124,8 @@ var TrenziaTextos = (function () {
     const out = [];
     const nombreDe = (clave) => (convocatorias.find((c) => c.clave === clave) || {}).nombre_oficial || clave;
     if (conv.estado_sin_fecha) out.push({ tipo: "fecha", texto: `${estado(conv.estado)}, sin fecha.` });
+    // El aviso de la app sobre la convocatoria (A-20), tal cual, con su punto final.
+    if (conv.aviso) out.push({ tipo: "aviso", texto: conPunto(conv.aviso) });
     if (conv.marcas && conv.marcas.relacion === "referencia") {
       out.push({ tipo: "referencia", texto: `Aún no hay bases de esta convocatoria. Usamos las marcas de ${nombreDe(conv.marcas.de)} como referencia.` });
     }
@@ -181,6 +191,6 @@ var TrenziaTextos = (function () {
     return n === 1 ? `Falta 1 prueba oficial que aún no calculamos: ${lista_}.` : `Faltan ${n} pruebas oficiales que aún no calculamos: ${lista_}.`;
   }
 
-  return { faltanPruebas, estado, estadoCompleto, tipo, ambito, fecha, num, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
+  return { faltanPruebas, conPunto, condicionTexto, estado, estadoCompleto, tipo, ambito, fecha, num, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
 })();
 if (typeof module !== "undefined") module.exports = TrenziaTextos;
