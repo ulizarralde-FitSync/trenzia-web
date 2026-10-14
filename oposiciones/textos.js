@@ -106,8 +106,13 @@ var TrenziaTextos = (function () {
     return `${que}, ${mejor}. ${b.solo_apto ? "Solo apto o no apto" : "Puntúa"}: ${apto}.`;
   }
 
-  /** Avisos obligatorios de una convocatoria (encargo web-01, apartado 2). */
-  function avisos(conv, convocatorias) {
+  /**
+   * Avisos obligatorios de una convocatoria (encargo web-01, apartado 2).
+   * opciones.cotejo (web-13, punto 5; DECISIÓN DE URKO, apagado por defecto):
+   * en las convocatorias verificadas, la frase de que Trenzia las ha cotejado
+   * con el boletín.
+   */
+  function avisos(conv, convocatorias, opciones) {
     const out = [];
     const nombreDe = (clave) => (convocatorias.find((c) => c.clave === clave) || {}).nombre_oficial || clave;
     if (conv.estado_sin_fecha) out.push({ tipo: "fecha", texto: `${estado(conv.estado)}, sin fecha.` });
@@ -125,6 +130,10 @@ var TrenziaTextos = (function () {
       out.push({ tipo: "verificacion", texto: "Hay dudas sobre alguna de estas marcas y las estamos revisando. Compruébalas en la convocatoria oficial." });
     } else if (v !== "verificado") {
       out.push({ tipo: "verificacion", texto: "Marcas sacadas de las bases oficiales, pero todavía no revisadas por Trenzia." });
+    } else if (opciones && opciones.cotejo && conv.boletin && conv.boletin.nombre && conv.verificacion.fecha) {
+      const b = conv.boletin;
+      const bol = `${b.nombre}${b.numero != null ? ` n.º ${b.numero}` : ""}${b.fecha ? `, de ${fecha(b.fecha)}` : ""}`;
+      out.push({ tipo: "cotejo", texto: `Marcas transcritas de ${bol} y cotejadas por Trenzia el ${fecha(conv.verificacion.fecha)}. Manda siempre la convocatoria oficial.` });
     }
     return out;
   }

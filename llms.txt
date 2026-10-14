@@ -1,0 +1,18 @@
+# Trenzia
+
+> Trenzia es una app para preparar las pruebas físicas de las oposiciones: bomberos, Ertzaintza, Policía Local, policía y ejército. Calcula cuánto te falta para el apto con el baremo oficial de tu convocatoria, junta todas las pruebas en un plan semanal que se adapta a cómo llegas cada día y permite hacer simulacros con nota. Hecha en Bilbao (España). Web: https://trenzia.es
+
+Las marcas y tablas de cada convocatoria se transcriben de las bases oficiales (boletín y fecha en cada página). Manda siempre la convocatoria oficial.
+
+## Pruebas físicas por oposición
+
+- [Índice de oposiciones](https://trenzia.es/oposiciones/): buscador y calculadora de nota
+- [Bomberos del Ayto. de Toledo](https://trenzia.es/oposiciones/bomberos-mun-toledo.html): 5 pruebas, BOP de Toledo n.º 225, de 24 de noviembre de 2025
+- [Bomberos del Ayto. de Zaragoza](https://trenzia.es/oposiciones/bomberos-mun-zaragoza.html): 4 pruebas, BOPZ n.º 147, de 27 de julio de 2026
+- [Bomberos de la Diputación de Cuenca](https://trenzia.es/oposiciones/bomberos-prov-cuenca.html): 6 pruebas, BOP de Cuenca n.º 107, de 16 de septiembre de 2026
+- [Ertzaintza](https://trenzia.es/oposiciones/ertzaintza.html): 4 pruebas, BOPV n.º 226, de 24 de noviembre de 2025
+
+## Sobre la app
+
+- [Probar Trenzia gratis](https://trenzia.es/probar.html): prueba cerrada para opositores
+- [Privacidad](https://trenzia.es/privacidad.html)
