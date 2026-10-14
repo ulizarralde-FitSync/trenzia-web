@@ -23,14 +23,47 @@
 <script type="application/ld+json">
 {
  "@context": "https://schema.org",
- "@type": "Organization",
- "name": "Trenzia",
- "url": "https://trenzia.es/",
- "logo": "https://trenzia.es/logo.svg",
- "email": "soporte@trenzia.es",
- "sameAs": [
-  "https://www.instagram.com/trenzia.app/",
-  "https://www.tiktok.com/@trenziaapp"
+ "@graph": [
+  {
+   "@type": "Organization",
+   "@id": "https://trenzia.es/#organizacion",
+   "name": "Trenzia",
+   "url": "https://trenzia.es/",
+   "logo": "https://trenzia.es/logo.svg",
+   "email": "soporte@trenzia.es",
+   "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Bilbao",
+    "addressRegion": "Bizkaia",
+    "addressCountry": "ES"
+   },
+   "sameAs": [
+    "https://www.instagram.com/trenzia.app/",
+    "https://www.tiktok.com/@trenziaapp"
+   ]
+  },
+  {
+   "@type": "WebSite",
+   "@id": "https://trenzia.es/#web",
+   "url": "https://trenzia.es/",
+   "name": "Trenzia",
+   "inLanguage": "es-ES",
+   "publisher": {
+    "@id": "https://trenzia.es/#organizacion"
+   }
+  },
+  {
+   "@type": "SoftwareApplication",
+   "@id": "https://trenzia.es/#app",
+   "name": "Trenzia",
+   "applicationCategory": "HealthApplication",
+   "operatingSystem": "iOS, Android",
+   "description": "Trenzia es una app para preparar las pruebas físicas de las oposiciones: bomberos, Ertzaintza, Policía Local, policía y ejército. Calcula cuánto te falta para el apto con el baremo oficial de tu convocatoria, junta todas las pruebas en un plan semanal que se adapta a cómo llegas cada día y permite hacer simulacros con nota. Hecha en Bilbao (España).",
+   "url": "https://trenzia.es/",
+   "publisher": {
+    "@id": "https://trenzia.es/#organizacion"
+   }
+  }
  ]
 }
 </script>
