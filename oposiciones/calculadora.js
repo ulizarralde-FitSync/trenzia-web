@@ -167,7 +167,8 @@
       $("tot").innerHTML = `${n.valor == null ? "–" : T.num(n.valor)}<small> de ${T.num(n.maximo)}</small>`;
     } else {
       $("total-titulo").textContent = "Pruebas aptas";
-      $("tot").innerHTML = `${n.aptas}<small> de ${n.total}</small>`;
+      // Las oficiales sin cargar también cuentan en el total (aún no se pueden aprobar aquí).
+      $("tot").innerHTML = `${n.aptas}<small> de ${n.total + n.sinCargar.length}</small>`;
     }
     const coef = T.coeficiente(c);
     $("coef").textContent = coef ?? "";
@@ -184,7 +185,7 @@
     if (res.pruebas.some((p) => p.baremo && p.soloApto && res.modelo === "points")) {
       li.push(`<li class="${n.porDebajo.length ? "no" : n.completas ? "ok" : ""}">Apto en las pruebas que no dan puntos</li>`);
     }
-    if (!regla || res.modelo !== "points") li.push(`<li class="${n.porDebajo.length ? "no" : !n.completas ? "" : n.apto ? "ok" : "no"}">Apto en todas las pruebas</li>`);
+    if (!regla || res.modelo !== "points") li.push(`<li class="${n.porDebajo.length ? "no" : !n.completas || n.apto == null ? "" : n.apto ? "ok" : "no"}">Apto en todas las pruebas</li>`);
     $("regla").innerHTML = li.join("");
     $("veredicto").textContent = T.veredicto(n, (codigo) => (cat[codigo] && cat[codigo].nombre) || codigo);
   }

@@ -22,6 +22,7 @@ var TrenziaNota = (() => {
   // web/calculadora/entrada.ts
   var entrada_exports = {};
   __export(entrada_exports, {
+    conPruebasSinCargar: () => conPruebasSinCargar,
     datosDeMotor: () => datosDeMotor,
     distingueEdad: () => distingueEdad,
     edadEn: () => edadEn,
@@ -511,6 +512,28 @@ var TrenziaNota = (() => {
     };
   }
 
+  // supabase/functions/_shared/apto_global.ts
+  function leerPruebasSinCargar(v) {
+    if (!Array.isArray(v)) return [];
+    return v.flatMap(
+      (x) => x && typeof x === "object" && typeof x.codigo === "string" && typeof x.nombre === "string" && x.codigo.trim() !== "" ? [{ codigo: x.codigo.trim(), nombre: x.nombre.trim() }] : []
+    );
+  }
+  function conPruebasSinCargar(filas, sinCargar) {
+    const ya = new Set(filas.map((f) => f.test_type));
+    return [
+      ...filas,
+      ...sinCargar.filter((p) => !ya.has(p.codigo)).map((p) => ({
+        test_type: p.codigo,
+        mark: null,
+        puntos: null,
+        points_max: null,
+        is_apto: false,
+        has_bareme: false
+      }))
+    ];
+  }
+
   // supabase/functions/_shared/oposiciones_archivo.ts
   var r4 = (x) => Math.round(x * 1e4) / 1e4;
   function marcasDeEstado(estado) {
@@ -591,7 +614,7 @@ var TrenziaNota = (() => {
       };
       if (rules.min_points_per_test === null && rules.min_total_points === null && rules.max_total_points === null && rules.nota !== "media") rules = null;
     }
-    return { scoringModel: c.nota.modelo, baremos, tramos, rules };
+    return { scoringModel: c.nota.modelo, baremos, tramos, rules, pruebasSinCargar: leerPruebasSinCargar(c.pruebas_sin_cargar) };
   }
   return __toCommonJS(entrada_exports);
 })();

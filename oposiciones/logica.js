@@ -71,11 +71,15 @@ var TrenziaWeb = (function () {
     const filas = pruebas.map((p) => p.baremo
       ? { test_type: p.codigo, has_bareme: true, mark: p.r.mark, puntos: p.puntos, points_max: p.puntosMax, is_apto: p.r.is_apto }
       : { test_type: p.codigo, has_bareme: false, mark: null, puntos: null, points_max: null, is_apto: false });
-    const n = N.notaDeConvocatoria(filas, motor.scoringModel, motor.rules, { completa: true, noAptoSeguro: true });
+    // Las pruebas oficiales sin baremo cargado (A-19) también cuentan: sin ellas,
+    // nota.js daría «apto» con solo las cargadas. Las añade nota.js, no la web.
+    const n = N.notaDeConvocatoria(N.conPruebasSinCargar(filas, motor.pruebasSinCargar ?? []), motor.scoringModel, motor.rules, { completa: true, noAptoSeguro: true });
     const conBaremo = filas.filter((f) => f.has_bareme);
     const conMarca = conBaremo.filter((f) => f.mark != null).length;
     const completas = conMarca === conBaremo.length;
     const sinBaremo = filas.length - conBaremo.length;
+    // Los nombres de las pruebas sin cargar, del archivo, para la frase «Faltan…».
+    const sinCargar = (conv.pruebas_sin_cargar || []).map((p) => p.nombre);
     const apto = n.apto_global;
     const nota = {
       tipo: motor.rules && motor.rules.nota === "media" ? "media" : "suma",
@@ -88,7 +92,8 @@ var TrenziaWeb = (function () {
       apto,
       // Solo para elegir el texto del veredicto, no lo cambian:
       sinBaremo,
-      noAptoSeguro: apto === false && (!completas || sinBaremo > 0),
+      sinCargar,
+      noAptoSeguro: apto === false && (!completas || sinBaremo > 0 || sinCargar.length > 0),
     };
     return { modelo: motor.scoringModel, pruebas, nota };
   }

@@ -162,15 +162,25 @@ var TrenziaTextos = (function () {
     if (nota.noAptoSeguro) {
       const una = nota.porDebajo.length === 1;
       const cuales = lista(nota.porDebajo.map(nombre));
-      const aunque = nota.completas ? "aunque alguna prueba no tenga marca para tu sexo o tu edad" : "aunque te falten otras";
+      const aunque = !nota.completas ? "aunque te falten otras"
+        : nota.sinCargar && nota.sinCargar.length ? "aunque falten pruebas que aún no calculamos"
+        : "aunque alguna prueba no tenga marca para tu sexo o tu edad";
       return `Con ${una ? "esta marca" : "estas marcas"} en ${cuales} no aprobarías: ${una ? "esa prueba elimina" : "esas pruebas eliminan"} por sí ${una ? "sola" : "solas"}, ${aunque}.`;
     }
     if (nota.apto === true) return "Con estas marcas aprobarías las pruebas físicas.";
     if (nota.apto === false) return "Con estas marcas no aprobarías las pruebas físicas.";
+    if (nota.sinCargar && nota.sinCargar.length) return faltanPruebas(nota.sinCargar);
     if (nota.sinBaremo > 0) return "No podemos decirte si apruebas: alguna prueba no tiene marca para tu sexo o tu edad.";
     return `Escribe tus marcas en las ${nota.total} pruebas para saber si apruebas.`;
   }
 
-  return { estado, estadoCompleto, tipo, ambito, fecha, num, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
+  /** «Faltan 2 pruebas oficiales que aún no calculamos: circuito de bombero y vértigo.» (nombres del archivo). */
+  function faltanPruebas(nombres) {
+    const n = nombres.length;
+    const lista_ = lista(nombres.map((x) => String(x).replace(/^\p{Lu}(?!\p{Lu})/u, (c) => c.toLowerCase())));
+    return n === 1 ? `Falta 1 prueba oficial que aún no calculamos: ${lista_}.` : `Faltan ${n} pruebas oficiales que aún no calculamos: ${lista_}.`;
+  }
+
+  return { faltanPruebas, estado, estadoCompleto, tipo, ambito, fecha, num, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
 })();
 if (typeof module !== "undefined") module.exports = TrenziaTextos;
