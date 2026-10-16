@@ -110,6 +110,7 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding-top:20px;font-si
 .marcas-prueba h4{font-size:16px;margin:0 0 4px}
 .marcas-prueba p{margin:2px 0;font-size:14px;color:var(--soft)}
 .marcas-prueba .quien{color:var(--muted)}
+.marcas-prueba p.como,.prueba p.como{font-size:14px;color:var(--muted);margin:0 0 6px}
 .tabla-scroll{max-width:100%;overflow-x:auto}
 .sin-js{font-size:14px;color:var(--muted)}
 .calc[hidden]{display:none}

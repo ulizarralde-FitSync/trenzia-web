@@ -99,10 +99,20 @@ var TrenziaTextos = (function () {
     return null;
   }
 
-  /** La condición de un baremo: el texto de las bases si viene (A-20), si no «100 m»; null sin condición. */
+  /**
+   * La condición corta de un baremo, para cada fila de marcas: «100 m», «35 kg»;
+   * null si no hay valor. El texto largo de las bases (`condicion.texto`) no va
+   * aquí sino una vez por prueba, con comoSeHace (web-21).
+   */
   function condicionTexto(cond) {
-    if (!cond) return null;
-    return cond.texto || `${num(cond.valor)} ${cond.unidad}`;
+    if (!cond || cond.valor == null) return null;
+    return `${num(cond.valor)}${cond.unidad ? ` ${cond.unidad}` : ""}`;
+  }
+
+  /** «Cómo se hace: …», una vez por cada texto distinto de los baremos de una prueba (web-21). */
+  function comoSeHace(baremos) {
+    const textos = [...new Set((baremos || []).map((b) => b.condicion && b.condicion.texto).filter(Boolean).map((t) => String(t).trim()))];
+    return textos.map((t) => `Cómo se hace: ${conPunto(t)}`);
   }
 
   /** Cómo se mide y qué hace falta para el apto, en una frase. */
@@ -146,12 +156,28 @@ var TrenziaTextos = (function () {
       out.push({ tipo: "verificacion", texto: "Hay dudas sobre alguna de estas marcas y las estamos revisando. Compruébalas en la convocatoria oficial." });
     } else if (v !== "verificado") {
       out.push({ tipo: "verificacion", texto: "Marcas sacadas de las bases oficiales, pero todavía no revisadas por Trenzia." });
-    } else if (opciones && opciones.cotejo && conv.boletin && conv.boletin.nombre && conv.verificacion.fecha) {
-      const b = conv.boletin;
-      const bol = `${b.nombre}${b.numero != null ? ` n.º ${b.numero}` : ""}${b.fecha ? `, de ${fecha(b.fecha)}` : ""}`;
-      out.push({ tipo: "cotejo", texto: `Marcas transcritas de ${bol} y cotejadas por Trenzia el ${fecha(conv.verificacion.fecha)}. Manda siempre la convocatoria oficial.` });
+    } else if (opciones && opciones.cotejo) {
+      const bolTxt = (b) => `${b.nombre}${b.numero != null ? ` n.º ${b.numero}` : ""}${b.fecha ? `, de ${fecha(b.fecha)}` : ""}`;
+      if (conv.boletin && conv.boletin.nombre && conv.verificacion.fecha) {
+        out.push({ tipo: "cotejo", texto: `Marcas transcritas de ${bolTxt(conv.boletin)} y cotejadas por Trenzia el ${fecha(conv.verificacion.fecha)}. Manda siempre la convocatoria oficial.` });
+      } else {
+        // Sin bases propias (P36): las marcas son las de otra convocatoria, y la
+        // frase dice de cuál, con su boletín y su fecha de cotejo (web-21).
+        const src = origenDeMarcas(conv, convocatorias);
+        if (src && src.boletin && src.boletin.nombre && src.verificacion && src.verificacion.estado === "verificado" && src.verificacion.fecha) {
+          const de = conv.marcas.relacion === "referencia" ? "Marcas de referencia transcritas" : "Marcas transcritas";
+          out.push({ tipo: "cotejo", texto: `${de} de ${bolTxt(src.boletin)} (${src.nombre_oficial}) y cotejadas por Trenzia el ${fecha(src.verificacion.fecha)}. Manda siempre la convocatoria oficial.` });
+        }
+      }
     }
     return out;
+  }
+
+  /** La convocatoria de la que salen las marcas de otra («referencia» o «iguales»), o null. */
+  function origenDeMarcas(conv, convocatorias) {
+    const m = conv.marcas;
+    if (!m || !["referencia", "iguales"].includes(m.relacion) || !m.de) return null;
+    return (convocatorias || []).find((c) => c.clave === m.de) || null;
   }
 
   /**
@@ -197,6 +223,6 @@ var TrenziaTextos = (function () {
     return n === 1 ? `Falta 1 prueba oficial que aún no calculamos: ${lista_}.` : `Faltan ${n} pruebas oficiales que aún no calculamos: ${lista_}.`;
   }
 
-  return { faltanPruebas, conPunto, condicionTexto, estado, estadoCompleto, claseEstado, tipo, ambito, fecha, num, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
+  return { faltanPruebas, conPunto, condicionTexto, comoSeHace, origenDeMarcas, estado, estadoCompleto, claseEstado, tipo, ambito, fecha, num, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
 })();
 if (typeof module !== "undefined") module.exports = TrenziaTextos;

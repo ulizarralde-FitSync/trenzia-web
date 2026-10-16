@@ -99,6 +99,7 @@
       const entero = b.metrica === "Reps" || b.metrica === "Distance" || b.metrica === "Height";
       return `<section class="prueba" aria-labelledby="t-${p.codigo}">
         <div class="prueba-cab"><h3 id="t-${p.codigo}">${esc(nombre)}</h3><span class="pts" id="pts-${p.codigo}"></span></div>
+        ${T.comoSeHace(p.prueba.baremos).map((t) => `<p class="como">${esc(t)}</p>`).join("")}
         <p class="cond">${esc(T.condicion(b, uni))}</p>
         <div class="entrada"><input id="in-${p.codigo}" inputmode="${entero ? "numeric" : "decimal"}" autocomplete="off" placeholder="${ayuda}" value="${esc(marcasTxt[p.codigo] ?? "")}" aria-label="Tu marca en ${esc(nombre)}, en ${esc(T.unidadCampo(b.metrica, uni))}" aria-describedby="msg-${p.codigo}"><span class="unidad">${esc(T.unidadCampo(b.metrica, uni))}</span></div>
         <div class="barra" aria-hidden="true"><i id="bar-${p.codigo}"></i></div>
