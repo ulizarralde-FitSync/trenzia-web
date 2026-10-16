@@ -68,6 +68,8 @@ var TrenziaTextos = (function () {
     if (!conEdad) return s;
     // 99 es «sin límite» (formato, 3.7): el último grupo de edad queda abierto.
     if (f.edad_min != null && (f.edad_max == null || f.edad_max >= 99)) return `${s}, ${f.edad_min} años o más`;
+    // Tramo de una sola edad (Guardia Civil: 40 es la edad máxima de la convocatoria).
+    if (f.edad_min != null && f.edad_min === f.edad_max) return `${s}, ${f.edad_min} años`;
     if (f.edad_min != null && f.edad_max != null) return `${s}, de ${f.edad_min} a ${f.edad_max} años`;
     if (f.edad_min != null) return `${s}, desde ${f.edad_min} años`;
     return `${s}, hasta ${f.edad_max} años`;

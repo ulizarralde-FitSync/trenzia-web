@@ -9,10 +9,11 @@ Las marcas y tablas de cada convocatoria se transcriben de las bases oficiales (
 - [Índice de oposiciones](https://trenzia.es/oposiciones/): buscador y calculadora de nota
 - [Bomberos del Ayto. de Toledo](https://trenzia.es/oposiciones/bomberos-mun-toledo.html): 5 pruebas, BOP de Toledo n.º 225, de 24 de noviembre de 2025
 - [Bomberos del Ayto. de Zaragoza](https://trenzia.es/oposiciones/bomberos-mun-zaragoza.html): 4 pruebas, BOPZ n.º 147, de 27 de julio de 2026
-- [Bomberos de la Diputación Foral de Bizkaia](https://trenzia.es/oposiciones/bomberos-prov-bizkaia.html): 4 pruebas, BOB núm. 220, 17/11/2025 (cve BOB-2025a220-(I-1220)); BOE n.º 283, 25/11/2025 (BOE-A-2025-23876)
+- [Bomberos de la Diputación Foral de Bizkaia](https://trenzia.es/oposiciones/bomberos-prov-bizkaia.html): 4 pruebas, BOB n.º 220, de 17 de noviembre de 2025
 - [Bomberos de la Diputación de Cuenca](https://trenzia.es/oposiciones/bomberos-prov-cuenca.html): 6 pruebas, BOP de Cuenca n.º 107, de 16 de septiembre de 2026
-- [Bomberos de la Diputación Foral de Gipuzkoa](https://trenzia.es/oposiciones/bomberos-prov-gipuzkoa.html): 4 pruebas, BOG núm. 238, 12/12/2025 (bases generales y anexo XIV, bases específicas); corrección en BOG 250, 31/12/2025; BOE-A-2026-708, 13/01/2026
+- [Bomberos de la Diputación Foral de Gipuzkoa](https://trenzia.es/oposiciones/bomberos-prov-gipuzkoa.html): 4 pruebas, BOG n.º 238, de 12 de diciembre de 2025
 - [Ertzaintza](https://trenzia.es/oposiciones/ertzaintza.html): 4 pruebas, BOPV n.º 226, de 24 de noviembre de 2025
+- [Guardia Civil](https://trenzia.es/oposiciones/gc.html): 4 pruebas, BOE n.º 112, de 8 de mayo de 2026
 
 ## Sobre la app
 
