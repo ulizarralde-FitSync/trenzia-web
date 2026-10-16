@@ -181,7 +181,7 @@
    <div class="field">
     <label class="check"><input type="checkbox" id="compromiso" name="compromiso"> <span>Usaré la app al menos 14 días seguidos. Sé que el acceso gratuito dura 6 meses mientras la use al menos 3 días por semana (<a href="terminos.html#precio-suscripciones-y-pagos" target="_blank" rel="noopener">condiciones</a>).</span></label>
     <span class="err" data-err="compromiso"></span>
-    <label class="check"><input type="checkbox" id="edad" name="edad"> <span>Tengo 16 años o más.</span></label>
+    <label class="check"><input type="checkbox" id="edad" name="edad"> <span>Tengo 18 años o más.</span></label>
     <span class="err" data-err="edad"></span>
     <label class="check"><input type="checkbox" id="privacidad" name="privacidad"> <span>He leído la <a href="privacidad.html#lista-de-probadores" target="_blank" rel="noopener">política de privacidad</a>.</span></label>
     <span class="err" data-err="privacidad"></span>
@@ -656,7 +656,7 @@
     if (!$("mismo_email").checked && !$("email_tienda").value.trim()) faltan.email_tienda = "Escribe el correo de tu cuenta de la tienda, o marca que es el mismo.";
     Object.assign(faltan, faltaOposicion());
     if (!$("compromiso").checked) faltan.compromiso = "Necesitamos este compromiso para la prueba.";
-    if (!$("edad").checked) faltan.edad = "La app es para mayores de 16 años.";
+    if (!$("edad").checked) faltan.edad = "La app es para mayores de 18 años.";
     if (!$("privacidad").checked) faltan.privacidad = "Tienes que aceptar la política de privacidad.";
     if (Object.keys(faltan).length) {
       pintarErrores(faltan);
@@ -687,6 +687,7 @@
       conocido: $("conocido").value,
       compromiso: $("compromiso").checked,
       edad: $("edad").checked,
+      edad_18: $("edad").checked,
       privacidad: $("privacidad").checked,
       novedades: $("novedades").checked,
       ref,
