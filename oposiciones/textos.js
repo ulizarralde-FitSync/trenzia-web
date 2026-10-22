@@ -22,6 +22,10 @@ var TrenziaTextos = (function () {
   const claseEstado = (c) => (c.aviso ? "aviso" : c.estado);
   const TIPO = { bomberos: "Bomberos", policia: "Policía", policia_local: "Policía local", ejercito: "Ejército" };
   const tipo = (t) => TIPO[t] ?? legible(t);
+  // Solo en el índice (filtro y título del grupo), para que se vea que la Guardia
+  // Civil está dentro (web-24). Las fichas siguen diciendo «Policía».
+  const TIPO_INDICE = { ...TIPO, policia: "Policía y Guardia Civil" };
+  const tipoIndice = (t) => TIPO_INDICE[t] ?? legible(t);
   const AMBITO = { municipal: "Ayuntamiento", local: "Ayuntamiento", provincial: "Diputación o consorcio", autonomico: "Comunidad autónoma", estatal: "Estatal" };
   const ambito = (a) => AMBITO[a] ?? legible(a);
 
@@ -223,6 +227,6 @@ var TrenziaTextos = (function () {
     return n === 1 ? `Falta 1 prueba oficial que aún no calculamos: ${lista_}.` : `Faltan ${n} pruebas oficiales que aún no calculamos: ${lista_}.`;
   }
 
-  return { faltanPruebas, conPunto, condicionTexto, comoSeHace, origenDeMarcas, estado, estadoCompleto, claseEstado, tipo, ambito, fecha, num, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
+  return { faltanPruebas, conPunto, condicionTexto, comoSeHace, origenDeMarcas, estado, estadoCompleto, claseEstado, tipo, tipoIndice, ambito, fecha, num, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
 })();
 if (typeof module !== "undefined") module.exports = TrenziaTextos;
