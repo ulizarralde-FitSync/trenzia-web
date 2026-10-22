@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="robots" content="noindex">
 <meta name="referrer" content="no-referrer">
-<title>Confirma tu plaza · Trenzia</title>
+<title>Confirma tu correo · Trenzia</title>
 <link rel="stylesheet" href="probar.css">
 </head>
 <body>
@@ -22,9 +22,9 @@
   solos.
  -->
  <section id="pedir">
-  <h1>Confirma tu plaza</h1>
-  <p class="lead">Pulsa el botón para confirmar que este correo es tuyo y reservar tu plaza.</p>
-  <button class="primary" id="confirmar" type="button">Confirmar mi plaza</button>
+  <h1>Confirma tu correo</h1>
+  <p class="lead">Pulsa el botón para confirmar que este correo es tuyo.</p>
+  <button class="primary" id="confirmar" type="button">Confirmar mi correo</button>
  </section>
 
  <section id="resultado" tabindex="-1" aria-live="polite" hidden></section>
@@ -101,7 +101,7 @@
           mostrar("Estás en la lista de espera", [
             "Gracias por confirmar. Las plazas de la prueba ya están cubiertas, así que esta vez no te enviaremos invitación.",
             "Te avisaremos a este correo el día que Trenzia salga en las tiendas.",
-            "Solo guardamos tu nombre, tu correo y el enlace por el que llegaste, y los borraremos después de avisarte.",
+            "Solo guardamos tu nombre, tu correo, el tipo de móvil y el enlace por el que llegaste, además del registro de que aceptaste la política, y lo borraremos todo después de avisarte.",
           ]);
           return;
         case "caducado":
@@ -117,7 +117,7 @@
       throw new Error(d.message || "respuesta inesperada");
     } catch {
       b.disabled = false;
-      b.textContent = "Confirmar mi plaza";
+      b.textContent = "Confirmar mi correo";
       alert("No hemos podido confirmar. Revisa tu conexión e inténtalo de nuevo.");
     }
   });

@@ -30,7 +30,7 @@
 
  <section id="alta">
   <h1>Prueba Trenzia <em>antes que nadie</em>.</h1>
-  <p class="lead">Buscamos opositores que usen la app durante la prueba cerrada y nos cuenten qué les sobra y qué les falta. Si entras, tienes Trenzia <strong>gratis 6 meses</strong> mientras la uses al menos 3 días por semana. A cambio te pedimos que la uses los primeros 14 días seguidos. Las plazas son limitadas y se cubren por orden de llegada.</p>
+  <p class="lead">Buscamos opositores que usen la app durante la prueba cerrada y nos cuenten qué les sobra y qué les falta. Si entras, tienes Trenzia <strong>gratis 6 meses</strong> mientras la uses al menos 3 días por semana. A cambio te pedimos que la uses los primeros 14 días seguidos. Las plazas son limitadas y se cubren por orden de confirmación del correo.</p>
 
   <form id="form" novalidate>
    <div class="field">
@@ -707,7 +707,7 @@
         // Plazas cubiertas (A-27): el alta sigue, pero al confirmar pasa a la lista de espera.
         // Si el servidor no manda el campo, el mensaje de siempre.
         h.innerHTML = d.plazas_libres === false
-          ? "<h1>Las plazas de la prueba están cubiertas</h1><p>Te hemos enviado un correo. Si lo confirmas, te apuntamos a la lista de espera y te avisaremos el día que Trenzia salga en las tiendas.</p><p>En la lista de espera solo guardamos tu nombre, tu correo y el enlace por el que llegaste, y los borramos después de avisarte.</p><p>Si no lo ves en unos minutos, <strong>mira en correo no deseado</strong>.</p>"
+          ? "<h1>Las plazas de la prueba están cubiertas</h1><p>Te hemos enviado un correo. Si lo confirmas, te apuntamos a la lista de espera y te avisaremos el día que Trenzia salga en las tiendas.</p><p>En la lista de espera solo guardamos tu nombre, tu correo, el tipo de móvil y el enlace por el que llegaste, además del registro de que aceptaste la política, y lo borramos todo después de avisarte.</p><p>Si no lo ves en unos minutos, <strong>mira en correo no deseado</strong>.</p>"
           : "<h1>Te hemos enviado un correo</h1><p>Confírmalo para reservar tu plaza.</p><p>Si no lo ves en unos minutos, <strong>mira en correo no deseado</strong>.</p>";
         window.scrollTo(0, 0);
         h.focus();
