@@ -41,16 +41,26 @@ var TrenziaTextos = (function () {
   /** Un texto libre del archivo como frase: con punto final si no lo trae. */
   const conPunto = (s) => { const t = String(s).trim(); return /[.!?…]$/.test(t) ? t : `${t}.`; };
 
-  /** Una marca con su unidad: «52 s», «7:10», «22 repeticiones», «9,5 periodos», «2,15 m». */
-  function marca(v, metrica, unidad) {
+  /**
+   * Una marca con su unidad: «52 s», «7:10», «22 repeticiones», «9,5 periodos», «2,15 m».
+   * mmss: en m:ss aunque baje de 100 s, para no mezclar formas en una prueba (enMinutos, web-27).
+   */
+  function marca(v, metrica, unidad, mmss) {
     if (metrica === "Time") {
-      if (v >= 100) {
+      if (v >= 100 || mmss) {
         const m = Math.floor(v / 60), s = Math.round((v - m * 60) * 100) / 100;
         return `${m}:${s < 10 ? "0" : ""}${num(s)}`;
       }
       return `${num(v)} s`;
     }
     return cantidad(v, metrica, unidad);
+  }
+  /** Si alguna marca de la prueba (de cualquier sexo) llega a 100 s, todas van en m:ss (web-27). */
+  function enMinutos(p) {
+    const bs = (p && p.baremos) || [];
+    if (!bs.length || bs[0].metrica !== "Time") return false;
+    const v = [...bs.flatMap((b) => [b.marca_apto, b.marca_max]), ...(p.tramos || []).map((t) => t.valor)];
+    return v.some((x) => x != null && Number(x) >= 100);
   }
   /** «1 repetición», «3 repeticiones», «0,01 segundos», «1 periodo», «5 cm». */
   function cantidad(x, metrica, unidad) {
@@ -132,8 +142,11 @@ var TrenziaTextos = (function () {
     return !(c.pruebas || []).every((p) => p.baremos.every((b) => b.solo_apto));
   }
 
-  /** Cómo se mide y qué hace falta para el apto, en una frase. sinEliminar: noElimina(c) de su convocatoria. */
-  function condicion(b, unidad, sinEliminar) {
+  /**
+   * Cómo se mide y qué hace falta para el apto, en una frase. sinEliminar: noElimina(c)
+   * de su convocatoria; mmss: enMinutos(prueba).
+   */
+  function condicion(b, unidad, sinEliminar, mmss) {
     const c = condicionTexto(b.condicion);
     let que;
     if (b.metrica === "Time") que = c ? `Tiempo (${c})` : "Tiempo";
@@ -143,7 +156,7 @@ var TrenziaTextos = (function () {
     else if (b.metrica === "Height") que = `Altura en ${unidad ?? "cm"}`;
     else que = `Marca en ${unidad ?? ""}`.trim();
     const mejor = b.sentido === "Up" ? "más es mejor" : "menos es mejor";
-    const hasta = `${b.sentido === "Up" ? "desde" : "hasta"} ${marca(Number(b.marca_apto), b.metrica, unidad)}`;
+    const hasta = `${b.sentido === "Up" ? "desde" : "hasta"} ${marca(Number(b.marca_apto), b.metrica, unidad, mmss)}`;
     if (sinEliminar && !b.solo_apto && b.puntos_min != null) {
       return `${que}, ${mejor}. Puntúa: ${puntos(b.puntos_min)} ${hasta}; ${b.sentido === "Up" ? "por debajo" : b.metrica === "Time" ? "con más tiempo" : "por encima"}, 0 puntos, pero no elimina.`;
     }
@@ -244,6 +257,6 @@ var TrenziaTextos = (function () {
     return n === 1 ? `Falta 1 prueba oficial que aún no calculamos: ${lista_}.` : `Faltan ${n} pruebas oficiales que aún no calculamos: ${lista_}.`;
   }
 
-  return { faltanPruebas, conPunto, condicionTexto, comoSeHace, origenDeMarcas, estado, estadoCompleto, claseEstado, tipo, tipoIndice, ambito, fecha, num, puntos, noElimina, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
+  return { faltanPruebas, conPunto, condicionTexto, comoSeHace, origenDeMarcas, estado, estadoCompleto, claseEstado, tipo, tipoIndice, ambito, fecha, num, puntos, noElimina, enMinutos, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
 })();
 if (typeof module !== "undefined") module.exports = TrenziaTextos;

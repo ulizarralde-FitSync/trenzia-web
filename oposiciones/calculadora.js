@@ -100,7 +100,7 @@
       return `<section class="prueba" aria-labelledby="t-${p.codigo}">
         <div class="prueba-cab"><h3 id="t-${p.codigo}">${esc(nombre)}</h3><span class="pts" id="pts-${p.codigo}"></span></div>
         ${T.comoSeHace(p.prueba.baremos).map((t) => `<p class="como">${esc(t)}</p>`).join("")}
-        <p class="cond">${esc(T.condicion(b, uni, T.noElimina(c)))}</p>
+        <p class="cond">${esc(T.condicion(b, uni, T.noElimina(c), T.enMinutos(p.prueba)))}</p>
         <div class="entrada"><input id="in-${p.codigo}" inputmode="${entero ? "numeric" : "decimal"}" autocomplete="off" placeholder="${ayuda}" value="${esc(marcasTxt[p.codigo] ?? "")}" aria-label="Tu marca en ${esc(nombre)}, en ${esc(T.unidadCampo(b.metrica, uni))}" aria-describedby="msg-${p.codigo}"><span class="unidad">${esc(T.unidadCampo(b.metrica, uni))}</span></div>
         <div class="barra" aria-hidden="true"><i id="bar-${p.codigo}"></i></div>
         <p class="msg" id="msg-${p.codigo}" aria-live="polite"></p>
@@ -125,6 +125,12 @@
     // Por debajo de la tabla, pero esta convocatoria no elimina por una prueba (web-26).
     if (p.noElimina) return { cls: "msg", txt: `0 puntos (en esta convocatoria no elimina: cuenta en la ${notaTipo === "media" ? "media" : "nota"}). Con ${T.cantidad(q.falta, met, uni)} ${b.sentido === "Up" ? "más" : "menos"} subes a ${T.puntos(p.puntosMinBases)}.` };
     if (!q.apto) return { cls: "msg no", txt: `No apto. ${faltan(q.falta, met, uni)} para el apto.` };
+    // Donde el 0 no elimina, ninguna prueba tiene apto propio: solo los puntos (web-27).
+    if (T.noElimina(convs[conv])) {
+      if (q.maximo) return { cls: "msg ok", txt: "Puntuación máxima." };
+      if (q.falta != null) return { cls: "msg ok", txt: `Con ${T.cantidad(q.falta, met, uni)} ${q.up ? "más" : "menos"} subes a ${T.puntos(q.puntos)}.` };
+      return { cls: "msg ok", txt: "" };
+    }
     if (q.maximo) return { cls: "msg ok", txt: "Apto con la nota máxima." };
     if (q.falta != null) return { cls: "msg ok", txt: `Apto. Con ${T.cantidad(q.falta, met, uni)} ${q.up ? "más" : "menos"} subes a ${T.num(q.puntos)} puntos.` };
     return { cls: "msg ok", txt: "Apto." };
