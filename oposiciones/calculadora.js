@@ -176,7 +176,7 @@
     $("coef").hidden = !coef;
     const li = [];
     if (regla && regla.min_por_prueba != null) {
-      li.push(`<li class="${n.porDebajo.length ? "no" : n.completas ? "ok" : ""}">Al menos ${T.num(regla.min_por_prueba)} puntos en cada prueba</li>`);
+      li.push(`<li class="${n.porDebajo.length ? "no" : n.completas ? "ok" : ""}">Al menos ${T.puntos(regla.min_por_prueba)} en cada prueba</li>`);
     }
     if (regla && regla.min_total != null) {
       const cls = n.porDebajo.length ? "" : !n.completas ? "" : n.apto ? "ok" : "no";
@@ -186,7 +186,9 @@
     if (res.pruebas.some((p) => p.baremo && p.soloApto && res.modelo === "points")) {
       li.push(`<li class="${n.porDebajo.length ? "no" : n.completas ? "ok" : ""}">Apto en las pruebas que no dan puntos</li>`);
     }
-    if (!regla || res.modelo !== "points") li.push(`<li class="${n.porDebajo.length ? "no" : !n.completas || n.apto == null ? "" : n.apto ? "ok" : "no"}">Apto en todas las pruebas</li>`);
+    // Sin mínimos de puntos (Madrid), el apto es llegar al apto en todas, como en nota.js.
+    const sinMinimos = !regla || (regla.min_por_prueba == null && regla.min_total == null);
+    if (sinMinimos || res.modelo !== "points") li.push(`<li class="${n.porDebajo.length ? "no" : !n.completas || n.apto == null ? "" : n.apto ? "ok" : "no"}">Apto en todas las pruebas</li>`);
     $("regla").innerHTML = li.join("");
     $("veredicto").textContent = T.veredicto(n, (codigo) => (cat[codigo] && cat[codigo].nombre) || codigo);
   }

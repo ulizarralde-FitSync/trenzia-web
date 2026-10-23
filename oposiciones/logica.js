@@ -39,7 +39,11 @@ var TrenziaWeb = (function () {
     const origenTramos = [];
     for (const p of conv.pruebas) if (p.puntuacion !== "lineal") for (const t of p.tramos) origenTramos.push(t);
 
-    const pruebas = conv.pruebas.slice().sort((a, b) => a.orden - b.orden).map((p) => {
+    // Solo las pruebas de este sexo, según nota.js (oficialesDelSexo): a un
+    // hombre de la Policía Nacional no le sale la suspensión ni le «falta»; a
+    // una mujer, lo mismo con las dominadas.
+    const delSexo = new Set(N.oficialesDelSexo(conv.pruebas.map((p) => p.codigo), motor.baremos, sexo));
+    const pruebas = conv.pruebas.filter((p) => delSexo.has(p.codigo)).sort((a, b) => a.orden - b.orden).map((p) => {
       const marca = marcas[p.codigo] ?? null;
       const r = N.puntuarPrueba({
         baremos: motor.baremos, tramos: motor.tramos, testType: p.codigo, testSubtype: p.subtipo ?? null,

@@ -30,6 +30,7 @@ var TrenziaNota = (() => {
     elegirTramos: () => elegirTramos,
     necesitaEdad: () => necesitaEdad,
     notaDeConvocatoria: () => notaDeConvocatoria,
+    oficialesDelSexo: () => oficialesDelSexo,
     parseScoringRules: () => parseScoringRules,
     pickBaremeFor: () => pickBaremeFor,
     pickTramosFor: () => pickTramosFor,
@@ -513,6 +514,13 @@ var TrenziaNota = (() => {
   }
 
   // supabase/functions/_shared/apto_global.ts
+  function oficialesDelSexo(oficiales, baremosOficiales, sexo) {
+    if (sexo !== "M" && sexo !== "F") return [...oficiales];
+    return oficiales.filter((t) => {
+      const del = baremosOficiales.filter((b) => b.test_type === t);
+      return del.length === 0 || del.some((b) => b.sexo == null || b.sexo === sexo);
+    });
+  }
   function leerPruebasSinCargar(v) {
     if (!Array.isArray(v)) return [];
     return v.flatMap(

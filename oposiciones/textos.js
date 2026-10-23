@@ -36,6 +36,8 @@ var TrenziaTextos = (function () {
   }
 
   function num(n) { return String(Math.round(n * 100) / 100).replace(".", ","); }
+  /** «1 punto», «5 puntos», «1,5 puntos». */
+  const puntos = (n) => `${num(n)} ${Number(n) === 1 ? "punto" : "puntos"}`;
   /** Un texto libre del archivo como frase: con punto final si no lo trae. */
   const conPunto = (s) => { const t = String(s).trim(); return /[.!?…]$/.test(t) ? t : `${t}.`; };
 
@@ -227,6 +229,6 @@ var TrenziaTextos = (function () {
     return n === 1 ? `Falta 1 prueba oficial que aún no calculamos: ${lista_}.` : `Faltan ${n} pruebas oficiales que aún no calculamos: ${lista_}.`;
   }
 
-  return { faltanPruebas, conPunto, condicionTexto, comoSeHace, origenDeMarcas, estado, estadoCompleto, claseEstado, tipo, tipoIndice, ambito, fecha, num, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
+  return { faltanPruebas, conPunto, condicionTexto, comoSeHace, origenDeMarcas, estado, estadoCompleto, claseEstado, tipo, tipoIndice, ambito, fecha, num, puntos, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
 })();
 if (typeof module !== "undefined") module.exports = TrenziaTextos;
