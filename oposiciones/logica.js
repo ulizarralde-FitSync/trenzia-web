@@ -85,6 +85,12 @@ var TrenziaWeb = (function () {
     // Los nombres de las pruebas sin cargar, del archivo, para la frase «Faltan…».
     const sinCargar = (conv.pruebas_sin_cargar || []).map((p) => p.nombre);
     const apto = n.apto_global;
+    // Una prueba con marca que no llega al apto pero que nota.js no cuenta entre
+    // las que eliminan (Generalitat 81/26: sin mínimo por prueba, solo media
+    // mínima): da 0 y cuenta en la nota, no es un «no apto» (web-26).
+    for (const p of pruebas) {
+      p.noElimina = !!p.baremo && p.marca != null && p.r.label !== "Sin marca" && !p.r.is_apto && !n.tests_below_min.includes(p.codigo);
+    }
     const nota = {
       tipo: motor.rules && motor.rules.nota === "media" ? "media" : "suma",
       completas, conMarca, total: conBaremo.length, aptas: conBaremo.filter((f) => f.is_apto).length,

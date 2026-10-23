@@ -100,7 +100,7 @@
       return `<section class="prueba" aria-labelledby="t-${p.codigo}">
         <div class="prueba-cab"><h3 id="t-${p.codigo}">${esc(nombre)}</h3><span class="pts" id="pts-${p.codigo}"></span></div>
         ${T.comoSeHace(p.prueba.baremos).map((t) => `<p class="como">${esc(t)}</p>`).join("")}
-        <p class="cond">${esc(T.condicion(b, uni))}</p>
+        <p class="cond">${esc(T.condicion(b, uni, T.noElimina(c)))}</p>
         <div class="entrada"><input id="in-${p.codigo}" inputmode="${entero ? "numeric" : "decimal"}" autocomplete="off" placeholder="${ayuda}" value="${esc(marcasTxt[p.codigo] ?? "")}" aria-label="Tu marca en ${esc(nombre)}, en ${esc(T.unidadCampo(b.metrica, uni))}" aria-describedby="msg-${p.codigo}"><span class="unidad">${esc(T.unidadCampo(b.metrica, uni))}</span></div>
         <div class="barra" aria-hidden="true"><i id="bar-${p.codigo}"></i></div>
         <p class="msg" id="msg-${p.codigo}" aria-live="polite"></p>
@@ -115,13 +115,15 @@
 
   const faltan = (x, met, uni) => `${x === 1 ? "Te falta" : "Te faltan"} ${T.cantidad(x, met, uni)}`;
 
-  function mensaje(p, marcaTxt) {
+  function mensaje(p, marcaTxt, notaTipo) {
     const b = p.baremo, met = b.metrica, uni = cat[p.codigo] && cat[p.codigo].unidad;
     if (marcaTxt && Number.isNaN(p.marcaLeida)) {
       return { cls: "msg no", txt: met === "Reps" ? "Escribe un número entero de repeticiones." : met === "Periods" ? "Escribe los periodos en medios (9 o 9,5)." : met === "Time" ? "Escribe segundos (31,5) o minutos y segundos (3:45)." : met === "Distance" || met === "Height" ? "Escribe los centímetros, sin decimales." : "Escribe solo el número." };
     }
     const q = W.queFalta(p);
     if (!q) return { cls: "msg", txt: "Escribe tu marca." };
+    // Por debajo de la tabla, pero esta convocatoria no elimina por una prueba (web-26).
+    if (p.noElimina) return { cls: "msg", txt: `0 puntos (en esta convocatoria no elimina: cuenta en la ${notaTipo === "media" ? "media" : "nota"}). Con ${T.cantidad(q.falta, met, uni)} ${b.sentido === "Up" ? "más" : "menos"} subes a ${T.puntos(p.puntosMinBases)}.` };
     if (!q.apto) return { cls: "msg no", txt: `No apto. ${faltan(q.falta, met, uni)} para el apto.` };
     if (q.maximo) return { cls: "msg ok", txt: "Apto con la nota máxima." };
     if (q.falta != null) return { cls: "msg ok", txt: `Apto. Con ${T.cantidad(q.falta, met, uni)} ${q.up ? "más" : "menos"} subes a ${T.num(q.puntos)} puntos.` };
@@ -152,7 +154,7 @@
         ptsEl.textContent = p.r.label === "Sin marca" ? "–" : p.r.is_apto ? "Apto" : "No apto";
         bar.style.width = p.r.is_apto ? "100%" : "0";
       }
-      const m = mensaje(p, marcasTxt[p.codigo]);
+      const m = mensaje(p, marcasTxt[p.codigo], res.nota.tipo);
       msg.className = m.cls;
       msg.textContent = m.txt;
     }

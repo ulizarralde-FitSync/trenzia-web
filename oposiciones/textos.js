@@ -121,8 +121,19 @@ var TrenziaTextos = (function () {
     return textos.map((t) => `Cómo se hace: ${conPunto(t)}`);
   }
 
-  /** Cómo se mide y qué hace falta para el apto, en una frase. */
-  function condicion(b, unidad) {
+  /**
+   * Con puntos, sin mínimo por prueba y con nota mínima (Generalitat 81/26, web-26):
+   * no llegar a la tabla da 0 en esa prueba y cuenta en la nota, no elimina.
+   * Es la misma regla con la que nota.js decide qué pruebas eliminan.
+   */
+  function noElimina(c) {
+    const g = c && c.nota && c.nota.regla_global;
+    if (!g || c.nota.modelo !== "points" || g.min_por_prueba != null || g.min_total == null) return false;
+    return !(c.pruebas || []).every((p) => p.baremos.every((b) => b.solo_apto));
+  }
+
+  /** Cómo se mide y qué hace falta para el apto, en una frase. sinEliminar: noElimina(c) de su convocatoria. */
+  function condicion(b, unidad, sinEliminar) {
     const c = condicionTexto(b.condicion);
     let que;
     if (b.metrica === "Time") que = c ? `Tiempo (${c})` : "Tiempo";
@@ -132,7 +143,11 @@ var TrenziaTextos = (function () {
     else if (b.metrica === "Height") que = `Altura en ${unidad ?? "cm"}`;
     else que = `Marca en ${unidad ?? ""}`.trim();
     const mejor = b.sentido === "Up" ? "más es mejor" : "menos es mejor";
-    const apto = `apto ${b.sentido === "Up" ? "desde" : "hasta"} ${marca(Number(b.marca_apto), b.metrica, unidad)}`;
+    const hasta = `${b.sentido === "Up" ? "desde" : "hasta"} ${marca(Number(b.marca_apto), b.metrica, unidad)}`;
+    if (sinEliminar && !b.solo_apto && b.puntos_min != null) {
+      return `${que}, ${mejor}. Puntúa: ${puntos(b.puntos_min)} ${hasta}; ${b.sentido === "Up" ? "por debajo" : b.metrica === "Time" ? "con más tiempo" : "por encima"}, 0 puntos, pero no elimina.`;
+    }
+    const apto = `apto ${hasta}`;
     return `${que}, ${mejor}. ${b.solo_apto ? "Solo apto o no apto" : "Puntúa"}: ${apto}.`;
   }
 
@@ -229,6 +244,6 @@ var TrenziaTextos = (function () {
     return n === 1 ? `Falta 1 prueba oficial que aún no calculamos: ${lista_}.` : `Faltan ${n} pruebas oficiales que aún no calculamos: ${lista_}.`;
   }
 
-  return { faltanPruebas, conPunto, condicionTexto, comoSeHace, origenDeMarcas, estado, estadoCompleto, claseEstado, tipo, tipoIndice, ambito, fecha, num, puntos, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
+  return { faltanPruebas, conPunto, condicionTexto, comoSeHace, origenDeMarcas, estado, estadoCompleto, claseEstado, tipo, tipoIndice, ambito, fecha, num, puntos, noElimina, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
 })();
 if (typeof module !== "undefined") module.exports = TrenziaTextos;
