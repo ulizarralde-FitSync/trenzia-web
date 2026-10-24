@@ -10,8 +10,7 @@ a{color:#fff}
 .proto{border:1px dashed #FFD54A;color:#FFE38A;border-radius:12px;padding:10px 14px;font-size:14px;margin:0 0 24px}
 .proto b{color:#FFD54A}
 .brand{display:flex;align-items:center;gap:12px;margin-bottom:28px;text-decoration:none}
-.brand svg{width:44px;height:44px}
-.brand span{font-size:28px;font-weight:700;letter-spacing:-.5px;color:#fff}
+.brand svg{width:201px;height:40px}
 .volver{display:inline-block;font-size:14px;color:var(--muted);text-decoration:none;margin:0 0 12px}
 h1{font-size:30px;line-height:1.2;margin:0 0 10px}
 h1 em{font-style:normal;color:var(--o)}
