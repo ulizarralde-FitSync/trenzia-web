@@ -33,6 +33,7 @@ input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(-
 .subgrupo{font-size:14px;font-weight:400;color:var(--soft);margin:16px 0 8px}
 .card{display:block;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:0 0 10px;color:#fff;text-decoration:none}
 a.card{box-shadow:inset 3px 0 0 var(--o)}
+.card[hidden]{display:none}
 .card-cab{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
 .card h4{font-size:16px;margin:0 0 2px;line-height:1.35}
 .card p{margin:0;font-size:14px;color:var(--muted)}
