@@ -20,6 +20,7 @@ Las marcas y tablas de cada convocatoria se transcriben de las bases oficiales (
 - [Guardia Civil](https://trenzia.es/oposiciones/guardia-civil.html): 4 pruebas, BOE n.º 112, de 8 de mayo de 2026
 - [Policía Municipal de Madrid](https://trenzia.es/oposiciones/policia-municipal-madrid.html): 5 pruebas, BOAM n.º 10020, de 4 de diciembre de 2025
 - [Policía Local de Andalucía](https://trenzia.es/oposiciones/policia-local-andalucia.html): 5 pruebas por persona, BOJA n.º 22, de 3 de febrero de 2026
+- [Policía Local de Castilla y León](https://trenzia.es/oposiciones/policia-local-castilla-y-leon.html): 5 pruebas, BOCYL n.º 100, de 26 de mayo de 2021
 - [Policía Local de la Comunitat Valenciana](https://trenzia.es/oposiciones/policia-local-comunitat-valenciana.html): 4 pruebas, DOGV n.º 9218, de 18 de noviembre de 2021
 
 ## Sobre la app
