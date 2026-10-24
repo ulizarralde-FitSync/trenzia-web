@@ -29,14 +29,17 @@ En `probar.css` están como variables: `--o` (naranja), `--k` (fondo), `--line`,
 - Titular principal (h1): 34 px en la portada y 30 px en las páginas de probadores, negrita, interlineado 1,2. La parte destacada va en naranja (`<em>` sin cursiva). En las páginas legales, 28 px.
 - Títulos de sección (h2): 26 px en la portada, 20 px en las páginas de probadores y 21 px en las legales.
 - Entradilla: 18 o 19 px, en `#CFCFD4`.
-- Nombre "Trenzia" junto al logo: 34 px (28 px en las páginas de probadores), negrita, espaciado de letras -0,5 px.
 - Texto pequeño (ayudas, pie): 14 px.
 - Campos de formulario: 16 px como mínimo, para que el iPhone no haga zoom.
 
 ## Logo
 
-- `logo.svg`: la T de tres trazos en naranja `#FF5A1F`, sin fondo.
-- 56 × 56 px en la portada y 44 × 44 px en las páginas de probadores, a la izquierda del nombre "Trenzia". Las páginas legales no llevan logo.
+Fuente única: el kit del logo v3 (`tienda\trenzia-logo-v3\`, con cesión de derechos). Los archivos de la web se copian de ahí tal cual; no se redibujan ni se cambian.
+
+- **Cabecera:** `lockup.svg`, el lockup oscuro del kit (`lockup\trenzia-lockup-dark.svg`): la T en naranja `#FF5A1F` y «Trenzia» en blanco, en Poppins Bold ya trazada en vectores. Mide 48 px de alto en la portada y en la 404, y 40 px en las páginas de probadores y en `/oposiciones/` (allí va dentro de la página, lo escribe el generador). Lleva `alt="Trenzia"` y no se escribe el nombre aparte. Las páginas legales no llevan logo.
+- **`logo.svg`:** el símbolo naranja del kit (`symbol\trenzia-symbol-orange.svg`), sin fondo. Es el que usa el JSON-LD de la portada.
+- **Iconos:** `favicon.svg`, `favicon.ico`, `favicon-16.png`, `favicon-32.png`, `favicon-48.png` y `apple-touch-icon.png` (el `apple-touch-icon-180.png` del kit), copiados de `favicon\`. Por debajo de 48 px se usa la T simplificada; el kit ya lo hace así. Los enlaces llevan `?v=3`: si cambian los iconos, sube ese número.
+- **`og-image.png`:** 1200 × 630, fondo `#0C0C0C` y el lockup centrado a 900 px de ancho, sin más texto.
 
 ## Formas y componentes
 
