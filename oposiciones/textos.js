@@ -24,7 +24,7 @@ var TrenziaTextos = (function () {
   const tipo = (t) => TIPO[t] ?? legible(t);
   // Solo en el índice (filtro y título del grupo), para que se vea que la Guardia
   // Civil está dentro (web-24). Las fichas siguen diciendo «Policía».
-  const TIPO_INDICE = { ...TIPO, policia: "Policía y Guardia Civil" };
+  const TIPO_INDICE = { ...TIPO, policia: "Policía y Guardia Civil", ejercito: "Fuerzas Armadas" };
   const tipoIndice = (t) => TIPO_INDICE[t] ?? legible(t);
   const AMBITO = { municipal: "Ayuntamiento", local: "Ayuntamiento", provincial: "Diputación o consorcio", autonomico: "Comunidad autónoma", estatal: "Estatal" };
   const ambito = (a) => AMBITO[a] ?? legible(a);
@@ -176,7 +176,9 @@ var TrenziaTextos = (function () {
     if (conv.estado_sin_fecha && !conv.aviso) out.push({ tipo: "fecha", texto: `${estado(conv.estado)}, sin fecha.` });
     // El aviso de la app sobre la convocatoria (A-20), tal cual, con su punto final.
     if (conv.aviso) out.push({ tipo: "aviso", texto: conPunto(conv.aviso) });
-    if (conv.marcas && conv.marcas.relacion === "referencia") {
+    // Con aviso de la app, el genérico de referencia sobra: la app ya explica de dónde
+    // salen las marcas y si pueden cambiar (tropa y marinería 2027, web-28).
+    if (conv.marcas && conv.marcas.relacion === "referencia" && !conv.aviso) {
       out.push({ tipo: "referencia", texto: `Aún no hay bases de esta convocatoria. Usamos las marcas de ${nombreDe(conv.marcas.de)} como referencia.` });
     }
     if (conv.marcas && conv.marcas.relacion === "iguales") {
