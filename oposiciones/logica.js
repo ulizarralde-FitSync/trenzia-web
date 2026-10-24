@@ -125,8 +125,11 @@ var TrenziaWeb = (function () {
   }
 
   // ── Marcas que escribe la persona ───────────────────────────────────────────
-  /** «31,5», «7:10», «7:10,5» → número; null si está vacío; NaN si no vale para esa métrica. */
-  function leeMarca(txt, metrica) {
+  /**
+   * «31,5», «7:10», «7:10,5» → número; null si está vacío; NaN si no vale para esa métrica.
+   * unidad: la del catálogo; en metros (balón medicinal, web-29) la distancia admite decimales.
+   */
+  function leeMarca(txt, metrica, unidad) {
     const t = String(txt ?? "").trim().replace(",", ".");
     if (!t) return null;
     let v;
@@ -140,7 +143,7 @@ var TrenziaWeb = (function () {
     }
     if (metrica === "Reps" && !Number.isInteger(v)) return NaN;
     if (metrica === "Periods" && !Number.isInteger(v * 2)) return NaN;
-    if ((metrica === "Distance" || metrica === "Height") && !Number.isInteger(v)) return NaN; // centímetros enteros
+    if ((metrica === "Distance" || metrica === "Height") && unidad !== "m" && !Number.isInteger(v)) return NaN; // centímetros enteros
     return v;
   }
 
