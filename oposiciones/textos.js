@@ -210,7 +210,9 @@ var TrenziaTextos = (function () {
         const src = origenDeMarcas(conv, convocatorias);
         if (src && src.boletin && src.boletin.nombre && src.verificacion && src.verificacion.estado === "verificado" && src.verificacion.fecha) {
           const de = conv.marcas.relacion === "referencia" ? "Marcas de referencia transcritas" : "Marcas transcritas";
-          out.push({ tipo: "cotejo", texto: `${de} de ${bolTxt(src.boletin)} (${src.nombre_oficial}) y cotejadas por Trenzia el ${fecha(src.verificacion.fecha)}. Manda siempre la convocatoria oficial.` });
+          // Un nombre largo (Bilbao 2022) no cabe en la frase: el boletín ya dice de cuándo es (web-36).
+          const cual = nombreLargo(src) ? "" : ` (${src.nombre_oficial})`;
+          out.push({ tipo: "cotejo", texto: `${de} de ${bolTxt(src.boletin)}${cual} y cotejadas por Trenzia el ${fecha(src.verificacion.fecha)}. Manda siempre la convocatoria oficial.` });
         }
       }
     }
@@ -247,6 +249,27 @@ var TrenziaTextos = (function () {
 
   /** Policía local con baremo de toda una comunidad (Andalucía, Decreto 8/2026): no es un examen con fecha (web-29). */
   const baremoComun = (o) => !!o && o.tipo === "policia_local" && o.ambito === "autonomico";
+
+  /**
+   * Una convocatoria «próxima» sin boletín no tiene año publicado, aunque el archivo traiga
+   * `anio`: la web no dice un año que no está en un boletín (Bilbao y P36, web-36). Si el nombre
+   * oficial ya lo lleva («… tropa y marinería 2027, 1.er ciclo»), el año sí es oficial y se queda.
+   */
+  const sinAnio = (c) => !!c && c.estado === "proximamente" && !c.boletin && !(c.anio && String(c.nombre_oficial || "").includes(String(c.anio)));
+
+  /** Nombre oficial demasiado largo para ir dentro de una frase («32 plazas de bombero/a…», web-36). */
+  const nombreLargo = (c) => String(c.nombre_oficial || c.clave).length > 40;
+
+  /**
+   * Cómo se nombra una convocatoria dentro de una frase (web-36): con un nombre corto, tal cual
+   * («la convocatoria Promoción 35»); con uno largo, el nombre se queda en la tarjeta y la frase
+   * dice «la convocatoria de 2022» o, sin año publicado, «la próxima convocatoria».
+   */
+  function convocatoriaEnFrase(c) {
+    if (!nombreLargo(c)) return `la convocatoria ${c.nombre_oficial || c.clave}`;
+    if (sinAnio(c)) return "la próxima convocatoria";
+    return c.anio ? `la convocatoria de ${c.anio}` : `la convocatoria ${c.nombre_oficial}`;
+  }
 
   /** La convocatoria de la que salen las marcas de otra («referencia» o «iguales»), o null. */
   function origenDeMarcas(conv, convocatorias) {
@@ -298,6 +321,6 @@ var TrenziaTextos = (function () {
     return n === 1 ? `Falta 1 prueba oficial que aún no calculamos: ${lista_}.` : `Faltan ${n} pruebas oficiales que aún no calculamos: ${lista_}.`;
   }
 
-  return { faltanPruebas, conPunto, condicionTexto, comoSeHace, origenDeMarcas, estado, estadoCompleto, claseEstado, tipo, tipoIndice, ambito, fecha, num, puntos, noElimina, enMinutos, baremoComun, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
+  return { faltanPruebas, conPunto, condicionTexto, comoSeHace, origenDeMarcas, estado, estadoCompleto, claseEstado, tipo, tipoIndice, ambito, fecha, num, puntos, noElimina, enMinutos, baremoComun, sinAnio, nombreLargo, convocatoriaEnFrase, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
 })();
 if (typeof module !== "undefined") module.exports = TrenziaTextos;
