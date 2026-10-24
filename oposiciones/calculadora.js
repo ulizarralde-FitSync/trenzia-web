@@ -95,8 +95,9 @@
         return `<section class="prueba"><h3>${esc(nombre)}</h3><p class="msg">No hay marca para ${sexo === "M" ? "hombres" : "mujeres"}${edad != null ? ` de ${edad} años` : ""} en esta prueba.</p></section>`;
       }
       const b = p.baremo, uni = cat[p.codigo] && cat[p.codigo].unidad;
-      const ayuda = b.metrica === "Time" ? "p. ej. 31,5 o 3:45" : b.metrica === "Periods" ? "p. ej. 9,5" : b.metrica === "Reps" ? "p. ej. 30" : b.metrica === "Distance" ? "p. ej. 245" : b.metrica === "Height" ? "p. ej. 55" : "";
-      const entero = b.metrica === "Reps" || b.metrica === "Distance" || b.metrica === "Height";
+      const ayuda = b.metrica === "Time" ? "p. ej. 31,5 o 3:45" : b.metrica === "Periods" ? "p. ej. 9,5" : b.metrica === "Reps" ? "p. ej. 30" : b.metrica === "Distance" ? (uni === "m" ? "p. ej. 5,40" : "p. ej. 245") : b.metrica === "Height" ? "p. ej. 55" : "";
+      // En metros (balón medicinal, web-29), con decimales.
+      const entero = b.metrica === "Reps" || ((b.metrica === "Distance" || b.metrica === "Height") && uni !== "m");
       return `<section class="prueba" aria-labelledby="t-${p.codigo}">
         <div class="prueba-cab"><h3 id="t-${p.codigo}">${esc(nombre)}</h3><span class="pts" id="pts-${p.codigo}"></span></div>
         ${T.comoSeHace(p.prueba.baremos).map((t) => `<p class="como">${esc(t)}</p>`).join("")}
@@ -118,7 +119,7 @@
   function mensaje(p, marcaTxt, notaTipo) {
     const b = p.baremo, met = b.metrica, uni = cat[p.codigo] && cat[p.codigo].unidad;
     if (marcaTxt && Number.isNaN(p.marcaLeida)) {
-      return { cls: "msg no", txt: met === "Reps" ? "Escribe un número entero de repeticiones." : met === "Periods" ? "Escribe los periodos en medios (9 o 9,5)." : met === "Time" ? "Escribe segundos (31,5) o minutos y segundos (3:45)." : met === "Distance" || met === "Height" ? "Escribe los centímetros, sin decimales." : "Escribe solo el número." };
+      return { cls: "msg no", txt: met === "Reps" ? "Escribe un número entero de repeticiones." : met === "Periods" ? "Escribe los periodos en medios (9 o 9,5)." : met === "Time" ? "Escribe segundos (31,5) o minutos y segundos (3:45)." : (met === "Distance" || met === "Height") && uni === "m" ? "Escribe los metros (5,40)." : met === "Distance" || met === "Height" ? "Escribe los centímetros, sin decimales." : "Escribe solo el número." };
     }
     const q = W.queFalta(p);
     if (!q) return { cls: "msg", txt: "Escribe tu marca." };
@@ -142,7 +143,7 @@
     const marcas = {}, leidas = {};
     for (const p of c.pruebas) {
       const b = p.baremos[0];
-      const v = W.leeMarca(marcasTxt[p.codigo], b && b.metrica);
+      const v = W.leeMarca(marcasTxt[p.codigo], b && b.metrica, cat[p.codigo] && cat[p.codigo].unidad);
       leidas[p.codigo] = v;
       marcas[p.codigo] = Number.isNaN(v) ? null : v;
     }

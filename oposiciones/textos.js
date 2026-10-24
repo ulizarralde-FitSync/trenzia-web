@@ -194,7 +194,11 @@ var TrenziaTextos = (function () {
       out.push({ tipo: "verificacion", texto: "Marcas sacadas de las bases oficiales, pero todavía no revisadas por Trenzia." });
     } else if (opciones && opciones.cotejo) {
       const bolTxt = (b) => `${b.nombre}${b.numero != null ? ` n.º ${b.numero}` : ""}${b.fecha ? `, de ${fecha(b.fecha)}` : ""}`;
-      if (conv.boletin && conv.boletin.nombre && conv.verificacion.fecha) {
+      const norma = normaDeMarcas(conv);
+      if (norma && conv.verificacion.fecha) {
+        // Las marcas salen de una norma, no del boletín de la convocatoria (tropa y marinería, web-29).
+        out.push({ tipo: "cotejo", texto: `Marcas transcritas de ${norma} y cotejadas por Trenzia el ${fecha(conv.verificacion.fecha)}. Manda siempre la convocatoria oficial.` });
+      } else if (conv.boletin && conv.boletin.nombre && conv.verificacion.fecha) {
         out.push({ tipo: "cotejo", texto: `Marcas transcritas de ${bolTxt(conv.boletin)} y cotejadas por Trenzia el ${fecha(conv.verificacion.fecha)}. Manda siempre la convocatoria oficial.` });
       } else {
         // Sin bases propias (P36): las marcas son las de otra convocatoria, y la
@@ -208,6 +212,26 @@ var TrenziaTextos = (function () {
     }
     return out;
   }
+
+  /**
+   * La norma de la que salen las marcas cuando es otro documento que el boletín de
+   * la convocatoria («la Orden DEF/15/2026 (anexo III)»), o null (web-29). Por datos:
+   * `fuentes.baremos` con enlace, y el boletín con otro enlace o sin boletín. Si el
+   * boletín no trae enlace no se puede saber, y se queda la frase del boletín.
+   */
+  function normaDeMarcas(conv) {
+    const fb = conv.fuentes && conv.fuentes.baremos;
+    if (!fb || !fb.referencia || !fb.url) return null;
+    const b = conv.boletin;
+    if (b && (!b.url || b.url === fb.url)) return null;
+    const ref = String(fb.referencia).trim().replace(/\.$/, "");
+    const art = /^(Orden|Resolución|Ley|Instrucción)\b/.test(ref) ? "la " : /^(Real Decreto|Decreto|Acuerdo|Reglamento)\b/.test(ref) ? "el " : "";
+    const m = /^(.+?), (.+)$/.exec(ref);
+    return `${art}${m ? `${m[1]} (${m[2]})` : ref}`;
+  }
+
+  /** Policía local con baremo de toda una comunidad (Andalucía, Decreto 8/2026): no es un examen con fecha (web-29). */
+  const baremoComun = (o) => !!o && o.tipo === "policia_local" && o.ambito === "autonomico";
 
   /** La convocatoria de la que salen las marcas de otra («referencia» o «iguales»), o null. */
   function origenDeMarcas(conv, convocatorias) {
@@ -259,6 +283,6 @@ var TrenziaTextos = (function () {
     return n === 1 ? `Falta 1 prueba oficial que aún no calculamos: ${lista_}.` : `Faltan ${n} pruebas oficiales que aún no calculamos: ${lista_}.`;
   }
 
-  return { faltanPruebas, conPunto, condicionTexto, comoSeHace, origenDeMarcas, estado, estadoCompleto, claseEstado, tipo, tipoIndice, ambito, fecha, num, puntos, noElimina, enMinutos, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
+  return { faltanPruebas, conPunto, condicionTexto, comoSeHace, origenDeMarcas, estado, estadoCompleto, claseEstado, tipo, tipoIndice, ambito, fecha, num, puntos, noElimina, enMinutos, baremoComun, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
 })();
 if (typeof module !== "undefined") module.exports = TrenziaTextos;
