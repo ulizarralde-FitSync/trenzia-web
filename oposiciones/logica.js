@@ -130,7 +130,10 @@ var TrenziaWeb = (function () {
    * unidad: la del catálogo; en metros (balón medicinal, web-29) la distancia admite decimales.
    */
   function leeMarca(txt, metrica, unidad) {
-    const t = String(txt ?? "").trim().replace(",", ".");
+    let s = String(txt ?? "").trim();
+    // En metros, «2.700» son 2700 m (el Cooper, web-35): un punto con tres cifras detrás es de miles.
+    if (metrica === "Distance" && unidad === "m" && /^\d{1,3}\.\d{3}$/.test(s)) s = s.replace(".", "");
+    const t = s.replace(",", ".");
     if (!t) return null;
     let v;
     if (metrica === "Time" && t.includes(":")) {

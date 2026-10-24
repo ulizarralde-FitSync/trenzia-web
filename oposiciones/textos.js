@@ -68,6 +68,8 @@ var TrenziaTextos = (function () {
     if (metrica === "Time") return `${num(x)} ${uno ? "segundo" : "segundos"}`;
     if (metrica === "Reps") return `${num(x)} ${uno ? "repetición" : "repeticiones"}`;
     if (metrica === "Periods") return `${num(x)} ${uno ? "periodo" : "periodos"}`;
+    // Metros enteros de cuatro cifras con punto de miles: «2.700 m» (el Cooper, web-35).
+    if (unidad === "m" && Number.isInteger(x) && x >= 1000) return `${String(x).replace(/\B(?=(\d{3})+(?!\d))/g, ".")} m`;
     return `${num(x)} ${unidad ?? ""}`.trim();
   }
   /** La unidad que se ve junto al campo. */
@@ -150,7 +152,8 @@ var TrenziaTextos = (function () {
     const c = condicionTexto(b.condicion);
     let que;
     if (b.metrica === "Time") que = c ? `Tiempo (${c})` : "Tiempo";
-    else if (b.metrica === "Reps") que = c ? `Repeticiones con ${c}` : "Repeticiones";
+    // «con 40 kg», pero «en 30 s» si la condición es un tiempo (saltos laterales, web-35).
+    else if (b.metrica === "Reps") que = c ? `Repeticiones ${/\b(s|min)$/.test(c) ? "en" : "con"} ${c}` : "Repeticiones";
     else if (b.metrica === "Periods") que = "Periodos completados, en medios periodos";
     // Con su condición, que puede cambiar por sexo (balón de 4 kg hombres y 3 kg mujeres, web-30).
     else if (b.metrica === "Distance") que = `Distancia en ${unidad ?? "cm"}${c ? ` (${c})` : ""}`;
@@ -229,7 +232,14 @@ var TrenziaTextos = (function () {
     // «Bases de 27/02/2025 …» (Policía Municipal de Madrid, web-32): «las bases de …».
     if (/^Bases\b/.test(ref)) ref = `las b${ref.slice(1)}`;
     const art = /^(Orden|Resolución|Ley|Instrucción)\b/.test(ref) ? "la " : /^(Real Decreto|Decreto|Acuerdo|Reglamento)\b/.test(ref) ? "el " : "";
-    const m = /^(.+?), (.+)$/.exec(ref);
+    // La primera coma fuera de paréntesis: «… (BOPZ 287, 14/12/2024), Policía C1, …» (web-35).
+    let corte = -1;
+    for (let i = 0, prof = 0; i < ref.length - 1; i++) {
+      if (ref[i] === "(") prof++;
+      else if (ref[i] === ")") prof--;
+      else if (prof === 0 && ref[i] === "," && ref[i + 1] === " ") { corte = i; break; }
+    }
+    const m = corte > 0 ? [ref, ref.slice(0, corte), ref.slice(corte + 2)] : null;
     if (!m) return `${art}${ref}`;
     // Si la primera parte ya acaba en paréntesis («(BOAM 9.829)»), el resto va entre comas, no en otro paréntesis.
     return /\)$/.test(m[1]) ? `${art}${m[1]}, ${m[2]},` : `${art}${m[1]} (${m[2]})`;
