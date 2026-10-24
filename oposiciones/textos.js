@@ -152,7 +152,8 @@ var TrenziaTextos = (function () {
     if (b.metrica === "Time") que = c ? `Tiempo (${c})` : "Tiempo";
     else if (b.metrica === "Reps") que = c ? `Repeticiones con ${c}` : "Repeticiones";
     else if (b.metrica === "Periods") que = "Periodos completados, en medios periodos";
-    else if (b.metrica === "Distance") que = `Distancia en ${unidad ?? "cm"}`;
+    // Con su condición, que puede cambiar por sexo (balón de 4 kg hombres y 3 kg mujeres, web-30).
+    else if (b.metrica === "Distance") que = `Distancia en ${unidad ?? "cm"}${c ? ` (${c})` : ""}`;
     else if (b.metrica === "Height") que = `Altura en ${unidad ?? "cm"}`;
     else que = `Marca en ${unidad ?? ""}`.trim();
     const mejor = b.sentido === "Up" ? "más es mejor" : "menos es mejor";
