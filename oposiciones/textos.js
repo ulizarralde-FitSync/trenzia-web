@@ -225,10 +225,14 @@ var TrenziaTextos = (function () {
     if (!fb || !fb.referencia || !fb.url) return null;
     const b = conv.boletin;
     if (b && (!b.url || b.url === fb.url)) return null;
-    const ref = String(fb.referencia).trim().replace(/\.$/, "");
+    let ref = String(fb.referencia).trim().replace(/\.$/, "");
+    // «Bases de 27/02/2025 …» (Policía Municipal de Madrid, web-32): «las bases de …».
+    if (/^Bases\b/.test(ref)) ref = `las b${ref.slice(1)}`;
     const art = /^(Orden|Resolución|Ley|Instrucción)\b/.test(ref) ? "la " : /^(Real Decreto|Decreto|Acuerdo|Reglamento)\b/.test(ref) ? "el " : "";
     const m = /^(.+?), (.+)$/.exec(ref);
-    return `${art}${m ? `${m[1]} (${m[2]})` : ref}`;
+    if (!m) return `${art}${ref}`;
+    // Si la primera parte ya acaba en paréntesis («(BOAM 9.829)»), el resto va entre comas, no en otro paréntesis.
+    return /\)$/.test(m[1]) ? `${art}${m[1]}, ${m[2]},` : `${art}${m[1]} (${m[2]})`;
   }
 
   /** Policía local con baremo de toda una comunidad (Andalucía, Decreto 8/2026): no es un examen con fecha (web-29). */
