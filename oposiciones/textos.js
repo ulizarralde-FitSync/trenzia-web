@@ -35,6 +35,20 @@ var TrenziaTextos = (function () {
     return m ? `${+m[3]} de ${MESES[+m[2] - 1]} de ${m[1]}` : null;
   }
 
+  /**
+   * Las fechas de las físicas: «del 4 al 12 de septiembre de 2026», «del 23 de noviembre al
+   * 21 de diciembre de 2026», «el 3 de marzo de 2027»; sin repetir mes ni año (web-39). Si no
+   * están confirmadas, «previstas del …» o «prevista el …», nunca como fecha cerrada. null sin fechas.
+   */
+  function rangoFechas(pf) {
+    if (!pf || !(pf.desde || pf.hasta)) return null;
+    const previstas = !pf.fechas_confirmadas;
+    if (!(pf.desde && pf.hasta) || pf.desde === pf.hasta) return `${previstas ? "prevista " : ""}el ${fecha(pf.desde || pf.hasta)}`;
+    const [a, b] = [pf.desde, pf.hasta].map((x) => /^(\d{4})-(\d{2})-(\d{2})/.exec(x));
+    const desde = a[1] !== b[1] ? fecha(pf.desde) : a[2] !== b[2] ? `${+a[3]} de ${MESES[+a[2] - 1]}` : `${+a[3]}`;
+    return `${previstas ? "previstas " : ""}del ${desde} al ${fecha(pf.hasta)}`;
+  }
+
   function num(n) { return String(Math.round(n * 100) / 100).replace(".", ","); }
   /** «1 punto», «5 puntos», «1,5 puntos». */
   const puntos = (n) => `${num(n)} ${Number(n) === 1 ? "punto" : "puntos"}`;
@@ -325,6 +339,6 @@ var TrenziaTextos = (function () {
     return n === 1 ? `Falta 1 prueba oficial que aún no calculamos: ${lista_}.` : `Faltan ${n} pruebas oficiales que aún no calculamos: ${lista_}.`;
   }
 
-  return { faltanPruebas, conPunto, condicionTexto, comoSeHace, origenDeMarcas, estado, estadoCompleto, claseEstado, tipo, tipoIndice, ambito, fecha, num, puntos, noElimina, enMinutos, baremoComun, sinAnio, nombreLargo, convocatoriaEnFrase, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
+  return { faltanPruebas, conPunto, condicionTexto, comoSeHace, origenDeMarcas, estado, estadoCompleto, claseEstado, tipo, tipoIndice, ambito, fecha, num, puntos, noElimina, enMinutos, rangoFechas, baremoComun, sinAnio, nombreLargo, convocatoriaEnFrase, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
 })();
 if (typeof module !== "undefined") module.exports = TrenziaTextos;
