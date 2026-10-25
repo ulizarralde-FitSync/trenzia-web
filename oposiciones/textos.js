@@ -49,6 +49,17 @@ var TrenziaTextos = (function () {
     return `${previstas ? "previstas " : ""}del ${desde} al ${fecha(pf.hasta)}`;
   }
 
+  /**
+   * El número de un boletín como lo escribe el propio boletín: el BOAM con punto de miles
+   * («n.º 9.982», «10.020»; web-41); el DOGC o el DOGV, sin él («9681»).
+   */
+  const CON_PUNTO = new Set(["BOAM"]);
+  function numeroBoletin(b) {
+    if (!b || b.numero == null) return null;
+    const n = String(b.numero);
+    return CON_PUNTO.has(b.nombre) && /^\d{4,}$/.test(n) ? n.replace(/\B(?=(\d{3})+$)/g, ".") : n;
+  }
+
   function num(n) { return String(Math.round(n * 100) / 100).replace(".", ","); }
   /** «1 punto», «5 puntos», «1,5 puntos». */
   const puntos = (n) => `${num(n)} ${Number(n) === 1 ? "punto" : "puntos"}`;
@@ -211,7 +222,7 @@ var TrenziaTextos = (function () {
     } else if (v !== "verificado") {
       out.push({ tipo: "verificacion", texto: "Marcas sacadas de las bases oficiales, pero todavía no revisadas por Trenzia." });
     } else if (opciones && opciones.cotejo) {
-      const bolTxt = (b) => `${b.nombre}${b.numero != null ? ` n.º ${b.numero}` : ""}${b.fecha ? `, de ${fecha(b.fecha)}` : ""}`;
+      const bolTxt = (b) => `${b.nombre}${b.numero != null ? ` n.º ${numeroBoletin(b)}` : ""}${b.fecha ? `, de ${fecha(b.fecha)}` : ""}`;
       const norma = normaDeMarcas(conv);
       if (norma && conv.verificacion.fecha) {
         // Las marcas salen de una norma, no del boletín de la convocatoria (tropa y marinería, web-29).
@@ -339,6 +350,6 @@ var TrenziaTextos = (function () {
     return n === 1 ? `Falta 1 prueba oficial que aún no calculamos: ${lista_}.` : `Faltan ${n} pruebas oficiales que aún no calculamos: ${lista_}.`;
   }
 
-  return { faltanPruebas, conPunto, condicionTexto, comoSeHace, origenDeMarcas, estado, estadoCompleto, claseEstado, tipo, tipoIndice, ambito, fecha, num, puntos, noElimina, enMinutos, rangoFechas, baremoComun, sinAnio, nombreLargo, convocatoriaEnFrase, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
+  return { faltanPruebas, conPunto, condicionTexto, comoSeHace, origenDeMarcas, estado, estadoCompleto, claseEstado, tipo, tipoIndice, ambito, fecha, num, puntos, noElimina, enMinutos, rangoFechas, numeroBoletin, baremoComun, sinAnio, nombreLargo, convocatoriaEnFrase, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
 })();
 if (typeof module !== "undefined") module.exports = TrenziaTextos;
