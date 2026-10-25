@@ -247,8 +247,12 @@ var TrenziaTextos = (function () {
     return /\)$/.test(m[1]) ? `${art}${m[1]}, ${m[2]},` : `${art}${m[1]} (${m[2]})`;
   }
 
-  /** Policía local con baremo de toda una comunidad (Andalucía, Decreto 8/2026): no es un examen con fecha (web-29). */
-  const baremoComun = (o) => !!o && o.tipo === "policia_local" && o.ambito === "autonomico";
+  /**
+   * Policía local con baremo de toda una comunidad (Andalucía, Decreto 8/2026): no es un examen con fecha (web-29).
+   * Un proceso unificado con plazo de inscripción (Galicia, Extremadura) es una convocatoria normal (web-38).
+   */
+  const conInscripcion = (c) => !!(c && c.inscripcion && (c.inscripcion.desde || c.inscripcion.hasta));
+  const baremoComun = (o) => !!o && o.tipo === "policia_local" && o.ambito === "autonomico" && !(o.convocatorias || []).some(conInscripcion);
 
   /**
    * Una convocatoria «próxima» sin boletín no tiene año publicado, aunque el archivo traiga
