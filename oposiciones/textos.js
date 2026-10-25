@@ -38,12 +38,14 @@ var TrenziaTextos = (function () {
   /**
    * Las fechas de las físicas: «del 4 al 12 de septiembre de 2026», «del 23 de noviembre al
    * 21 de diciembre de 2026», «el 3 de marzo de 2027»; sin repetir mes ni año (web-39). Si no
-   * están confirmadas, «previstas del …» o «prevista el …», nunca como fecha cerrada. null sin fechas.
+   * están confirmadas, «previstas del …» o «prevista el …», nunca como fecha cerrada. Con solo el
+   * principio o el final, «desde el …» o «hasta el …» (Madrid Especialista, web-42). null sin fechas.
    */
   function rangoFechas(pf) {
     if (!pf || !(pf.desde || pf.hasta)) return null;
     const previstas = !pf.fechas_confirmadas;
-    if (!(pf.desde && pf.hasta) || pf.desde === pf.hasta) return `${previstas ? "prevista " : ""}el ${fecha(pf.desde || pf.hasta)}`;
+    if (!(pf.desde && pf.hasta)) return `${previstas ? "previstas " : ""}${pf.desde ? `desde el ${fecha(pf.desde)}` : `hasta el ${fecha(pf.hasta)}`}`;
+    if (pf.desde === pf.hasta) return `${previstas ? "prevista " : ""}el ${fecha(pf.desde)}`;
     const [a, b] = [pf.desde, pf.hasta].map((x) => /^(\d{4})-(\d{2})-(\d{2})/.exec(x));
     const desde = a[1] !== b[1] ? fecha(pf.desde) : a[2] !== b[2] ? `${+a[3]} de ${MESES[+a[2] - 1]}` : `${+a[3]}`;
     return `${previstas ? "previstas " : ""}del ${desde} al ${fecha(pf.hasta)}`;
