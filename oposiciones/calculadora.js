@@ -95,7 +95,8 @@
         return `<section class="prueba"><h3>${esc(nombre)}</h3><p class="msg">No hay marca para ${sexo === "M" ? "hombres" : "mujeres"}${edad != null ? ` de ${edad} años` : ""} en esta prueba.</p></section>`;
       }
       const b = p.baremo, uni = cat[p.codigo] && cat[p.codigo].unidad;
-      const ayuda = b.metrica === "Time" ? "p. ej. 31,5 o 3:45" : b.metrica === "Periods" ? "p. ej. 9,5" : b.metrica === "Reps" ? "p. ej. 30" : b.metrica === "Distance" ? (uni === "m" ? (Number(b.marca_apto) >= 100 ? "p. ej. 2800" : "p. ej. 5,40") : "p. ej. 245") : b.metrica === "Height" ? "p. ej. 55" : "";
+      // Una altura de varios metros (la trepa de Sevilla, web-40) pide un ejemplo de su tamaño, no el de un salto.
+      const ayuda = b.metrica === "Time" ? "p. ej. 31,5 o 3:45" : b.metrica === "Periods" ? "p. ej. 9,5" : b.metrica === "Reps" ? "p. ej. 30" : b.metrica === "Distance" ? (uni === "m" ? (Number(b.marca_apto) >= 100 ? "p. ej. 2800" : "p. ej. 5,40") : "p. ej. 245") : b.metrica === "Height" ? (Number(b.marca_apto) >= 200 ? "p. ej. 400" : "p. ej. 55") : "";
       // En metros (balón medicinal, web-29), con decimales.
       const entero = b.metrica === "Reps" || ((b.metrica === "Distance" || b.metrica === "Height") && uni !== "m");
       return `<section class="prueba" aria-labelledby="t-${p.codigo}">
