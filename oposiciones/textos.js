@@ -275,11 +275,13 @@ var TrenziaTextos = (function () {
   }
 
   /**
-   * Policía local con baremo de toda una comunidad (Andalucía, Decreto 8/2026): no es un examen con fecha (web-29).
-   * Un proceso unificado con plazo de inscripción (Galicia, Extremadura) es una convocatoria normal (web-38).
+   * Baremo de toda una comunidad, no un examen con fecha (Andalucía, Decreto 8/2026; web-29): la app
+   * le da a esa convocatoria la clave de su norma, «decreto-…» u «orden-…» (web-44). Así entran también
+   * los bomberos valencianos (Decreto 163/2019), y no los procesos unificados con plazo (Galicia,
+   * Extremadura, web-38) ni las convocatorias sin inscripción (Bomberos de Navarra, Policía Canaria).
    */
-  const conInscripcion = (c) => !!(c && c.inscripcion && (c.inscripcion.desde || c.inscripcion.hasta));
-  const baremoComun = (o) => !!o && o.tipo === "policia_local" && o.ambito === "autonomico" && !(o.convocatorias || []).some(conInscripcion);
+  const esNorma = (c) => !!c && /^(decreto|orden)-/.test(String(c.clave || ""));
+  const baremoComun = (o) => !!o && (o.convocatorias || []).some(esNorma);
 
   /**
    * Una convocatoria «próxima» sin boletín no tiene año publicado, aunque el archivo traiga
