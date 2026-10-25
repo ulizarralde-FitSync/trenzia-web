@@ -2,7 +2,8 @@
 // HTML (se lee sin JavaScript); aquí solo se filtra. Sin red ni almacenamiento.
 (function () {
   "use strict";
-  const norm = (s) => String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  // El apóstrofo curvo del móvil cuenta como el recto: «d’Esquadra» encuentra «d'Esquadra» (web-39).
+  const norm = (s) => String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[‘’]/g, "'");
   const q = document.getElementById("q");
   const tarjetas = [...document.querySelectorAll("[data-buscar]")];
   let fTipo = "todas", fEstado = "todas";
