@@ -132,8 +132,10 @@ var TrenziaTextos = (function () {
    *   un 2.000 m de 11:14): «¿Son minutos?». No se convierte solo: «11,6» puede ser 11:06 u 11:36.
    * - Un tiempo corto escrito con «:» que da más de diez veces el apto («8:5» en 60 m).
    * - Segundos de una cifra tras «:» («1:5» puede ser 1:05 o 1:50).
-   * - Una marca imposible: en tiempo, menos de la mitad de la máxima (o del apto); en lo demás,
-   *   más del triple. Así «0», «1» o «300» dominadas nunca dan apto.
+   * - Una marca imposible (web-47). Con escala (marca máxima distinta del apto): menos del 75 %
+   *   de la máxima en lo que va a menos («3,5» en un 60 m de máxima 7,00), más del 150 % en lo que
+   *   va a más («46» dominadas de máxima 30). Solo apto o no apto: la mitad o el triple del apto,
+   *   porque el apto no dice cuál es el máximo humano. Así «0», «1» o «300» nunca dan apto, ni un 10 imposible.
    * - El Cooper en kilómetros («2,5»): se pide en metros.
    * v: la marca leída (leeMarca); txt: lo escrito; b: el baremo de esa persona.
    */
@@ -141,7 +143,9 @@ var TrenziaTextos = (function () {
     if (v == null || Number.isNaN(v) || !b) return null;
     const s = String(txt ?? "").trim().replace(",", ".");
     const conPuntos = s.includes(":");
-    const apto = Number(b.marca_apto), tope = Number(b.marca_max ?? b.marca_apto);
+    const apto = Number(b.marca_apto);
+    const conMax = b.marca_max != null && Number(b.marca_max) !== apto, max = Number(b.marca_max);
+    const fuera = b.sentido === "Down" ? v < (conMax ? max * 0.75 : apto / 2) : v > (conMax ? max * 1.5 : apto * 3);
     const imposible = { txt: `Esa marca no parece posible. Revisa cómo la has escrito: ${ejemploCampo(b, unidad)}.` };
     if (b.metrica === "Time") {
       if (!conPuntos && apto >= 60 && v < apto / 3 && v >= 1) {
@@ -151,13 +155,10 @@ var TrenziaTextos = (function () {
       if (conPuntos && apto < 60 && v > apto * 10) return { txt: `Esa marca no parece posible. Revisa cómo la has escrito: escribe ${String(txt).trim().replace(":", ",")}.` };
       const seg = /^(\d+):(\d)$/.exec(s);
       if (seg) return { txt: `¿${seg[1]}:0${seg[2]} o ${seg[1]}:${seg[2]}0? Escribe los segundos con dos cifras.` };
-      if (b.sentido === "Down" ? v < tope / 2 : v > tope * 3) return imposible;
-      return null;
+      return fuera ? imposible : null;
     }
     if (b.metrica === "Distance" && unidad === "m" && apto >= 100 && v < 10) return { txt: `¿Son kilómetros? Escríbelo en metros: ${Math.round(v * 1000)}.` };
-    if (b.sentido === "Up" && v > tope * 3) return imposible;
-    if (b.sentido === "Down" && v < tope / 2) return imposible;
-    return null;
+    return fuera ? imposible : null;
   }
 
   /** «Hombres», «Mujeres, de 18 a 29 años»… conEdad: si la fila es un tramo de edad (distingueEdad de nota.js). */
