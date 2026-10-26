@@ -95,8 +95,8 @@
         return `<section class="prueba"><h3>${esc(nombre)}</h3><p class="msg">No hay marca para ${sexo === "M" ? "hombres" : "mujeres"}${edad != null ? ` de ${edad} años` : ""} en esta prueba.</p></section>`;
       }
       const b = p.baremo, uni = cat[p.codigo] && cat[p.codigo].unidad;
-      // Una altura de varios metros (la trepa de Sevilla, web-40) pide un ejemplo de su tamaño, no el de un salto.
-      const ayuda = b.metrica === "Time" ? "p. ej. 31,5 o 3:45" : b.metrica === "Periods" ? "p. ej. 9,5" : b.metrica === "Reps" ? "p. ej. 30" : b.metrica === "Distance" ? (uni === "m" ? (Number(b.marca_apto) >= 100 ? "p. ej. 2800" : "p. ej. 5,40") : "p. ej. 245") : b.metrica === "Height" ? (Number(b.marca_apto) >= 200 ? "p. ej. 400" : "p. ej. 55") : "";
+      // El ejemplo, con el formato y el tamaño de esta prueba: «p. ej. 11:14» en un 2.000 m (web-46).
+      const ayuda = T.ejemploCampo(b, uni);
       // En metros (balón medicinal, web-29), con decimales.
       const entero = b.metrica === "Reps" || ((b.metrica === "Distance" || b.metrica === "Height") && uni !== "m");
       return `<section class="prueba" aria-labelledby="t-${p.codigo}">
@@ -148,11 +148,25 @@
       leidas[p.codigo] = v;
       marcas[p.codigo] = Number.isNaN(v) ? null : v;
     }
+    // Una marca que no puede ser lo que se quería («11,6» en un 2.000 m, «1:5», «0»…) no se
+    // puntúa: cuenta como vacía y sale un aviso. Se mira con el baremo de esta persona (web-46).
+    const avisos = {};
+    for (const p of W.puntuar(N, c, sexo, edad, marcas).pruebas) {
+      const a = p.baremo && T.revisaMarca(marcasTxt[p.codigo], marcas[p.codigo], p.baremo, cat[p.codigo] && cat[p.codigo].unidad);
+      if (a) { avisos[p.codigo] = a; marcas[p.codigo] = null; }
+    }
     const res = W.puntuar(N, c, sexo, edad, marcas);
     for (const p of res.pruebas) {
       if (!p.baremo) continue;
       p.marcaLeida = leidas[p.codigo];
       const ptsEl = $("pts-" + p.codigo), bar = $("bar-" + p.codigo), msg = $("msg-" + p.codigo);
+      if (avisos[p.codigo]) {
+        ptsEl.textContent = "–";
+        bar.style.width = "0";
+        msg.className = "msg aviso";
+        msg.textContent = avisos[p.codigo].txt;
+        continue;
+      }
       if (!p.soloApto && res.modelo === "points") {
         // En la escala de las bases (Cuenca: de 5 a 10), como los da nota.js.
         ptsEl.innerHTML = `${p.puntosBases == null ? "–" : T.num(p.puntosBases)}<small> / ${T.num(p.puntosMaxBases)}</small>`;

@@ -76,6 +76,8 @@ a.card{box-shadow:inset 3px 0 0 var(--o)}
 .barra i{display:block;height:100%;background:var(--o);width:0}
 .msg{font-size:14px;color:var(--soft);min-height:22px;margin:0}
 .msg.ok{color:var(--ok)}.msg.no{color:var(--err)}
+/* Una marca que no se puntúa porque parece mal escrita (web-46): en el color de la marca, sin el rojo del no apto. */
+.msg.aviso{color:var(--o);font-weight:600}
 details{margin-top:10px}
 summary{cursor:pointer;font-size:14px;color:var(--muted)}
 table{width:100%;border-collapse:collapse;font-size:14px;margin-top:6px}
