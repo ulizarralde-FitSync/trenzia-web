@@ -107,6 +107,59 @@ var TrenziaTextos = (function () {
     return unidad ?? "";
   }
 
+  /** «11:14», «1:59,6»: un tiempo en min:seg, sin unidad, para los ejemplos del campo. */
+  const minSeg = (v) => { const m = Math.floor(v / 60), s = Math.round((v - m * 60) * 100) / 100; return `${m}:${s < 10 ? "0" : ""}${num(s)}`; };
+
+  /**
+   * El ejemplo del campo de la calculadora, con el formato y el tamaño de esa prueba (web-46):
+   * un tiempo de un minuto o más, en min:seg con su marca apto («p. ej. 11:14»); uno corto, en
+   * segundos («p. ej. 8,8»); el Cooper en metros («p. ej. 2500»); la trepa de 4 m en cm («p. ej. 400»).
+   */
+  function ejemploCampo(b, unidad) {
+    const apto = Number(b && b.marca_apto);
+    if (!b) return "";
+    if (b.metrica === "Time") return Number.isFinite(apto) && apto > 0 ? `p. ej. ${apto >= 60 ? minSeg(apto) : num(apto)}` : "p. ej. 31,5 o 3:45";
+    if (b.metrica === "Distance" && unidad === "m") return apto >= 100 ? "p. ej. 2500" : "p. ej. 5,40";
+    // Repeticiones, periodos, centímetros: la marca apto de esa persona, que siempre es de su tamaño
+    // (un «30» fijo sería imposible en unas flexiones de apto 9).
+    return Number.isFinite(apto) ? `p. ej. ${num(apto)}` : "";
+  }
+
+  /**
+   * Una marca escrita que no puede ser lo que la persona quería (web-46): en lugar de puntuarla,
+   * la calculadora enseña este aviso y la deja como vacía. null si la marca parece buena.
+   * - Un tiempo de un minuto o más escrito sin «:» y por debajo de un tercio del apto («11,6» en
+   *   un 2.000 m de 11:14): «¿Son minutos?». No se convierte solo: «11,6» puede ser 11:06 u 11:36.
+   * - Un tiempo corto escrito con «:» que da más de diez veces el apto («8:5» en 60 m).
+   * - Segundos de una cifra tras «:» («1:5» puede ser 1:05 o 1:50).
+   * - Una marca imposible: en tiempo, menos de la mitad de la máxima (o del apto); en lo demás,
+   *   más del triple. Así «0», «1» o «300» dominadas nunca dan apto.
+   * - El Cooper en kilómetros («2,5»): se pide en metros.
+   * v: la marca leída (leeMarca); txt: lo escrito; b: el baremo de esa persona.
+   */
+  function revisaMarca(txt, v, b, unidad) {
+    if (v == null || Number.isNaN(v) || !b) return null;
+    const s = String(txt ?? "").trim().replace(",", ".");
+    const conPuntos = s.includes(":");
+    const apto = Number(b.marca_apto), tope = Number(b.marca_max ?? b.marca_apto);
+    const imposible = { txt: `Esa marca no parece posible. Revisa cómo la has escrito: ${ejemploCampo(b, unidad)}.` };
+    if (b.metrica === "Time") {
+      if (!conPuntos && apto >= 60 && v < apto / 3 && v >= 1) {
+        const m = Math.floor(v);
+        return { txt: `¿Son minutos? Escríbelo con dos puntos: ${m}:06 son ${m} ${m === 1 ? "minuto" : "minutos"} y 6 segundos.` };
+      }
+      if (conPuntos && apto < 60 && v > apto * 10) return { txt: `Esa marca no parece posible. Revisa cómo la has escrito: escribe ${String(txt).trim().replace(":", ",")}.` };
+      const seg = /^(\d+):(\d)$/.exec(s);
+      if (seg) return { txt: `¿${seg[1]}:0${seg[2]} o ${seg[1]}:${seg[2]}0? Escribe los segundos con dos cifras.` };
+      if (b.sentido === "Down" ? v < tope / 2 : v > tope * 3) return imposible;
+      return null;
+    }
+    if (b.metrica === "Distance" && unidad === "m" && apto >= 100 && v < 10) return { txt: `¿Son kilómetros? Escríbelo en metros: ${Math.round(v * 1000)}.` };
+    if (b.sentido === "Up" && v > tope * 3) return imposible;
+    if (b.sentido === "Down" && v < tope / 2) return imposible;
+    return null;
+  }
+
   /** «Hombres», «Mujeres, de 18 a 29 años»… conEdad: si la fila es un tramo de edad (distingueEdad de nota.js). */
   function sexoEdad(f, conEdad) {
     const s = f.sexo === "M" ? "Hombres" : f.sexo === "F" ? "Mujeres" : "Todos";
@@ -354,6 +407,6 @@ var TrenziaTextos = (function () {
     return n === 1 ? `Falta 1 prueba oficial que aún no calculamos: ${lista_}.` : `Faltan ${n} pruebas oficiales que aún no calculamos: ${lista_}.`;
   }
 
-  return { faltanPruebas, conPunto, condicionTexto, comoSeHace, origenDeMarcas, estado, estadoCompleto, claseEstado, tipo, tipoIndice, ambito, fecha, num, puntos, noElimina, enMinutos, rangoFechas, numeroBoletin, baremoComun, sinAnio, nombreLargo, convocatoriaEnFrase, marca, cantidad, unidadCampo, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
+  return { faltanPruebas, conPunto, condicionTexto, comoSeHace, origenDeMarcas, estado, estadoCompleto, claseEstado, tipo, tipoIndice, ambito, fecha, num, puntos, noElimina, enMinutos, rangoFechas, numeroBoletin, baremoComun, sinAnio, nombreLargo, convocatoriaEnFrase, marca, cantidad, unidadCampo, ejemploCampo, revisaMarca, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
 })();
 if (typeof module !== "undefined") module.exports = TrenziaTextos;
