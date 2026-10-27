@@ -44,28 +44,34 @@
    </div>
 
    <div class="field">
-    <label for="email" id="email-l">Tu correo de Google (si tienes Android) o tu Apple ID (si tienes iPhone)</label>
-    <input id="email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="254" required aria-describedby="email-aviso">
-    <p class="aviso" id="email-aviso">Usa ese correo: es al que te llega la invitación para instalar la app.</p>
-    <p class="help" id="email-sug" aria-live="polite" hidden>¿Querías decir <button type="button" class="link en-linea" id="email-sug-si"></button>?</p>
-    <span class="err" data-err="email"></span>
-    <button type="button" class="link pequeno" id="otro" aria-expanded="false" aria-controls="tienda">Uso otro correo para la tienda</button>
-   </div>
-
-   <div class="field" id="tienda" hidden>
-    <label for="email_tienda" id="tienda-l">Correo de tu cuenta de Google o de tu Apple ID</label>
-    <input id="email_tienda" name="email_tienda" type="email" autocomplete="off" inputmode="email" maxlength="254" aria-describedby="tienda-h">
-    <p class="help" id="tienda-h">Para darte acceso a la prueba necesitamos el correo de la cuenta con la que instalas apps en el móvil. Solo lo usamos para invitarte.</p>
-    <span class="err" data-err="email_tienda"></span>
-   </div>
-
-   <div class="field">
     <span class="label" id="plataforma-l">Tu móvil</span>
     <div class="seg" role="radiogroup" aria-labelledby="plataforma-l">
      <label><input type="radio" name="plataforma" value="android" required> Android</label>
      <label><input type="radio" name="plataforma" value="ios"> iPhone</label>
     </div>
     <span class="err" data-err="plataforma"></span>
+   </div>
+
+   <!-- El correo depende del móvil (añadido del 27/10): en Android tiene que ser
+        el de la cuenta de Google de Play Store; en iPhone vale cualquiera, porque
+        la invitación de TestFlight se abre en el iPhone. -->
+   <div class="field">
+    <label for="email" id="email-l">Tu correo</label>
+    <input id="email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="254" required aria-describedby="email-aviso">
+    <p id="email-aviso" hidden></p>
+    <p class="help" id="email-sug" aria-live="polite" hidden>¿Querías decir <button type="button" class="link en-linea" data-sug="email"></button>?</p>
+    <p class="help" id="email-google" aria-live="polite" hidden>¿Es este el correo con el que entras en Play Store? Casi siempre es un Gmail.</p>
+    <span class="err" data-err="email"></span>
+    <button type="button" class="link pequeno" id="otro" aria-expanded="false" aria-controls="tienda" hidden>Uso otro correo para la tienda</button>
+   </div>
+
+   <div class="field" id="tienda" hidden>
+    <label for="email_tienda">El correo de tu cuenta de Google</label>
+    <input id="email_tienda" name="email_tienda" type="email" autocomplete="off" inputmode="email" maxlength="254" aria-describedby="tienda-h">
+    <p class="help" id="tienda-h">El de la cuenta de Google con la que usas Google Play en el móvil. Lo necesitamos para darte acceso a la prueba en Google Play; solo lo usamos para eso.</p>
+    <p class="help" id="email_tienda-sug" aria-live="polite" hidden>¿Querías decir <button type="button" class="link en-linea" data-sug="email_tienda"></button>?</p>
+    <p class="help" id="email_tienda-google" aria-live="polite" hidden>¿Es este el correo con el que entras en Play Store? Casi siempre es un Gmail.</p>
+    <span class="err" data-err="email_tienda"></span>
    </div>
 
    <div class="field">
@@ -146,31 +152,36 @@
       .catch(() => {});
   }
 
-  // ── El correo: el de la tienda, salvo que se abra «Uso otro correo» ──
-  const AYUDA = {
-    android: ["Correo de tu cuenta de Google", "El de la cuenta de Google con la que usas Google Play en el móvil. Lo necesitamos para darte acceso a la prueba en Google Play; solo lo usamos para eso."],
-    ios: ["Correo de tu Apple ID", "El de tu Apple ID, el que usas en la App Store. Lo necesitamos para invitarte por TestFlight, la app de Apple para probar apps antes de que salgan; solo lo usamos para eso."],
-  };
-  const ETIQ_EMAIL = $("email-l").textContent;
+  // ── El correo, según el móvil ──
+  // Android: el de la cuenta de Google de Play Store (se invita por lista de
+  // correos; con otro no se puede instalar), salvo que se abra «Uso otro
+  // correo». iPhone: cualquiera; la invitación de TestFlight se abre en el
+  // iPhone y se acepta con su cuenta de Apple. Sin elegir: «Tu correo».
+  const plataforma = () => (form.querySelector("[name=plataforma]:checked") || {}).value || "";
   let otroCorreo = false;
-  function ponerOtroCorreo(si) {
-    otroCorreo = si;
-    $("tienda").hidden = !si;
-    $("email-aviso").hidden = si;
-    $("email-l").textContent = si ? "Tu correo" : ETIQ_EMAIL;
-    $("otro").textContent = si ? "Uso el mismo correo para la tienda" : "Uso otro correo para la tienda";
-    $("otro").setAttribute("aria-expanded", String(si));
-    document.querySelector('[data-err="email_tienda"]').textContent = "";
-    if (si) $("email_tienda").focus();
+  function pintarCorreo() {
+    const p = plataforma();
+    const android = p === "android";
+    if (!android) otroCorreo = false;
+    $("email-l").textContent = android && !otroCorreo ? "El correo de tu cuenta de Google (el Gmail con el que entras en Play Store)" : "Tu correo";
+    const aviso = $("email-aviso");
+    aviso.hidden = !p || otroCorreo;
+    aviso.className = android ? "aviso" : "help";
+    aviso.textContent = android ? "Si pones otro, no podrás instalar la app." : "Te llegará la invitación de TestFlight: ábrela en el iPhone.";
+    $("otro").hidden = !android;
+    $("otro").textContent = otroCorreo ? "Uso el mismo correo para la tienda" : "Uso otro correo para la tienda";
+    $("otro").setAttribute("aria-expanded", String(otroCorreo));
+    $("tienda").hidden = !otroCorreo;
+    revisarCorreo("email");
+    if (otroCorreo) revisarCorreo("email_tienda");
   }
-  $("otro").addEventListener("click", () => ponerOtroCorreo(!otroCorreo));
-  form.addEventListener("change", (e) => {
-    if (e.target.name === "plataforma") {
-      const [t, h] = AYUDA[e.target.value];
-      $("tienda-l").textContent = t;
-      $("tienda-h").textContent = h;
-    }
+  $("otro").addEventListener("click", () => {
+    otroCorreo = !otroCorreo;
+    document.querySelector('[data-err="email_tienda"]').textContent = "";
+    pintarCorreo();
+    if (otroCorreo) $("email_tienda").focus();
   });
+  form.addEventListener("change", (e) => { if (e.target.name === "plataforma") pintarCorreo(); });
 
   // ── «¿Querías decir …?»: dominios mal escritos (gmial.com, gmail.con…) ──
   // Sin correo de confirmación, un correo mal escrito es una invitación perdida.
@@ -208,28 +219,38 @@
     }
     return mejor ? `${usuario}@${mejor}` : "";
   }
+  // El correo al que va la invitación de Google Play: el segundo si está
+  // abierto «Uso otro correo», si no el primero. Solo ese lleva el aviso de Gmail.
+  const campoTienda = () => (otroCorreo ? "email_tienda" : "email");
+  const GOOGLE = /@(gmail|googlemail)\.com$/i;
   const sugVistas = new Set();
-  function mirarCorreo() {
-    const v = $("email").value.trim();
+  // Enseña «¿Querías decir…?» o, en el correo de Google de Android, el aviso
+  // suave de que casi siempre es un Gmail (hay cuentas de Google con otros
+  // dominios, así que no bloquea). Devuelve la sugerencia, si la hay.
+  function revisarCorreo(id) {
+    const v = $(id).value.trim();
     const s = sugerirCorreo(v);
-    $("email-sug").hidden = !s;
-    $("email-sug-si").textContent = s;
+    $(`${id}-sug`).hidden = !s;
+    $(`${id}-sug`).querySelector("button").textContent = s;
     if (s) sugVistas.add(v.toLowerCase());
+    $(`${id}-google`).hidden = !(plataforma() === "android" && id === campoTienda() && !s && RE_EMAIL.test(v) && !GOOGLE.test(v));
     return s;
   }
-  $("email").addEventListener("blur", mirarCorreo);
-  $("email-sug-si").addEventListener("click", () => {
-    $("email").value = $("email-sug-si").textContent;
-    $("email-sug").hidden = true;
-    $("email").focus();
-  });
+  for (const id of ["email", "email_tienda"]) {
+    $(id).addEventListener("blur", () => revisarCorreo(id));
+    $(`${id}-sug`).querySelector("button").addEventListener("click", (e) => {
+      $(id).value = e.target.textContent;
+      revisarCorreo(id);
+      $(id).focus();
+    });
+  }
 
   // ── Errores: junto a cada campo; el foco, al primero ──
   // El servidor llama `edad` y `privacidad` a lo que aquí es una sola casilla.
   // Lo que no tiene sitio en la página va al mensaje de abajo.
   const CAMPO = { edad: "acepto", edad_18: "acepto", privacidad: "acepto" };
   const FOCO = { plataforma: () => form.querySelector("[name=plataforma]") };
-  const ORDEN = ["nombre", "email", "email_tienda", "plataforma", "acepto"];
+  const ORDEN = ["nombre", "plataforma", "email", "email_tienda", "acepto"];
   function limpiarErrores() {
     document.querySelectorAll("[data-err]").forEach((s) => (s.textContent = ""));
     $("general").textContent = "";
@@ -252,7 +273,10 @@
     const campo = e.target.name === "plataforma" ? "plataforma" : e.target.id;
     const s = document.querySelector(`[data-err="${campo}"]`);
     if (s) s.textContent = "";
-    if (e.target.id === "email") $("email-sug").hidden = true;
+    if (e.target.id === "email" || e.target.id === "email_tienda") {
+      $(`${e.target.id}-sug`).hidden = true;
+      $(`${e.target.id}-google`).hidden = true;
+    }
   });
 
   const RE_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -269,7 +293,7 @@
     if (!$("nombre").value.trim()) faltan.nombre = "Escribe tu nombre.";
     if (!email) faltan.email = "Escribe tu correo.";
     else if (!RE_EMAIL.test(email)) faltan.email = "Revisa el correo: no parece válido.";
-    if (otroCorreo && !tienda) faltan.email_tienda = "Escribe el correo de tu cuenta de la tienda, o pulsa «Uso el mismo correo».";
+    if (otroCorreo && !tienda) faltan.email_tienda = "Escribe el correo de tu cuenta de Google, o pulsa «Uso el mismo correo».";
     else if (otroCorreo && !RE_EMAIL.test(tienda)) faltan.email_tienda = "Revisa el correo: no parece válido.";
     if (!plat) faltan.plataforma = "Elige si tu móvil es Android o iPhone.";
     if (!$("acepto").checked) faltan.acepto = "Marca la casilla: la app es para mayores de 18 años y tienes que leer la política de privacidad.";
@@ -279,9 +303,11 @@
     }
     // Un dominio mal escrito que aún no se ha enseñado: se enseña una vez y se
     // espera; si se vuelve a pulsar, se manda tal cual.
-    if (!sugVistas.has(email.toLowerCase()) && mirarCorreo()) {
-      $("email").focus();
-      return;
+    for (const id of otroCorreo ? ["email", "email_tienda"] : ["email"]) {
+      if (!sugVistas.has($(id).value.trim().toLowerCase()) && revisarCorreo(id)) {
+        $(id).focus();
+        return;
+      }
     }
 
     const body = {
@@ -352,7 +378,9 @@
       // La invitación de Google Play o TestFlight va al correo de la tienda.
       t.textContent = "Te has apuntado";
       correo.textContent = body.email_tienda;
-      h.append(t, parrafo("Te mandaremos la invitación a ", correo, "."));
+      h.append(t, body.plataforma === "android"
+        ? parrafo("Te mandaremos la invitación a ", correo, ". Es tu cuenta de Google, ¿verdad?")
+        : parrafo("Te mandaremos la invitación de TestFlight a ", correo, "."));
     }
     h.append(parrafo("¿Está mal escrito? ", corregir));
     $("alta").hidden = true;
