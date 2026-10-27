@@ -32,19 +32,15 @@
 
  <section id="alta">
   <h1>Prueba Trenzia <em>antes que nadie</em>.</h1>
-  <p class="lead">Buscamos opositores que usen la app durante la prueba cerrada y nos cuenten qué les sobra y qué les falta. Si entras, tienes Trenzia <strong>gratis 6 meses</strong> mientras la uses al menos 3 días por semana. A cambio te pedimos que la uses los primeros 14 días seguidos. Las plazas son limitadas y se cubren por orden de confirmación del correo.</p>
+  <p class="lead">Buscamos opositores que usen la app durante la prueba cerrada y nos cuenten qué les sobra y qué les falta. Si entras, tienes Trenzia <strong>gratis 6 meses</strong> mientras la uses al menos 3 días por semana. A cambio te pedimos que la uses los primeros 14 días seguidos. Las plazas son limitadas y se cubren por orden de llegada.</p>
 
   <form id="form" novalidate>
+   <p id="para" class="help" hidden>Para: <strong></strong></p>
+
    <div class="field">
     <label for="nombre">Nombre</label>
     <input id="nombre" name="nombre" type="text" autocomplete="given-name" maxlength="80" required>
     <span class="err" data-err="nombre"></span>
-   </div>
-
-   <div class="field">
-    <label for="email">Correo electrónico</label>
-    <input id="email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="254" required>
-    <span class="err" data-err="email"></span>
    </div>
 
    <div class="field">
@@ -56,138 +52,31 @@
     <span class="err" data-err="plataforma"></span>
    </div>
 
+   <!-- El correo depende del móvil (añadido del 27/10): en Android tiene que ser
+        el de la cuenta de Google de Play Store; en iPhone vale cualquiera, porque
+        la invitación de TestFlight se abre en el iPhone. -->
    <div class="field">
-    <label for="email_tienda" id="tienda-l">Correo de tu cuenta de Google o de tu Apple ID</label>
-    <label class="check"><input type="checkbox" id="mismo_email" name="mismo_email"> <span>Es el mismo correo que el de arriba</span></label>
+    <label for="email" id="email-l">Tu correo</label>
+    <input id="email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="254" required aria-describedby="email-aviso">
+    <p id="email-aviso" hidden></p>
+    <p class="help" id="email-sug" aria-live="polite" hidden>¿Querías decir <button type="button" class="link en-linea" data-sug="email"></button>?</p>
+    <p class="help" id="email-google" aria-live="polite" hidden>¿Es este el correo con el que entras en Play Store? Casi siempre es un Gmail.</p>
+    <span class="err" data-err="email"></span>
+    <button type="button" class="link pequeno" id="otro" aria-expanded="false" aria-controls="tienda" hidden>Uso otro correo para la tienda</button>
+   </div>
+
+   <div class="field" id="tienda" hidden>
+    <label for="email_tienda">El correo de tu cuenta de Google</label>
     <input id="email_tienda" name="email_tienda" type="email" autocomplete="off" inputmode="email" maxlength="254" aria-describedby="tienda-h">
-    <p class="help" id="tienda-h">Para darte acceso a la prueba necesitamos el correo de la cuenta con la que instalas apps en el móvil. Solo lo usamos para invitarte.</p>
+    <p class="help" id="tienda-h">El de la cuenta de Google con la que usas Google Play en el móvil. Lo necesitamos para darte acceso a la prueba en Google Play; solo lo usamos para eso.</p>
+    <p class="help" id="email_tienda-sug" aria-live="polite" hidden>¿Querías decir <button type="button" class="link en-linea" data-sug="email_tienda"></button>?</p>
+    <p class="help" id="email_tienda-google" aria-live="polite" hidden>¿Es este el correo con el que entras en Play Store? Casi siempre es un Gmail.</p>
     <span class="err" data-err="email_tienda"></span>
    </div>
 
-   <div class="field" id="op">
-    <span class="label" id="op-l">Oposición</span>
-
-    <!-- La elegida: su tarjeta, marcada, con «Cambiar». -->
-    <div id="op-elegida" class="tarjeta marcada" hidden>
-     <span class="t-texto"><span class="t-nombre"></span><span class="t-sub"></span></span>
-     <button type="button" class="link" id="op-cambiar">Cambiar</button>
-    </div>
-
-    <!-- El selector de la pantalla «Cuerpo de oposición» de la app
-         (cuerpo_selector_screen.dart): buscador, chips de tipo y ámbito,
-         comunidad autónoma y tarjetas. A diferencia de la app, salen también
-         los cuerpos sin baremos. -->
-    <div id="op-lista-w" role="group" aria-labelledby="op-l">
-     <input id="op-buscar" type="search" autocomplete="off" autocapitalize="off" spellcheck="false"
-            aria-label="Buscar oposición" aria-controls="op-tarjetas" placeholder="Cargando…" disabled>
-
-     <span class="label sub" id="f-tipo-l">Tipo</span>
-     <div class="chips" id="f-tipo" role="group" aria-labelledby="f-tipo-l">
-      <button type="button" class="chip" data-v="" aria-pressed="true">Todos</button>
-      <button type="button" class="chip" data-v="bomberos" aria-pressed="false">Bomberos</button>
-      <button type="button" class="chip" data-v="policia" aria-pressed="false">Policía</button>
-      <button type="button" class="chip" data-v="ejercito" aria-pressed="false">Ejército</button>
-     </div>
-
-     <span class="label sub" id="f-ambito-l">Ámbito</span>
-     <div class="chips" id="f-ambito" role="group" aria-labelledby="f-ambito-l">
-      <button type="button" class="chip" data-v="" aria-pressed="true">Todos</button>
-      <button type="button" class="chip" data-v="estatal" aria-pressed="false">Estatal</button>
-      <button type="button" class="chip" data-v="autonomico" aria-pressed="false">Autonómico</button>
-      <button type="button" class="chip" data-v="provincial" aria-pressed="false">Provincial</button>
-      <button type="button" class="chip" data-v="local" aria-pressed="false">Local</button>
-     </div>
-
-     <label for="f-ccaa" class="label sub">Comunidad autónoma</label>
-     <select id="f-ccaa">
-      <option value="">Todas</option>
-      <option value="__estatal__">Estatal</option>
-     </select>
-
-     <p class="help" id="op-cuenta" aria-live="polite"></p>
-     <ul id="op-tarjetas" class="tarjetas" aria-label="Oposiciones"></ul>
-     <p id="op-vacio" class="vacio" hidden>Sin resultados con esos filtros.</p>
-     <span class="err" data-err="cuerpo_code"></span>
-     <button type="button" class="link" id="op-nueva-abrir">¿No encuentras tu oposición?</button>
-    </div>
-
-    <!-- «¿No encuentras tu oposición?»: como en la app (custom_convocatoria). -->
-    <div id="op-nueva" class="box" hidden>
-     <h2 style="font-size:18px">¿No encuentras tu oposición?</h2>
-     <span class="label" id="op-tipo-l">Es de…</span>
-     <div class="seg seg3" role="radiogroup" aria-labelledby="op-tipo-l">
-      <label><input type="radio" name="op_tipo" value="bomberos"> Bomberos</label>
-      <label><input type="radio" name="op_tipo" value="policia_local"> Policía Local</label>
-      <label><input type="radio" name="op_tipo" value="otra"> Otra</label>
-     </div>
-     <span class="err" data-err="cuerpo_tipo"></span>
-
-     <div id="op-ambit-w" hidden style="margin-top:14px">
-      <span class="label" id="op-ambit-l">De qué administración</span>
-      <div class="seg seg3" role="radiogroup" aria-labelledby="op-ambit-l">
-       <label><input type="radio" name="op_ambit" value="local"> Ayuntamiento</label>
-       <label><input type="radio" name="op_ambit" value="provincial"> Diputación / Consorcio</label>
-       <label><input type="radio" name="op_ambit" value="autonomico"> Comunidad autónoma</label>
-      </div>
-      <span class="err" data-err="cuerpo_ambit"></span>
-     </div>
-
-     <div id="op-terr-w" hidden style="margin-top:14px">
-      <label for="op-territorio" id="op-terr-l">Municipio</label>
-      <input id="op-territorio" type="text" maxlength="50" autocomplete="off">
-      <span class="err" data-err="cuerpo_territorio"></span>
-     </div>
-
-     <div id="op-otra-w" hidden style="margin-top:14px">
-      <label for="op-otra">¿Cuál?</label>
-      <input id="op-otra" type="text" maxlength="80" autocomplete="off">
-      <span class="err" data-err="cuerpo_otra"></span>
-     </div>
-
-     <p id="op-preview" class="help" aria-live="polite" hidden>Se guardará como: <strong></strong></p>
-     <button type="button" class="link" id="op-nueva-cerrar">Volver a la lista</button>
-    </div>
-
-    <!-- «¿Es alguna de estas?», antes de enviar una que no está en la lista. -->
-    <div id="op-sug" class="box" role="group" aria-labelledby="op-sug-l" tabindex="-1" hidden>
-     <p id="op-sug-l" style="font-weight:700">¿Es alguna de estas?</p>
-     <p class="help" style="margin:-8px 0 12px">Ya las conocemos. Si es una de ellas, elígela.</p>
-     <div id="op-sug-lista" class="sug-lista"></div>
-     <button type="button" class="secondary" id="op-sug-no"></button>
-    </div>
-   </div>
-
    <div class="field">
-    <span class="label" id="examen-l">Fecha aproximada del examen <span class="opt">(opcional)</span></span>
-    <div class="row" role="group" aria-labelledby="examen-l">
-     <select id="examen_mes" aria-label="Mes"><option value="">Mes</option></select>
-     <select id="examen_anio" aria-label="Año"><option value="">Año</option></select>
-    </div>
-    <span class="err" data-err="examen"></span>
-   </div>
-
-   <div class="field">
-    <label for="conocido">¿Cómo nos has conocido? <span class="opt">(opcional)</span></label>
-    <select id="conocido" name="conocido">
-     <option value="">Elige una opción</option>
-     <option value="academia">En mi academia</option>
-     <option value="instagram">Instagram</option>
-     <option value="tiktok">TikTok</option>
-     <option value="amigo">Me lo ha dicho alguien</option>
-     <option value="google">Buscando en Google</option>
-     <option value="otro">De otra forma</option>
-    </select>
-    <span class="err" data-err="conocido"></span>
-   </div>
-
-   <div class="field">
-    <label class="check"><input type="checkbox" id="compromiso" name="compromiso"> <span>Usaré la app al menos 14 días seguidos. Sé que el acceso gratuito dura 6 meses mientras la use al menos 3 días por semana (<a href="terminos.html#precio-suscripciones-y-pagos" target="_blank" rel="noopener">condiciones</a>).</span></label>
-    <span class="err" data-err="compromiso"></span>
-    <label class="check"><input type="checkbox" id="edad" name="edad"> <span>Tengo 18 años o más.</span></label>
-    <span class="err" data-err="edad"></span>
-    <label class="check"><input type="checkbox" id="privacidad" name="privacidad"> <span>He leído la <a href="privacidad.html#lista-de-probadores" target="_blank" rel="noopener">política de privacidad</a>.</span></label>
-    <span class="err" data-err="privacidad"></span>
-    <label class="check"><input type="checkbox" id="novedades" name="novedades"> <span>Quiero recibir novedades de Trenzia. <span class="opt">(opcional)</span></span></label>
+    <label class="check"><input type="checkbox" id="acepto" name="acepto"> <span>Tengo 18 años o más y he leído la <a href="privacidad.html#lista-de-probadores" target="_blank" rel="noopener">política de privacidad</a>.</span></label>
+    <span class="err" data-err="acepto"></span>
    </div>
 
    <div class="hp" aria-hidden="true">
@@ -197,7 +86,6 @@
 
    <div id="general" class="msg bad" role="alert"></div>
    <button class="primary" type="submit" id="enviar">Quiero probar Trenzia</button>
-   <p class="help" style="text-align:center;margin-top:12px">Te mandaremos un correo para confirmar. Si no lo ves en unos minutos, mira en correo no deseado.</p>
   </form>
  </section>
 
@@ -237,482 +125,219 @@
   const form = $("form");
 
   // ?ref= de una academia o campaña: se manda con el alta y no se enseña.
-  // ?oposicion=CODIGO viene del botón de /oposiciones/: esa oposición sale ya
-  // elegida y, si no hay otro ?ref=, el alta lleva ref=guia-CODIGO.
+  // ?oposicion=CODIGO viene del botón de /oposiciones/: se manda como
+  // cuerpo_code sin pedirla (solo la línea «Para: …») y, si no hay otro ?ref=,
+  // el alta lleva ref=guia-CODIGO. Sin ella, la oposición se pide en la app.
   const params = new URLSearchParams(location.search);
   const oposicionPedida = /^[A-Z0-9_]{1,34}$/.test(params.get("oposicion") || "") ? params.get("oposicion") : "";
   const ref = params.get("ref") || (oposicionPedida ? `guia-${oposicionPedida}` : "");
   // probar.html#ya viene de «pedir el enlace otra vez».
   if (location.hash === "#ya") $("ya").open = true;
 
-  // ── Fecha del examen: de este mes a 3 años vista ──
-  const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
-  MESES.forEach((m, i) => $("examen_mes").add(new Option(m[0].toUpperCase() + m.slice(1), String(i + 1).padStart(2, "0"))));
-  const hoy = new Date();
-  for (let a = hoy.getFullYear(); a <= hoy.getFullYear() + 3; a++) $("examen_anio").add(new Option(String(a), String(a)));
-
-  // ── Copia de la lógica de la app, solo para buscar y para la vista previa ──
-  // El original está en fitsync-backend/supabase/functions/_shared/cuerpos_propuestos.ts
-  // (puerto de la app y de propose_shared_cuerpo). Lo que se GUARDA lo calcula
-  // siempre la función; esto solo enseña lo mismo mientras se escribe.
-  const NORM = { "á":"a","à":"a","ä":"a","â":"a","ã":"a","é":"e","è":"e","ë":"e","ê":"e","í":"i","ì":"i","ï":"i","î":"i",
-    "ó":"o","ò":"o","ö":"o","ô":"o","õ":"o","ú":"u","ù":"u","ü":"u","û":"u","ñ":"n","ç":"c" };
-  const searchNormalize = (s) => [...s.toLowerCase()].map((c) => NORM[c] || c).join("");
-  const initcap = (s) => s.toLowerCase().replace(/(^|[^\p{L}\p{N}'’.·:_])(\p{L})/gu, (_m, a, l) => a + l.toUpperCase());
-  const normalizarTerritorio = (t) => {
-    const s = t.trim().replace(/\s+/g, " ");
-    return s === s.toLowerCase() || s === s.toUpperCase() ? initcap(s) : s;
-  };
-  const slugTerritorio = (t) => t.normalize("NFD").replace(/\p{M}/gu, "").toUpperCase().replace(/[^A-Z0-9]+/g, "_").replace(/^_+|_+$/g, "");
-  const FORALES = { bizkaia: "Bizkaia", vizcaya: "Bizkaia", gipuzkoa: "Gipuzkoa", guipuzcoa: "Gipuzkoa",
-    alava: "Álava", araba: "Álava", arabaalava: "Álava", alavaaraba: "Álava" };
-  function sharedCuerpoName(tipo, ambit, territorio) {
-    const terr = territorio.trim().replace(/\s+/g, " ");
-    if (tipo === "bomberos" && ambit === "autonomico") return `Bomberos de ${terr}`;
-    if (tipo === "bomberos" && ambit === "provincial") {
-      // Foral (27/09): los provinciales de Bizkaia, Gipuzkoa y Álava son los de
-      // la Diputación Foral, con su nombre oficial aunque se escriba «Vizcaya».
-      const foral = FORALES[searchNormalize(terr).replace(/[^a-z0-9]/g, "")];
-      return foral ? `Bomberos Diputación Foral de ${foral}` : `Bomberos Provinciales de ${terr}`;
-    }
-    if (tipo === "bomberos") return `Bomberos del Ayto. de ${terr}`;
-    return `Policía Local de ${terr}`;
+  // Solo se manda una oposición que esté en el catálogo: un código que no
+  // existe haría fallar el alta entera.
+  let cuerpoCode = "";
+  if (oposicionPedida) {
+    // VERSIÓN DEL FORMATO DEL CATÁLOGO: la de siempre (2: { cuerpos, grupos }).
+    // El navegador guarda la respuesta una hora; súbela si cambia su forma.
+    fetch(API + "?accion=catalogo&v=2")
+      .then((r) => r.ok ? r.json() : Promise.reject(r.status))
+      .then((d) => {
+        const c = (d.cuerpos || []).find((x) => x.code === oposicionPedida);
+        if (!c) return;
+        cuerpoCode = c.code;
+        $("para").querySelector("strong").textContent = c.short;
+        $("para").hidden = false;
+      })
+      .catch(() => {});
   }
 
-  // ── Búsqueda: copia de fitsync-backend/supabase/functions/_shared/buscar_cuerpos.ts ──
-  // (su test fija los casos: «bomberos comunidad murcia», «bomberos barcelona»,
-  // «mur», «bomberos generalitat», «ertzaina»…). Palabra a palabra; relleno
-  // fuera; los sinónimos de bomberos filtran el tipo; las de ámbito filtran el
-  // ámbito (salvo que el cuerpo la lleve en el nombre, y entonces va primero);
-  // desde 4 letras una palabra vale a medias, y la que se está escribiendo,
-  // desde 1.
-  const RELLENO = ["de","del","la","el","los","las","y","comunidad","region","ayuntamiento","ayto","cuerpo","oposicion"];
-  const PAL_AMBITO = { autonomico:"autonomico", autonomica:"autonomico", comunidad:"autonomico", generalitat:"autonomico",
-    provincial:"provincial", diputacion:"provincial", consorcio:"provincial", foral:"provincial",
-    ayuntamiento:"local", ayto:"local", municipal:"local", local:"local" };
-  const PAL_BOMBEROS = ["bomberos","bombero","bombers","bombeiros"];
-  const VARIANTES = { ertzaina:["ertzaintza"], ertzainas:["ertzaintza"], vizcaya:["bizkaia"], bizkaia:["vizcaya"],
-    guipuzcoa:["gipuzkoa"], gipuzkoa:["guipuzcoa"], alava:["araba"], araba:["alava"] };
-  const CLAVES = [...new Set([...Object.keys(PAL_AMBITO), ...RELLENO, ...PAL_BOMBEROS])];
-  const MIN_PREFIJO = 4;
-  const NOMBRE_AMBITO = { estatal: "Estatal", autonomico: "Autonómico", provincial: "Provincial", local: "Local" };
-  const CCAA_ESTATAL = "__estatal__";
-  const palabras = (s) => searchNormalize(s || "").split(/[^a-z0-9]+/).filter(Boolean);
-  function claseDeClave(k) {
-    if (PAL_BOMBEROS.includes(k)) return { clase: "bomberos" };
-    return PAL_AMBITO[k] ? { clase: "ambito", ambit: PAL_AMBITO[k] } : { clase: "relleno" };
+  // ── El correo, según el móvil ──
+  // Android: el de la cuenta de Google de Play Store (se invita por lista de
+  // correos; con otro no se puede instalar), salvo que se abra «Uso otro
+  // correo». iPhone: cualquiera; la invitación de TestFlight se abre en el
+  // iPhone y se acepta con su cuenta de Apple. Sin elegir: «Tu correo».
+  const plataforma = () => (form.querySelector("[name=plataforma]:checked") || {}).value || "";
+  let otroCorreo = false;
+  function pintarCorreo() {
+    const p = plataforma();
+    const android = p === "android";
+    if (!android) otroCorreo = false;
+    $("email-l").textContent = android && !otroCorreo ? "El correo de tu cuenta de Google (el Gmail con el que entras en Play Store)" : "Tu correo";
+    const aviso = $("email-aviso");
+    aviso.hidden = !p || otroCorreo;
+    aviso.className = android ? "aviso" : "help";
+    aviso.textContent = android ? "Si pones otro, no podrás instalar la app." : "Te llegará la invitación de TestFlight: ábrela tú en tu iPhone (el enlace sirve una sola vez).";
+    $("otro").hidden = !android;
+    $("otro").textContent = otroCorreo ? "Uso el mismo correo para la tienda" : "Uso otro correo para la tienda";
+    $("otro").setAttribute("aria-expanded", String(otroCorreo));
+    $("tienda").hidden = !otroCorreo;
+    revisarCorreo("email");
+    if (otroCorreo) revisarCorreo("email_tienda");
   }
-  function clasificar(t) {
-    if (CLAVES.includes(t)) return claseDeClave(t);
-    if (t.length >= MIN_PREFIJO) {
-      const k = CLAVES.find((k) => k.startsWith(t) || (k.length >= MIN_PREFIJO && t.startsWith(k)));
-      if (k) return claseDeClave(k);
-    }
-    return { clase: "texto" };
-  }
-  function analizar(query) {
-    const c = { textos: [], ambitos: new Set(), clavesAmbito: [], bomberos: false };
-    const ps = palabras(query);
-    const escribiendo = ps.length > 0 && !/[\s]$/.test(query || "");
-    ps.forEach((t, i) => {
-      const ultima = escribiendo && i === ps.length - 1;
-      const k = ultima && t.length < MIN_PREFIJO && !CLAVES.includes(t) ? { clase: "texto" } : clasificar(t);
-      if (k.clase === "bomberos") c.bomberos = true;
-      else if (k.clase === "ambito") { c.ambitos.add(k.ambit); c.clavesAmbito.push(t); }
-      else if (k.clase === "texto") c.textos.push({ t, formas: [t, ...(VARIANTES[t] || [])], aMedias: ultima });
-    });
-    return c;
-  }
-  function coincide(x, ps) {
-    const tx = typeof x === "string" ? { t: x, formas: [x], aMedias: false } : x;
-    return tx.formas.some((f) => tx.aMedias || f.length >= MIN_PREFIJO ? ps.some((p) => p.startsWith(f)) : ps.includes(f));
-  }
-  function buscarCuerpos(cuerpos, f) {
-    const q = analizar(f.query);
-    const out = [];
-    for (const c of cuerpos) {
-      if (f.tipo && c.tipo !== f.tipo) continue;
-      if (q.bomberos && c.tipo !== "bomberos") continue;
-      if (f.ambito && c.ambit !== f.ambito) continue;
-      if (f.ccaa === CCAA_ESTATAL ? c.ccaa != null : f.ccaa && c.ccaa !== f.ccaa) continue;
-      const principales = palabras(`${c.short} ${c.name} ${c.region || ""}`);
-      const clavesEnNombre = q.clavesAmbito.filter((t) => coincide(t, principales)).length;
-      if (q.ambitos.size && !q.ambitos.has(c.ambit) && clavesEnNombre === 0) continue;
-      const todas = [...principales, ...palabras(`${c.ccaa || ""} ${NOMBRE_AMBITO[c.ambit] || c.ambit}`)];
-      if (!q.textos.every((t) => coincide(t, todas))) continue;
-      out.push({ c, puntos: q.textos.filter((t) => coincide(t, principales)).length + clavesEnNombre });
-    }
-    return out
-      .sort((a, b) => b.puntos - a.puntos || a.c.short.localeCompare(b.c.short, "es") || a.c.ambit.localeCompare(b.c.ambit))
-      .map((x) => x.c);
-  }
-  const P_POLICIA = ["policia","policias","policial"];
-  const PARTICULAS = ["de","del","la","el","los","las","y"];
-  function deducirPropuesta(query) {
-    let tipo = null, ambit = null, pendientes = [];
-    const territorio = [];
-    for (const w of query.trim().split(/\s+/).filter(Boolean)) {
-      const ps = palabras(w);
-      if (!ps.length) continue;
-      const t = ps.join("");
-      if (P_POLICIA.includes(t)) { tipo = tipo || "policia_local"; pendientes = []; continue; }
-      const k = clasificar(t);
-      if (k.clase === "bomberos") { tipo = "bomberos"; pendientes = []; continue; }
-      if (k.clase === "ambito") { ambit = k.ambit; pendientes = []; continue; }
-      if (k.clase === "relleno") {
-        if (PARTICULAS.includes(t) && territorio.length) pendientes.push(w); else pendientes = [];
-        continue;
+  $("otro").addEventListener("click", () => {
+    otroCorreo = !otroCorreo;
+    document.querySelector('[data-err="email_tienda"]').textContent = "";
+    pintarCorreo();
+    if (otroCorreo) $("email_tienda").focus();
+  });
+  form.addEventListener("change", (e) => { if (e.target.name === "plataforma") pintarCorreo(); });
+
+  // ── «¿Querías decir …?»: dominios mal escritos (gmial.com, gmail.con…) ──
+  // Sin correo de confirmación, un correo mal escrito es una invitación perdida.
+  // Solo avisa: no corrige solo ni impide enviar.
+  const DOMINIOS = ["gmail.com", "hotmail.com", "hotmail.es", "outlook.com", "outlook.es", "yahoo.com", "yahoo.es", "icloud.com", "live.com", "msn.com", "googlemail.com"];
+  // Dominios reales que se parecen a los de arriba: no se tocan.
+  const BUENOS = new Set([...DOMINIOS, "me.com", "mac.com", "mail.com", "gmx.com", "gmx.es", "ymail.com", "live.es", "hotmail.fr", "terra.es", "telefonica.net", "movistar.es", "orange.es", "vodafone.es"]);
+  const PROVEEDORES = { gmail: "gmail.com", hotmail: "hotmail.com", outlook: "outlook.com", yahoo: "yahoo.com", icloud: "icloud.com" };
+  // Distancia de edición con trasposiciones (gmial → gmail es 1).
+  function distancia(a, b) {
+    const d = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
+    for (let j = 1; j <= b.length; j++) d[0][j] = j;
+    for (let i = 1; i <= a.length; i++) {
+      for (let j = 1; j <= b.length; j++) {
+        const c = a[i - 1] === b[j - 1] ? 0 : 1;
+        d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + c);
+        if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
       }
-      territorio.push(...pendientes, w);
-      pendientes = [];
     }
-    if (tipo === "policia_local") ambit = "local";
-    return { tipo, ambit, territorio: territorio.join(" ") };
+    return d[a.length][b.length];
   }
-
-  // ── Estado de la oposición ──
-  // modo "lista": `elegido` es un cuerpo del catálogo (o una sugerencia).
-  // modo "nueva": «¿No encuentras tu oposición?».
-  const op = { modo: "lista", elegido: null, sugRespondidas: false };
-  const filtro = { tipo: "", ambito: "", ccaa: "" };
-  const buscar = $("op-buscar"), tarjetas = $("op-tarjetas");
-  let catalogo = [];
-
-  const subtitulo = (c) => `${NOMBRE_AMBITO[c.ambit] || c.ambit}${c.region ? ` · ${c.region}` : ""}`;
-
-  // VERSIÓN DEL FORMATO DEL CATÁLOGO. El navegador guarda la respuesta una hora
-  // (Cache-Control de beta-testers): si cambia el formato y la URL no, quien ya
-  // la tenía en caché recibe la vieja y ve «No hemos podido cargar la lista».
-  // SÚBELA cada vez que cambie la forma de la respuesta de ?accion=catalogo.
-  //   1: { grupos }            (hasta el 27/09)
-  //   2: { cuerpos, grupos }   (selector como la app, 27/09)
-  const CATALOGO_V = 2;
-  fetch(API + "?accion=catalogo&v=" + CATALOGO_V)
-    .then((r) => r.ok ? r.json() : Promise.reject(r.status))
-    .then((d) => {
-      // Un backend anterior responde sin `cuerpos`: se trata como un fallo de
-      // carga (aviso y «¿No encuentras?»), no como una lista vacía.
-      if (!Array.isArray(d.cuerpos) || d.cuerpos.length === 0) throw new Error("sin cuerpos");
-      catalogo = d.cuerpos;
-      const ccaa = [...new Set(catalogo.map((c) => c.ccaa).filter(Boolean))]
-        .sort((a, b) => searchNormalize(a).localeCompare(searchNormalize(b)));
-      for (const cc of ccaa) $("f-ccaa").add(new Option(cc, cc));
-      buscar.disabled = false;
-      buscar.placeholder = "Busca por nombre, comunidad o ciudad…";
-      pintar();
-      if (oposicionPedida && catalogo.some((c) => c.code === oposicionPedida)) elegir(oposicionPedida);
-    })
-    .catch(() => {
-      // Sin lista, al menos se puede describir.
-      buscar.placeholder = "No hemos podido cargar la lista";
-      abrirNueva();
-    });
-
-  function pintar() {
-    const r = buscarCuerpos(catalogo, { query: buscar.value, tipo: filtro.tipo, ambito: filtro.ambito, ccaa: filtro.ccaa });
-    tarjetas.textContent = "";
-    for (const c of r) {
-      const li = document.createElement("li");
-      const b = document.createElement("button");
-      b.type = "button";
-      b.className = "tarjeta";
-      b.dataset.code = c.code;
-      const t = document.createElement("span");
-      t.className = "t-texto";
-      const n = document.createElement("span");
-      n.className = "t-nombre";
-      n.textContent = c.short;
-      const s = document.createElement("span");
-      s.className = "t-sub";
-      s.textContent = subtitulo(c);
-      t.append(n, s);
-      b.append(t);
-      li.append(b);
-      tarjetas.append(li);
+  function sugerirCorreo(email) {
+    const m = /^([^\s@]+)@([^\s@]+)$/.exec(email.trim().toLowerCase());
+    if (!m) return "";
+    const [, usuario, dominio] = m;
+    if (BUENOS.has(dominio)) return "";
+    // «gmail» sin punto, o «gmail.es» (Gmail solo es .com).
+    const nombre = dominio.split(".")[0];
+    if (PROVEEDORES[nombre] && !dominio.includes(".")) return `${usuario}@${PROVEEDORES[nombre]}`;
+    if (nombre === "gmail") return `${usuario}@gmail.com`;
+    let mejor = "", min = 3;
+    for (const x of DOMINIOS) {
+      const k = distancia(dominio, x);
+      if (k < min) { min = k; mejor = x; }
     }
-    const vacio = catalogo.length > 0 && r.length === 0;
-    $("op-vacio").hidden = !vacio;
-    $("op-cuenta").textContent = catalogo.length ? (r.length === 1 ? "1 oposición" : `${r.length} oposiciones`) : "";
-    // Sin resultados, «¿No encuentras tu oposición?» es lo siguiente que se ve.
-    $("op-nueva-abrir").classList.toggle("destacado", vacio);
+    return mejor ? `${usuario}@${mejor}` : "";
   }
-
-  function elegir(code, labelSiNoEsta) {
-    const c = catalogo.find((x) => x.code === code);
-    op.modo = "lista";
-    op.elegido = { code, label: c ? c.short : labelSiNoEsta };
-    const e = $("op-elegida");
-    e.querySelector(".t-nombre").textContent = op.elegido.label;
-    e.querySelector(".t-sub").textContent = c ? subtitulo(c) : "";
-    e.hidden = false;
-    $("op-lista-w").hidden = true;
-    $("op-nueva").hidden = true;
-    $("op-sug").hidden = true;
-    document.querySelector('[data-err="cuerpo_code"]').textContent = "";
+  // El correo al que va la invitación de Google Play: el segundo si está
+  // abierto «Uso otro correo», si no el primero. Solo ese lleva el aviso de Gmail.
+  const campoTienda = () => (otroCorreo ? "email_tienda" : "email");
+  const GOOGLE = /@(gmail|googlemail)\.com$/i;
+  const sugVistas = new Set();
+  // Enseña «¿Querías decir…?» o, en el correo de Google de Android, el aviso
+  // suave de que casi siempre es un Gmail (hay cuentas de Google con otros
+  // dominios, así que no bloquea). Devuelve la sugerencia, si la hay.
+  function revisarCorreo(id) {
+    const v = $(id).value.trim();
+    const s = sugerirCorreo(v);
+    $(`${id}-sug`).hidden = !s;
+    $(`${id}-sug`).querySelector("button").textContent = s;
+    if (s) sugVistas.add(v.toLowerCase());
+    $(`${id}-google`).hidden = !(plataforma() === "android" && id === campoTienda() && !s && RE_EMAIL.test(v) && !GOOGLE.test(v));
+    return s;
   }
-  function quitarEleccion() {
-    op.elegido = null;
-    $("op-elegida").hidden = true;
-  }
-
-  buscar.addEventListener("input", pintar);
-  // Enter en el buscador no envía el formulario: con un solo resultado, lo elige.
-  buscar.addEventListener("keydown", (e) => {
-    if (e.key !== "Enter") return;
-    e.preventDefault();
-    const bs = tarjetas.querySelectorAll("button.tarjeta");
-    if (bs.length === 1) bs[0].click();
-  });
-  for (const [id, clave] of [["f-tipo", "tipo"], ["f-ambito", "ambito"]]) {
-    $(id).addEventListener("click", (e) => {
-      const b = e.target.closest(".chip");
-      if (!b) return;
-      // Como en la app: tocar el activo lo quita (vuelve a «Todos»).
-      filtro[clave] = b.dataset.v && filtro[clave] === b.dataset.v ? "" : b.dataset.v;
-      for (const x of $(id).querySelectorAll(".chip")) x.setAttribute("aria-pressed", String(x.dataset.v === filtro[clave]));
-      pintar();
+  for (const id of ["email", "email_tienda"]) {
+    $(id).addEventListener("blur", () => revisarCorreo(id));
+    $(`${id}-sug`).querySelector("button").addEventListener("click", (e) => {
+      $(id).value = e.target.textContent;
+      revisarCorreo(id);
+      $(id).focus();
     });
   }
-  $("f-ccaa").addEventListener("change", (e) => { filtro.ccaa = e.target.value; pintar(); });
-  tarjetas.addEventListener("click", (e) => {
-    const b = e.target.closest("button.tarjeta");
-    if (b) elegir(b.dataset.code);
-  });
-  $("op-cambiar").addEventListener("click", () => {
-    quitarEleccion();
-    $("op-lista-w").hidden = false;
-    pintar();
-    buscar.focus();
-  });
 
-  // ── «¿No encuentras tu oposición?» ──
-  function abrirNueva() {
-    op.modo = "nueva";
-    quitarEleccion();
-    $("op-lista-w").hidden = true;
-    $("op-nueva").hidden = false;
-    document.querySelector('[data-err="cuerpo_code"]').textContent = "";
-    // Lo que se buscó rellena lo que se pueda: «bomberos ayuntamiento getafe»
-    // → Bomberos, Ayuntamiento, «getafe». No pisa lo que ya se haya escrito.
-    const d = deducirPropuesta(buscar.value);
-    if (d.tipo && !valor("op_tipo")) document.querySelector(`[name=op_tipo][value=${d.tipo}]`).checked = true;
-    if (d.ambit && d.tipo === "bomberos" && !valor("op_ambit")) document.querySelector(`[name=op_ambit][value=${d.ambit}]`).checked = true;
-    if (d.territorio && !$("op-territorio").value.trim()) $("op-territorio").value = d.territorio;
-    actualizarNueva();
-    const primero = document.querySelector("[name=op_tipo]:checked") || document.querySelector("[name=op_tipo]");
-    primero.focus();
-  }
-  function cerrarNueva() {
-    op.modo = "lista";
-    $("op-nueva").hidden = true;
-    $("op-sug").hidden = true;
-    $("op-lista-w").hidden = false;
-    pintar();
-    buscar.focus();
-  }
-  $("op-nueva-abrir").addEventListener("click", abrirNueva);
-  $("op-nueva-cerrar").addEventListener("click", cerrarNueva);
-
-  const valor = (name) => (document.querySelector(`[name=${name}]:checked`) || {}).value || "";
-  const ETIQ_TERR = { local: "Municipio", provincial: "Provincia o consorcio", autonomico: "Comunidad autónoma" };
-
-  function actualizarNueva() {
-    const tipo = valor("op_tipo");
-    const ambit = tipo === "policia_local" ? "local" : valor("op_ambit");
-    $("op-ambit-w").hidden = tipo !== "bomberos";
-    $("op-terr-w").hidden = !(tipo === "policia_local" || (tipo === "bomberos" && ambit));
-    $("op-otra-w").hidden = tipo !== "otra";
-    $("op-terr-l").textContent = ETIQ_TERR[ambit] || "Municipio";
-    // Vista previa: el mismo nombre que daría la app.
-    const terr = $("op-territorio").value;
-    let nombre = "";
-    if ((tipo === "bomberos" && ambit) || tipo === "policia_local") {
-      if (terr.trim().length >= 3) nombre = sharedCuerpoName(tipo, ambit, normalizarTerritorio(terr));
-    } else if (tipo === "otra") {
-      nombre = $("op-otra").value.trim();
-    }
-    const p = $("op-preview");
-    p.hidden = !nombre;
-    p.querySelector("strong").textContent = nombre;
-    // Las sugerencias ya enseñadas solo dejan de valer si cambia lo que se
-    // describe. Un `change` que llega solo porque el campo pierde el foco (al
-    // saltar al panel de sugerencias) no cuenta.
-    const clave = [tipo, ambit, normalizarTerritorio(terr), $("op-otra").value.trim()].join("|");
-    if (clave !== op.clave) {
-      op.clave = clave;
-      op.sugRespondidas = false;
-      $("op-sug").hidden = true;
-    }
-  }
-  $("op-nueva").addEventListener("change", actualizarNueva);
-  $("op-nueva").addEventListener("input", actualizarNueva);
-
-  // ── «¿Es alguna de estas?» ──
-  // Devuelve true si hay que esperar a que la persona conteste.
-  async function preguntarSugerencias() {
-    const tipo = valor("op_tipo");
-    if (op.modo !== "nueva" || tipo === "otra" || op.sugRespondidas) return false;
-    const ambit = tipo === "policia_local" ? "local" : valor("op_ambit");
-    const qs = new URLSearchParams({ accion: "sugerir", tipo, ambit, territorio: $("op-territorio").value });
-    let d;
-    try {
-      const r = await fetch(`${API}?${qs}`);
-      d = await r.json().catch(() => ({}));
-      if (r.status === 400 && d.errores) { pintarErrores(d.errores); return true; }
-      if (!r.ok) return false; // sin sugerencias no se bloquea el alta
-    } catch {
-      return false;
-    }
-    if (!d.sugerencias || !d.sugerencias.length) return false;
-    const cont = $("op-sug-lista");
-    cont.textContent = "";
-    for (const s of d.sugerencias) {
-      const b = document.createElement("button");
-      b.type = "button";
-      b.className = "secondary";
-      b.textContent = s.label;
-      b.addEventListener("click", () => { elegir(s.code, s.label); enviar(); });
-      cont.appendChild(b);
-    }
-    $("op-sug-no").textContent = `No, ninguna: guardar como «${d.nombre}»`;
-    const caja = $("op-sug");
-    caja.hidden = false;
-    caja.focus();
-    caja.scrollIntoView({ block: "center" });
-    return true;
-  }
-  $("op-sug-no").addEventListener("click", () => { op.sugRespondidas = true; $("op-sug").hidden = true; enviar(); });
-
-  // ── El correo de la tienda: la ayuda cambia con la plataforma ──
-  const AYUDA = {
-    android: ["Correo de tu cuenta de Google", "El de la cuenta de Google con la que usas Google Play en el móvil. Lo necesitamos para darte acceso a la prueba en Google Play; solo lo usamos para eso."],
-    ios: ["Correo de tu Apple ID", "El de tu Apple ID, el que usas en la App Store. Lo necesitamos para invitarte por TestFlight, la app de Apple para probar apps antes de que salgan; solo lo usamos para eso."],
-  };
-  form.addEventListener("change", (e) => {
-    if (e.target.name === "plataforma") {
-      const [t, h] = AYUDA[e.target.value];
-      $("tienda-l").textContent = t;
-      $("tienda-h").textContent = h;
-    }
-  });
-  $("mismo_email").addEventListener("change", (e) => {
-    $("email_tienda").disabled = e.target.checked;
-    if (e.target.checked) $("email_tienda").value = "";
-  });
-
+  // ── Errores: junto a cada campo; el foco, al primero ──
+  // El servidor llama `edad` y `privacidad` a lo que aquí es una sola casilla.
+  // Lo que no tiene sitio en la página va al mensaje de abajo.
+  const CAMPO = { edad: "acepto", edad_18: "acepto", privacidad: "acepto" };
+  const FOCO = { plataforma: () => form.querySelector("[name=plataforma]") };
+  const ORDEN = ["nombre", "plataforma", "email", "email_tienda", "acepto"];
   function limpiarErrores() {
     document.querySelectorAll("[data-err]").forEach((s) => (s.textContent = ""));
     $("general").textContent = "";
   }
-  // Dónde poner el foco para cada error (lo que no está aquí es el id del campo).
-  const FOCO = {
-    plataforma: () => form.querySelector("[name=plataforma]"),
-    examen: () => $("examen_mes"),
-    cuerpo_code: () => (op.modo === "nueva" ? null : !$("op-elegida").hidden ? $("op-cambiar") : buscar),
-    cuerpo_tipo: () => document.querySelector("[name=op_tipo]"),
-    cuerpo_ambit: () => document.querySelector("[name=op_ambit]"),
-    cuerpo_territorio: () => $("op-territorio"),
-    cuerpo_otra: () => $("op-otra"),
-  };
   function pintarErrores(errores) {
-    let primero = null;
-    for (const [campo, msg] of Object.entries(errores)) {
+    const sueltos = [];
+    const puestos = new Set();
+    for (const [k, msg] of Object.entries(errores)) {
+      const campo = CAMPO[k] || k;
       const s = document.querySelector(`[data-err="${campo}"]`);
-      if (s) s.textContent = msg;
-      if (!primero) primero = FOCO[campo] ? FOCO[campo]() : $(campo);
+      if (s && !puestos.has(campo)) { s.textContent = msg; puestos.add(campo); }
+      else if (!s) sueltos.push(msg);
     }
-    if (primero) primero.focus();
+    if (sueltos.length) $("general").textContent = sueltos.join(" ");
+    const primero = ORDEN.find((c) => puestos.has(c));
+    if (primero) (FOCO[primero] ? FOCO[primero]() : $(primero)).focus();
   }
-
-  // Lo obligatorio de la oposición, en la página (el servidor lo vuelve a mirar).
-  function faltaOposicion() {
-    if (op.modo === "lista") return op.elegido ? {} : { cuerpo_code: "Toca tu oposición en la lista, o pulsa «¿No encuentras tu oposición?»." };
-    const tipo = valor("op_tipo");
-    if (!tipo) return { cuerpo_tipo: "Elige si es de bomberos, de policía local u otra." };
-    if (tipo === "otra") return $("op-otra").value.trim() ? {} : { cuerpo_otra: "Escribe a qué oposición te presentas." };
-    const ambit = tipo === "policia_local" ? "local" : valor("op_ambit");
-    if (!ambit) return { cuerpo_ambit: "Elige si es de ayuntamiento, de diputación o consorcio, o de la comunidad autónoma." };
-    const terr = normalizarTerritorio($("op-territorio").value);
-    if (terr.length < 3 || slugTerritorio(terr).length < 3) {
-      return { cuerpo_territorio: `Escribe ${ETIQ_TERR[ambit].toLowerCase()} (al menos 3 letras).` };
+  // Al corregir un campo, su error se va.
+  form.addEventListener("input", (e) => {
+    const campo = e.target.name === "plataforma" ? "plataforma" : e.target.id;
+    const s = document.querySelector(`[data-err="${campo}"]`);
+    if (s) s.textContent = "";
+    if (e.target.id === "email" || e.target.id === "email_tienda") {
+      $(`${e.target.id}-sug`).hidden = true;
+      $(`${e.target.id}-google`).hidden = true;
     }
-    return {};
-  }
+  });
 
+  const RE_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   form.addEventListener("submit", (e) => { e.preventDefault(); enviar(); });
 
   async function enviar() {
     limpiarErrores();
-    const mes = $("examen_mes").value, anio = $("examen_anio").value;
-    if ((mes && !anio) || (!mes && anio)) {
-      pintarErrores({ examen: "Elige el mes y el año, o ninguno de los dos." });
-      return;
-    }
     const plat = form.querySelector("[name=plataforma]:checked");
+    const email = $("email").value.trim();
+    const tienda = $("email_tienda").value.trim();
     // Lo obligatorio, aquí también: un envío muy rápido el servidor lo trata como
-    // un robot y responde «ok» sin guardar, y la página diría «revisa tu correo».
+    // un robot y responde «ok» sin guardar, y la página diría que está hecho.
     const faltan = {};
     if (!$("nombre").value.trim()) faltan.nombre = "Escribe tu nombre.";
-    if (!$("email").value.trim()) faltan.email = "Escribe tu correo.";
+    if (!email) faltan.email = "Escribe tu correo.";
+    else if (!RE_EMAIL.test(email)) faltan.email = "Revisa el correo: no parece válido.";
+    if (otroCorreo && !tienda) faltan.email_tienda = "Escribe el correo de tu cuenta de Google, o pulsa «Uso el mismo correo».";
+    else if (otroCorreo && !RE_EMAIL.test(tienda)) faltan.email_tienda = "Revisa el correo: no parece válido.";
     if (!plat) faltan.plataforma = "Elige si tu móvil es Android o iPhone.";
-    if (!$("mismo_email").checked && !$("email_tienda").value.trim()) faltan.email_tienda = "Escribe el correo de tu cuenta de la tienda, o marca que es el mismo.";
-    Object.assign(faltan, faltaOposicion());
-    if (!$("compromiso").checked) faltan.compromiso = "Necesitamos este compromiso para la prueba.";
-    if (!$("edad").checked) faltan.edad = "La app es para mayores de 18 años.";
-    if (!$("privacidad").checked) faltan.privacidad = "Tienes que aceptar la política de privacidad.";
+    if (!$("acepto").checked) faltan.acepto = "Marca la casilla: la app es para mayores de 18 años y tienes que leer la política de privacidad.";
     if (Object.keys(faltan).length) {
       pintarErrores(faltan);
       return;
     }
-    const boton = $("enviar");
-    boton.disabled = true;
-    boton.textContent = "Comprobando…";
-    const esperar = await preguntarSugerencias();
-    boton.disabled = false;
-    boton.textContent = "Quiero probar Trenzia";
-    if (esperar) return;
+    // Un dominio mal escrito que aún no se ha enseñado: se enseña una vez y se
+    // espera; si se vuelve a pulsar, se manda tal cual.
+    for (const id of otroCorreo ? ["email", "email_tienda"] : ["email"]) {
+      if (!sugVistas.has($(id).value.trim().toLowerCase()) && revisarCorreo(id)) {
+        $(id).focus();
+        return;
+      }
+    }
 
-    const tipo = op.modo === "nueva" ? valor("op_tipo") : "";
     const body = {
       accion: "alta",
       nombre: $("nombre").value,
-      email: $("email").value,
-      plataforma: plat ? plat.value : "",
-      mismo_email: $("mismo_email").checked,
-      email_tienda: $("email_tienda").value,
-      cuerpo_code: op.modo === "nueva" ? "NUEVA" : op.elegido.code,
-      cuerpo_tipo: tipo,
-      cuerpo_ambit: tipo === "bomberos" ? valor("op_ambit") : tipo === "policia_local" ? "local" : "",
-      cuerpo_territorio: tipo === "bomberos" || tipo === "policia_local" ? $("op-territorio").value : "",
-      cuerpo_otra: tipo === "otra" ? $("op-otra").value : "",
-      examen: mes && anio ? `${anio}-${mes}` : "",
-      conocido: $("conocido").value,
-      compromiso: $("compromiso").checked,
-      edad: $("edad").checked,
-      edad_18: $("edad").checked,
-      privacidad: $("privacidad").checked,
-      novedades: $("novedades").checked,
+      email,
+      plataforma: plat.value,
+      mismo_email: !otroCorreo,
+      email_tienda: otroCorreo ? tienda : email,
+      cuerpo_code: cuerpoCode,
+      examen: "",
+      conocido: "",
+      compromiso: false,
+      edad: true,
+      edad_18: true,
+      privacidad: true,
+      novedades: false,
       ref,
       web: $("web").value,
       ms: Date.now() - abierto,
     };
+    const boton = $("enviar");
     boton.disabled = true;
     boton.textContent = "Enviando…";
     try {
       const r = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
       const d = await r.json().catch(() => ({}));
       if (r.ok) {
-        $("alta").hidden = true;
-        $("ya").hidden = true;
-        const h = $("hecho");
-        h.hidden = false;
-        // Plazas cubiertas (A-27): el alta sigue, pero al confirmar pasa a la lista de espera.
-        // Si el servidor no manda el campo, el mensaje de siempre.
-        h.innerHTML = d.plazas_libres === false
-          ? "<h1>Las plazas de la prueba están cubiertas</h1><p>Te hemos enviado un correo. Si lo confirmas, te apuntamos a la lista de espera y te avisaremos el día que Trenzia salga en las tiendas.</p><p>En la lista de espera solo guardamos tu nombre, tu correo, el tipo de móvil y el enlace por el que llegaste, además del registro de que aceptaste la política, y lo borramos todo después de avisarte.</p><p>Si no lo ves en unos minutos, <strong>mira en correo no deseado</strong>.</p>"
-          : "<h1>Te hemos enviado un correo</h1><p>Confírmalo para reservar tu plaza.</p><p>Si no lo ves en unos minutos, <strong>mira en correo no deseado</strong>.</p>";
-        window.scrollTo(0, 0);
-        h.focus();
+        // W-63: `estado` dice qué pasó; `plazas_libres` es el campo de antes.
+        hecho(d.estado === "lista_espera" || d.plazas_libres === false, body);
         return;
       }
       if (d.errores) pintarErrores(d.errores);
@@ -723,6 +348,55 @@
       boton.disabled = false;
       boton.textContent = "Quiero probar Trenzia";
     }
+  }
+
+  // ── Después del alta: sin correo de confirmación, el correo en grande ──
+  function parrafo(...partes) {
+    const p = document.createElement("p");
+    for (const x of partes) p.append(x);
+    return p;
+  }
+  function hecho(enEspera, body) {
+    const h = $("hecho");
+    h.textContent = "";
+    const t = document.createElement("h1");
+    const correo = document.createElement("strong");
+    correo.className = "correo";
+    const corregir = document.createElement("button");
+    corregir.type = "button";
+    corregir.className = "link en-linea";
+    corregir.textContent = "Corrígelo";
+    corregir.addEventListener("click", volver);
+    if (enEspera) {
+      // Plazas cubiertas (A-27): queda en la lista de espera, con su correo de contacto.
+      t.textContent = "Las plazas de la prueba están cubiertas";
+      correo.textContent = body.email;
+      h.append(t,
+        parrafo("Te hemos apuntado a la lista de espera y te avisaremos en ", correo, " el día que Trenzia salga en las tiendas."),
+        parrafo("En la lista de espera solo guardamos tu nombre, tu correo, el tipo de móvil y el enlace por el que llegaste, además del registro de que aceptaste la política, y lo borramos todo después de avisarte."));
+    } else {
+      // La invitación de Google Play o TestFlight va al correo de la tienda.
+      t.textContent = "Te has apuntado";
+      correo.textContent = body.email_tienda;
+      h.append(t, body.plataforma === "android"
+        ? parrafo("Te mandaremos la invitación a ", correo, ". Es tu cuenta de Google, ¿verdad?")
+        : parrafo("Te mandaremos la invitación de TestFlight a ", correo, "."));
+    }
+    h.append(parrafo("¿Está mal escrito? ", corregir));
+    $("alta").hidden = true;
+    $("ya").hidden = true;
+    h.hidden = false;
+    window.scrollTo(0, 0);
+    h.focus();
+  }
+  // «Corrígelo»: el formulario otra vez, con lo que se escribió.
+  function volver() {
+    $("hecho").hidden = true;
+    $("alta").hidden = false;
+    $("ya").hidden = false;
+    const campo = otroCorreo ? $("email_tienda") : $("email");
+    campo.focus();
+    campo.select();
   }
 
   // ── «¿Ya te apuntaste?»: manda el enlace de baja y borrado ──
