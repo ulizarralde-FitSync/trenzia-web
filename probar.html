@@ -167,7 +167,7 @@
     const aviso = $("email-aviso");
     aviso.hidden = !p || otroCorreo;
     aviso.className = android ? "aviso" : "help";
-    aviso.textContent = android ? "Si pones otro, no podrás instalar la app." : "Te llegará la invitación de TestFlight: ábrela en el iPhone.";
+    aviso.textContent = android ? "Si pones otro, no podrás instalar la app." : "Te llegará la invitación de TestFlight: ábrela tú en tu iPhone (el enlace sirve una sola vez).";
     $("otro").hidden = !android;
     $("otro").textContent = otroCorreo ? "Uso el mismo correo para la tienda" : "Uso otro correo para la tienda";
     $("otro").setAttribute("aria-expanded", String(otroCorreo));
