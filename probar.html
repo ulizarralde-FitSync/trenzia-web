@@ -310,7 +310,8 @@
       const r = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
       const d = await r.json().catch(() => ({}));
       if (r.ok) {
-        hecho(d.plazas_libres === false, body);
+        // W-63: `estado` dice qué pasó; `plazas_libres` es el campo de antes.
+        hecho(d.estado === "lista_espera" || d.plazas_libres === false, body);
         return;
       }
       if (d.errores) pintarErrores(d.errores);
