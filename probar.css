@@ -39,6 +39,12 @@ button.danger{border-color:var(--err);color:var(--err)}
 .msg.ok{border-color:var(--ok)}
 .msg.bad{border-color:var(--err)}
 .msg:empty{display:none}
+/* probar.html: el aviso del correo de la tienda y el correo en grande al acabar */
+.aviso{color:var(--o);font-weight:600;font-size:15px;margin:6px 0 0}
+button.link.pequeno{font-size:14px;padding:6px 0 0}
+button.link.en-linea{padding:0;font-size:inherit}
+.correo{font-size:20px;word-break:break-all}
+#para{margin:0 0 16px}
 .hp{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
 details{margin-top:40px;border-top:1px solid var(--line);padding-top:20px}
 summary{cursor:pointer;font-weight:600}
