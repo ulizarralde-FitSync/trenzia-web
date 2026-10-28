@@ -78,7 +78,7 @@ Mismas medidas que las páginas de probadores (640 px, h1 de 30 px). Su estilo e
 - Nada cargado de otros servidores (fuentes, scripts, analítica, formularios de terceros). Afecta a la política de privacidad: coméntalo antes. La única conexión es la de las páginas de probadores con nuestro propio servidor (Supabase), que es donde se guardan los datos del formulario.
 - Las páginas de probadores comparten `probar.css`. La portada lleva su estilo dentro del propio HTML.
 - **`oposiciones/` no se edita a mano:** la genera el generador de la web a partir del archivo de la app (`oposiciones.json` y `nota.js`, que es el cálculo de la app y no se toca). También escribe su bloque de `sitemap.xml`. Para cambiar textos o estilo, se cambia el generador y se vuelve a generar. La calculadora funciona en el navegador: no se conecta a nada ni guarda nada.
-- Las páginas legales (privacidad, términos, aviso legal, eliminar cuenta) van en fondo blanco y texto `#1A1A1A` para leerse mejor, con 760 px de ancho máximo. El naranja `#FF5A1F` va en la línea bajo el título y en el borde izquierdo de las citas; los enlaces, en un naranja más oscuro (`#D1490F`) para que se lean sobre blanco.
+- Las páginas legales (privacidad, términos, aviso legal, eliminar cuenta) van en fondo blanco y texto `#1A1A1A` para leerse mejor, con 760 px de ancho máximo. El naranja `#FF5A1F` va en la línea bajo el título y en el borde izquierdo de las citas; los enlaces, en un naranja más oscuro (`#C2410C`, contraste 5,18 sobre blanco) para que se lean sobre blanco. El contenido va en `<main>` y el pie de enlaces en `<footer>`; las tablas, dentro de `<div class="tabla" role="region">` con su propio scroll horizontal.
 
 ## Reglas para colaborar
 
