@@ -1,0 +1,53 @@
+# Aviso si la web se cae (web-54). Cada 30 minutos y a mano. Si algo falla, el job
+# falla y GitHub manda su correo de «workflow failed» al dueño del repo; nada más.
+# GitHub desactiva los workflows programados tras 60 días sin actividad en el repo
+# (ver README.md).
+name: vigilancia
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Páginas (200 y con su texto)
+        run: |
+          fallos=0
+          comprobar() {
+            url="$1"; texto="$2"
+            codigo=$(curl -sS -L --max-time 20 -o pagina.html -w '%{http_code}' "$url") || codigo="sin respuesta"
+            if [ "$codigo" != "200" ]; then
+              echo "::error::$url da $codigo"; fallos=1
+            elif ! grep -qF "$texto" pagina.html; then
+              echo "::error::$url no contiene «$texto»"; fallos=1
+            else
+              echo "bien: $url"
+            fi
+          }
+          comprobar "https://trenzia.es/" "Trenzia"
+          comprobar "https://trenzia.es/probar.html" "Trenzia"
+          comprobar "https://trenzia.es/oposiciones/" "Pruebas físicas"
+          comprobar "https://trenzia.es/oposiciones/ertzaintza.html" "Pruebas físicas de la"
+          exit $fallos
+
+      - name: Alta de probadores (OPTIONS da 204)
+        run: |
+          url="https://zbmtqhipmnsztplraeqk.supabase.co/functions/v1/beta-testers"
+          codigo=$(curl -sS --max-time 20 -o /dev/null -w '%{http_code}' -X OPTIONS \
+            -H "Origin: https://trenzia.es" -H "Access-Control-Request-Method: POST" "$url") || codigo="sin respuesta"
+          if [ "$codigo" != "204" ]; then echo "::error::OPTIONS $url da $codigo"; exit 1; fi
+          echo "bien: beta-testers"
+
+      - name: Certificado (caduca en más de 14 días)
+        run: |
+          fin=$(echo | openssl s_client -connect trenzia.es:443 -servername trenzia.es 2>/dev/null | openssl x509 -noout -enddate | cut -d= -f2)
+          if [ -z "$fin" ]; then echo "::error::no se pudo leer el certificado"; exit 1; fi
+          dias=$(( ( $(date -d "$fin" +%s) - $(date +%s) ) / 86400 ))
+          echo "caduca: $fin ($dias días)"
+          if [ "$dias" -le 14 ]; then echo "::error::el certificado caduca en $dias días"; exit 1; fi

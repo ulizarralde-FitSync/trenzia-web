@@ -1,0 +1,8 @@
+# GitHub Pages construye la web con Jekyll (no hay .nojekyll).
+# Jekyll se salta las carpetas que empiezan por punto: .well-known se incluye a mano (web-54).
+include:
+  - .well-known
+# README.md y ESTILO.md son para el repo, no para la web: siguen aquí, pero no se publican.
+exclude:
+  - README.md
+  - ESTILO.md

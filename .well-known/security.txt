@@ -1,0 +1,5 @@
+Contact: mailto:soporte@trenzia.es
+Expires: 2027-10-28T00:00:00.000Z
+Preferred-Languages: es, en
+Canonical: https://trenzia.es/.well-known/security.txt
+Policy: https://trenzia.es/aviso-legal.html
