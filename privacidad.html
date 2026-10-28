@@ -10,7 +10,7 @@
  hr{border:0;border-top:1px solid #e6e6e9;margin:32px 0}
  .box{border:1px solid #e3e3e6;border-radius:10px;padding:18px 20px;background:#fafafa;margin:20px 0}
 </style></head><body><h1>Política de Privacidad de Trenzia</h1>
-<p><strong>Última actualización: 27 de octubre de 2026 · Versión 1.11</strong></p>
+<p><strong>Última actualización: 28 de octubre de 2026 · Versión 1.12</strong></p>
 <h2 id="responsable-del-tratamiento">1. Responsable del tratamiento</h2>
 <table>
 <colgroup>
@@ -63,6 +63,7 @@
 <h2 id="a-quién-se-dirige-esta-política">2. A quién se dirige esta política</h2>
 <p>A todas las personas usuarias de la aplicación Trenzia en iOS y Android, incluidas las que participan en las fases de prueba (TestFlight y pruebas cerradas de Google Play). Las condiciones de uso del servicio están en los <a href="https://trenzia.es/terminos.html">Términos de uso</a>.</p>
 <p>También se aplica a quienes se apuntan en <a href="https://trenzia.es/probar.html">trenzia.es/probar.html</a> para probar la versión beta, aunque todavía no hayan creado una cuenta en la app. Lo que es propio de esa lista está en los apartados 3.8, 3.9, 4 (finalidades 11 y 12), 5 y 6.</p>
+<p>También se aplica a quien visita trenzia.es, para las estadísticas de la web que explica el apartado 3.5.</p>
 <hr />
 <h2 id="datos-que-tratamos">3. Datos que tratamos</h2>
 <p>Trenzia no recoge datos de forma oculta ni en segundo plano: todos los datos proceden de lo que el usuario introduce en la aplicación o de lo que la aplicación calcula a partir de esa información. La app <strong>no accede a la ubicación, a la cámara, al micrófono, a la agenda de contactos ni al calendario del dispositivo</strong>.</p>
@@ -223,6 +224,10 @@
 <td>Si marcas la casilla de analítica la primera vez que abres la app, registramos eventos de uso (pantallas abiertas, acciones realizadas), la plataforma (iOS/Android), la versión de la app y el identificador interno del usuario. Se guardan en nuestra base de datos, alojada en la Unión Europea, y se envían también a PostHog, en su servidor de la Unión Europea, con la dirección IP descartada y sin grabación de sesiones. Si no la aceptas, no se guarda ni se envía ningún evento de analítica. No usamos identificadores publicitarios ni compartimos estos datos con fines de publicidad</td>
 </tr>
 <tr class="even">
+<td>Estadísticas de la web trenzia.es (sin cookies)</td>
+<td>Cuando visitas trenzia.es contamos qué páginas se ven, desde qué enlace llegas (por ejemplo, el código de una academia), si usas la calculadora de una oposición y si terminas apuntándote a la prueba. Lo hacemos con PostHog, con los datos en la Unión Europea, sin cookies y sin guardar nada en tu navegador. Para no contar dos veces la misma visita en un día, los servidores de PostHog calculan un código que no se puede revertir a partir de tu dirección IP, tu navegador y un valor que cambia cada día y se borra al terminar ese día. La IP no se guarda. No registramos tu nombre, tu correo ni las marcas que escribes en la calculadora. Si tu navegador envía la señal Global Privacy Control o «No rastrear», no medimos nada.</td>
+</tr>
+<tr class="even">
 <td>Token de notificaciones push</td>
 <td>Identificador que asigna Firebase Cloud Messaging al dispositivo, para poder entregar recordatorios. Campos users.expo_push_token, push_platform, push_token_updated_at</td>
 </tr>
@@ -258,7 +263,7 @@
 <p>Si te apuntas en trenzia.es para probar la versión beta, tratamos estos datos, que nos das tú en el formulario:</p>
 <ul>
 <li>Nombre y correo electrónico de contacto.</li>
-<li>Tu tipo de móvil (Android o iPhone) y el correo de tu cuenta de Google o tu Apple ID, que es el que necesitamos para invitarte a la prueba.</li>
+<li>Tu tipo de móvil (Android o iPhone) y el correo al que te invitamos a la prueba (en Android, el de tu cuenta de Google).</li>
 <li>Si llegas desde la página de una oposición, cuál es. El resto (la oposición que preparas y la fecha de tu examen) nos lo dices dentro de la app.</li>
 <li>Si llegaste con un enlace de una academia o de una campaña, el código de ese enlace.</li>
 <li>Tu declaración de que tienes 18 años o más y la versión de esta política que has leído.</li>
@@ -367,6 +372,12 @@
 <td>Comentarios (3.9)</td>
 <td>Interés legítimo (art. 6.1.f). El envío es voluntario</td>
 </tr>
+<tr class="odd">
+<td>13</td>
+<td>Estadísticas de uso de la web trenzia.es (3.5)</td>
+<td>Estadísticas de la web (3.5)</td>
+<td>Interés legítimo (art. 6.1.f) en saber qué páginas son útiles y cómo llega la gente a la prueba, con datos de conjunto y sin cookies. Puedes oponerte (apartado 8) y, si tu navegador envía Global Privacy Control o «No rastrear», no medimos.</td>
+</tr>
 </tbody>
 </table>
 <h3 id="sobre-el-consentimiento-para-los-datos-de-salud">4.1 Sobre el consentimiento para los datos de salud</h3>
@@ -426,7 +437,7 @@
 </tr>
 <tr class="odd">
 <td>PostHog Inc.</td>
-<td>Analítica de producto, solo si aceptas la casilla de analítica</td>
+<td>Analítica de producto en la app, solo si aceptas la casilla de analítica, y estadísticas de la web trenzia.es sin cookies (3.5)</td>
 <td>Eventos de uso del apartado 3.5 e identificador interno del usuario (sin dirección IP)</td>
 <td>Datos almacenados en la Unión Europea (PostHog Cloud EU, Fráncfort). Empresa con sede en Estados Unidos</td>
 </tr>
@@ -451,7 +462,7 @@
 <tr class="odd">
 <td>Apple Inc. / Google LLC (App Store, Google Play, TestFlight)</td>
 <td>Distribución de la app, gestión de las suscripciones y del programa de pruebas beta</td>
-<td>Correo electrónico del tester (TestFlight/pruebas cerradas) y datos de la transacción, que estas plataformas tratan como responsables independientes conforme a sus propias políticas. <strong>Si te apuntas a la lista de probadores, cuando te invitamos a la prueba comunicamos a Google (si usas Android) o a Apple (si usas iPhone) el correo de tu cuenta de Google o tu Apple ID.</strong> Es la única forma de darte acceso a la beta y solo lo hacemos en el momento de invitarte</td>
+<td>Correo electrónico del tester (TestFlight/pruebas cerradas) y datos de la transacción, que estas plataformas tratan como responsables independientes conforme a sus propias políticas. <strong>Si te apuntas a la lista de probadores, cuando te invitamos a la prueba comunicamos a Google (si usas Android) o a Apple (si usas iPhone) el correo al que te invitamos (en Android, el de tu cuenta de Google).</strong> Es la única forma de darte acceso a la beta y solo lo hacemos en el momento de invitarte</td>
 <td>Estados Unidos y Unión Europea</td>
 </tr>
 <tr class="even">
@@ -467,7 +478,7 @@
 <ul>
 <li>El entrenador IA y la generación de planes, porque las peticiones se procesan en la infraestructura de Anthropic.</li>
 <li>La entrega de notificaciones push, a través de Firebase.</li>
-<li>El diagnóstico de errores (Sentry) y la analítica de producto (PostHog): los datos se almacenan en la Unión Europea, pero son empresas con sede en Estados Unidos y su personal puede acceder a ellos de forma puntual.</li>
+<li>El diagnóstico de errores (Sentry) y la analítica de producto y de la web (PostHog): los datos se almacenan en la Unión Europea, pero son empresas con sede en Estados Unidos y su personal puede acceder a ellos de forma puntual.</li>
 <li>El envío de correos del servicio, a través de Resend.</li>
 <li>El soporte técnico del desarrollador externo, con sede en Filipinas, país sin decisión de adecuación: esta transferencia se ampara en las Cláusulas Contractuales Tipo firmadas con él.</li>
 <li>La gestión de suscripciones y la distribución de la app, a través de Apple, Google y (en el futuro) RevenueCat.</li>
@@ -513,6 +524,10 @@
 <tr class="even">
 <td>Analítica de producto (nuestra base de datos y PostHog)</td>
 <td>12 meses, con borrado automático posterior</td>
+</tr>
+<tr class="odd">
+<td>Estadísticas de la web (PostHog)</td>
+<td>12 meses. La IP no se guarda y el código diario no se puede revertir.</td>
 </tr>
 <tr class="odd">
 <td>Informes de fallos (Sentry)</td>
@@ -658,6 +673,7 @@
 <li>Aclaración (18 de octubre de 2026): se indica qué guarda la app en tu móvil para poder usarse sin conexión y cuándo se borra (apartados 5 y 7). No es una versión nueva y no cambia el tratamiento.</li>
 <li>Versión 1.10 (22 de octubre de 2026): las plazas de la prueba son limitadas; si están cubiertas al confirmar tu correo, pasas a una lista de espera en la que solo guardamos tu nombre, tu correo, el tipo de móvil, el código del enlace y el registro de tu aceptación para avisarte del lanzamiento, y se borran después (apartados 3.8, 4 y 6).</li>
 <li>Versión 1.11 (27 de octubre de 2026): ya no hace falta confirmar el correo para apuntarte a la prueba; las plazas se cubren por orden de llegada; el formulario solo pide nombre, correo, tipo de móvil y tu declaración de edad (apartados 3.8, 3.9, 4 y 6).</li>
+<li>Versión 1.12 (28 de octubre de 2026): se añaden las estadísticas de la web trenzia.es, sin cookies (apartados 2, 3.5, 4, 5, 5.1 y 6), y se aclara que en iPhone no hace falta el Apple ID para la prueba (apartados 3.8 y 5).</li>
 </ul>
 <hr />
 <h2 id="contacto">11. Contacto</h2>
