@@ -19,6 +19,12 @@
   let nacimiento = null, edadEscrita = null;
   const marcasTxt = {};
 
+  // Estadísticas sin cookies (web-52, /analitica.js): códigos y resultado, nunca las marcas ni la edad.
+  const medir = (nombre, props) => (globalThis.trz = globalThis.trz || []).push([nombre, props]);
+  const org = D.organismo.codigo;
+  let medidaUsada = false, medidaNota = false;
+  medir("ficha_vista", { organismo: org, tipo: D.organismo.tipo, ambito: D.organismo.ambito });
+
   // ── Selector de convocatorias ───────────────────────────────────────────────
   function eligeConvocatoria(i) {
     conv = i;
@@ -156,6 +162,15 @@
       if (a) { avisos[p.codigo] = a; marcas[p.codigo] = null; }
     }
     const res = W.puntuar(N, c, sexo, edad, marcas);
+    // Una vez por página: la primera marca válida y la primera nota o apto completo.
+    if (!medidaUsada && Object.values(marcas).some((v) => v != null)) {
+      medidaUsada = true;
+      medir("calculadora_usada", { organismo: org, convocatoria: c.clave });
+    }
+    if (!medidaNota && res.nota.completas) {
+      medidaNota = true;
+      medir("calculadora_nota", { organismo: org, resultado: res.nota.apto === true ? "apto" : res.nota.apto === false ? "no_apto" : "puntos" });
+    }
     for (const p of res.pruebas) {
       if (!p.baremo) continue;
       p.marcaLeida = leidas[p.codigo];

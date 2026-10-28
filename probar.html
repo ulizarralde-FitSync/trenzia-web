@@ -255,7 +255,10 @@
     document.querySelectorAll("[data-err]").forEach((s) => (s.textContent = ""));
     $("general").textContent = "";
   }
+  // Estadísticas sin cookies (web-52, /analitica.js): solo códigos, nunca lo escrito.
+  const medir = (nombre, props) => (window.trz = window.trz || []).push([nombre, props || {}]);
   function pintarErrores(errores) {
+    for (const k of new Set(Object.keys(errores).map((k) => CAMPO[k] || k))) medir("alta_error", { campo: k });
     const sueltos = [];
     const puestos = new Set();
     for (const [k, msg] of Object.entries(errores)) {
@@ -337,7 +340,12 @@
       const d = await r.json().catch(() => ({}));
       if (r.ok) {
         // W-63: `estado` dice qué pasó; `plazas_libres` es el campo de antes.
-        hecho(d.estado === "lista_espera" || d.plazas_libres === false, body);
+        const enEspera = d.estado === "lista_espera" || d.plazas_libres === false;
+        medir("alta_enviada", Object.assign(
+          { estado: enEspera ? "lista_espera" : "confirmado", plataforma: body.plataforma },
+          /^[a-z0-9-]{1,40}$/.test(body.ref) ? { ref: body.ref } : {},
+          body.cuerpo_code ? { cuerpo_code: body.cuerpo_code } : {}));
+        hecho(enEspera, body);
         return;
       }
       if (d.errores) pintarErrores(d.errores);
@@ -391,6 +399,7 @@
   }
   // «Corrígelo»: el formulario otra vez, con lo que se escribió.
   function volver() {
+    medir("corrigelo");
     $("hecho").hidden = true;
     $("alta").hidden = false;
     $("ya").hidden = false;
@@ -429,5 +438,6 @@
 })();
 </script>
 <script src="/oposiciones/ref.js"></script>
+<script src="/analitica.js" defer></script>
 </body>
 </html>
