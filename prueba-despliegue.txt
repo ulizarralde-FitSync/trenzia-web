@@ -1,0 +1,3 @@
+Prueba de despliegue de trenzia.es (encargo web-57).
+Este archivo no lo enlaza ninguna página y se borra en el mismo encargo.
+Hecho desde el Mac el 30/10/2026.
