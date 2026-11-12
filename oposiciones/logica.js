@@ -72,8 +72,9 @@ var TrenziaWeb = (function () {
     // este sexo o esta edad (has_bareme: false): con completa, sin baremo no
     // hay veredicto; con noAptoSeguro, una prueba que elimina da «no apto»
     // aunque falten otras. El veredicto es siempre el de nota.js.
+    // puntos_bases (los de la tabla, sin coeficiente) son los que mira min_por_prueba_en_bruto (A-61, web-59).
     const filas = pruebas.map((p) => p.baremo
-      ? { test_type: p.codigo, has_bareme: true, mark: p.r.mark, puntos: p.puntos, points_max: p.puntosMax, is_apto: p.r.is_apto }
+      ? { test_type: p.codigo, has_bareme: true, mark: p.r.mark, puntos: p.puntos, puntos_bases: p.puntosBases, points_max: p.puntosMax, is_apto: p.r.is_apto }
       : { test_type: p.codigo, has_bareme: false, mark: null, puntos: null, points_max: null, is_apto: false });
     // Las pruebas oficiales sin baremo cargado (A-19) también cuentan: sin ellas,
     // nota.js daría «apto» con solo las cargadas. Las añade nota.js, no la web.

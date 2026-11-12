@@ -225,6 +225,39 @@ var TrenziaTextos = (function () {
     return !(c.pruebas || []).every((p) => p.baremos.every((b) => b.solo_apto));
   }
 
+  const CUANTAS = ["", "una", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez"];
+  const CUANTOS = ["", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez"];
+  const enLetra = (xs, n) => xs[n] || num(n);
+
+  /**
+   * El mínimo de cada prueba, sin mayúscula ni punto (A-61, web-59): «al menos 5 puntos en
+   * cada prueba», con «de la tabla … antes de aplicar el coeficiente» (min_por_prueba_en_bruto)
+   * y «salvo en una, donde basta con 3» (excepciones). Con ceros_permitidos, o sin
+   * min_por_prueba, null: esa regla va en cerosTexto. cada: «en cada prueba» u otra.
+   * Solo describe los campos; quién elimina lo decide nota.js.
+   */
+  function minimoEnCadaPrueba(g, cada = "en cada prueba") {
+    if (!g || g.min_por_prueba == null || g.ceros_permitidos != null) return null;
+    let t = g.min_por_prueba_en_bruto === true
+      ? `al menos ${puntos(g.min_por_prueba)} de la tabla ${cada}, antes de aplicar el coeficiente`
+      : `al menos ${puntos(g.min_por_prueba)} ${cada}`;
+    const ex = g.excepciones;
+    if (ex) t += `, salvo en ${ex.pruebas === 1 ? "una" : `${enLetra(CUANTAS, ex.pruebas)} como mucho`}, donde basta con ${num(ex.minimo)}`;
+    return t;
+  }
+
+  /**
+   * Con ceros_permitidos (A-61, web-59): «Por debajo de 5 puntos, la prueba cuenta 0 en la
+   * media. Se admite un solo 0; con dos, no apto.» Si no, null.
+   */
+  function cerosTexto(g) {
+    if (!g || g.min_por_prueba == null || g.ceros_permitidos == null) return null;
+    const n = g.ceros_permitidos;
+    const bajo = g.min_por_prueba_en_bruto === true ? `${puntos(g.min_por_prueba)} de la tabla (antes del coeficiente)` : puntos(g.min_por_prueba);
+    const cuantos = n === 1 ? "Se admite un solo 0" : `Se admiten hasta ${enLetra(CUANTOS, n)} ceros`;
+    return `Por debajo de ${bajo}, la prueba cuenta 0 en la ${g.tipo === "media" ? "media" : "nota"}. ${cuantos}; con ${enLetra(CUANTOS, n + 1)}, no apto.`;
+  }
+
   /**
    * Cómo se mide y qué hace falta para el apto, en una frase. sinEliminar: noElimina(c)
    * de su convocatoria; mmss: enMinutos(prueba).
@@ -408,6 +441,6 @@ var TrenziaTextos = (function () {
     return n === 1 ? `Falta 1 prueba oficial que aún no calculamos: ${lista_}.` : `Faltan ${n} pruebas oficiales que aún no calculamos: ${lista_}.`;
   }
 
-  return { faltanPruebas, conPunto, condicionTexto, comoSeHace, origenDeMarcas, estado, estadoCompleto, claseEstado, tipo, tipoIndice, ambito, fecha, num, puntos, noElimina, enMinutos, rangoFechas, numeroBoletin, baremoComun, sinAnio, nombreLargo, convocatoriaEnFrase, marca, cantidad, unidadCampo, ejemploCampo, revisaMarca, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
+  return { faltanPruebas, conPunto, condicionTexto, comoSeHace, origenDeMarcas, estado, estadoCompleto, claseEstado, tipo, tipoIndice, ambito, fecha, num, puntos, noElimina, minimoEnCadaPrueba, cerosTexto, enMinutos, rangoFechas, numeroBoletin, baremoComun, sinAnio, nombreLargo, convocatoriaEnFrase, marca, cantidad, unidadCampo, ejemploCampo, revisaMarca, sexoEdad, condicion, avisos, legible, cuando, edadReferencia, SIN_CONFIRMAR, lista, veredicto, coeficiente };
 })();
 if (typeof module !== "undefined") module.exports = TrenziaTextos;
