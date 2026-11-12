@@ -118,20 +118,61 @@ var TrenziaNota = (() => {
       const n = Number(v);
       return v != null && Number.isFinite(n) && n >= 0 ? n : null;
     };
+    const entero = (v) => {
+      const n = num(v);
+      return n !== null && Number.isInteger(n) && n >= 1 ? n : null;
+    };
+    const minPrueba = num(o.min_points_per_test);
+    const ex = o.exceptions && typeof o.exceptions === "object" && !Array.isArray(o.exceptions) ? o.exceptions : null;
+    const exTests = ex ? entero(ex.tests) : null;
+    const exMin = ex ? num(ex.min_points) : null;
+    const excepciones = minPrueba !== null && exTests !== null && exMin !== null && exMin < minPrueba ? { tests: exTests, min_points: exMin } : null;
+    const ceros = minPrueba !== null ? entero(o.zeros_allowed) : null;
+    const ambas = excepciones !== null && ceros !== null;
     const rules = {
-      min_points_per_test: num(o.min_points_per_test),
+      min_points_per_test: minPrueba,
       min_total_points: num(o.min_total_points),
       max_total_points: num(o.max_total_points),
-      ...o.nota === "media" ? { nota: "media" } : {}
+      ...o.nota === "media" ? { nota: "media" } : {},
+      ...minPrueba !== null && o.min_points_per_test_raw === true ? { min_points_per_test_raw: true } : {},
+      ...excepciones && !ambas ? { exceptions: excepciones } : {},
+      ...ceros !== null && !ambas ? { zeros_allowed: ceros } : {}
     };
     if (rules.min_points_per_test === null && rules.min_total_points === null && rules.max_total_points === null) return null;
     return rules;
+  }
+  function frenteAlMinimo(filas, rules) {
+    const min = rules.min_points_per_test;
+    if (min == null) return filas.map(() => "llega");
+    const valor = (f) => {
+      var _a;
+      return rules.min_points_per_test_raw ? (_a = f.puntos_bases) != null ? _a : f.puntos : f.puntos;
+    };
+    const bajo = filas.map((f) => valor(f) < min);
+    const nBajo = bajo.filter(Boolean).length;
+    if (rules.exceptions) {
+      const { tests, min_points } = rules.exceptions;
+      const admisibles = filas.filter((f, i) => bajo[i] && valor(f) >= min_points).length;
+      const caben = admisibles <= tests;
+      return filas.map((f, i) => !bajo[i] ? "llega" : caben && valor(f) >= min_points ? "excepcion" : "elimina");
+    }
+    if (rules.zeros_allowed != null) {
+      const caben = nBajo <= rules.zeros_allowed;
+      return bajo.map((b) => !b ? "llega" : caben ? "cero" : "elimina");
+    }
+    return bajo.map((b) => b ? "elimina" : "llega");
   }
   function evaluateGlobalRule(perTest, rules) {
     let suma = 0;
     let conPuntos = 0;
     const below = [];
     const sinMarca = [];
+    const conMarca = perTest.filter((t) => !t.solo_apto && t.puntos != null);
+    const frente = frenteAlMinimo(
+      conMarca.map((t) => ({ puntos: t.puntos, puntos_bases: t.puntos_bases })),
+      rules
+    );
+    const estadoDe = new Map(conMarca.map((t, i) => [t, frente[i]]));
     for (const t of perTest) {
       if (t.solo_apto) {
         if (t.is_apto == null) sinMarca.push(t.test_type);
@@ -142,11 +183,10 @@ var TrenziaNota = (() => {
         sinMarca.push(t.test_type);
         continue;
       }
-      suma += t.puntos;
+      const estado = estadoDe.get(t);
+      suma += estado === "cero" ? 0 : t.puntos;
       conPuntos++;
-      if (rules.min_points_per_test != null && t.puntos < rules.min_points_per_test) {
-        below.push(t.test_type);
-      }
+      if (estado === "elimina") below.push(t.test_type);
     }
     const total = rules.nota === "media" ? conPuntos > 0 ? Math.round(suma / conPuntos * 100) / 100 : 0 : Math.round(suma * 100) / 100;
     const pointsToApto = rules.min_total_points != null ? Math.max(0, Math.round((rules.min_total_points - total) * 100) / 100) : null;
@@ -357,22 +397,28 @@ var TrenziaNota = (() => {
     };
   }
   function filaDeRegla(b) {
-    var _a;
-    return b.points_max === null ? { test_type: b.test_type, puntos: null, solo_apto: true, is_apto: b.mark === null ? null : b.is_apto } : { test_type: b.test_type, puntos: b.mark === null ? null : (_a = b.puntos) != null ? _a : 0 };
+    var _a, _b, _c;
+    return b.points_max === null ? { test_type: b.test_type, puntos: null, solo_apto: true, is_apto: b.mark === null ? null : b.is_apto } : {
+      test_type: b.test_type,
+      puntos: b.mark === null ? null : (_a = b.puntos) != null ? _a : 0,
+      puntos_bases: b.mark === null ? null : (_c = (_b = b.puntos_bases) != null ? _b : b.puntos) != null ? _c : 0
+    };
   }
   function notaDeConvocatoria(pruebas, scoringModel, rules, opciones = {}) {
-    var _a, _b;
+    var _a;
     const totals = aggregateScore(pruebas, scoringModel, (_a = rules == null ? void 0 : rules.nota) != null ? _a : "suma");
     if (opciones.completa) {
       const conBaremo = pruebas.filter((b) => b.has_bareme);
       const aptoEnTodas = scoringModel === "binary" || !rules || rules.min_points_per_test == null && rules.min_total_points == null;
-      const minPrueba = (_b = rules == null ? void 0 : rules.min_points_per_test) != null ? _b : null;
-      const eliminan = conBaremo.filter(
-        (b) => {
-          var _a2;
-          return b.mark !== null && (aptoEnTodas || b.points_max === null ? !b.is_apto : minPrueba !== null && ((_a2 = b.puntos) != null ? _a2 : 0) < minPrueba);
-        }
-      ).map((b) => b.test_type);
+      const conMarca = conBaremo.filter((b) => b.mark !== null);
+      const porApto = (b) => aptoEnTodas || b.points_max === null;
+      const conPuntos = rules && !aptoEnTodas ? conMarca.filter((b) => !porApto(b)) : [];
+      const frente = rules && !aptoEnTodas ? frenteAlMinimo(conPuntos.map((b) => {
+        var _a2, _b, _c;
+        return { puntos: (_a2 = b.puntos) != null ? _a2 : 0, puntos_bases: (_c = (_b = b.puntos_bases) != null ? _b : b.puntos) != null ? _c : 0 };
+      }), rules) : [];
+      const eliminaPorPuntos = new Set(conPuntos.filter((_, i) => frente[i] === "elimina"));
+      const eliminan = conMarca.filter((b) => porApto(b) ? !b.is_apto : eliminaPorPuntos.has(b)).map((b) => b.test_type);
       const faltanPuntos = scoringModel === "points" && rules && conBaremo.length > 0 ? evaluateGlobalRule(conBaremo.map(filaDeRegla), rules).points_to_apto : null;
       const sinVeredicto = { totals, apto_global: null, points_to_apto: faltanPuntos, tests_below_min: eliminan };
       if (opciones.noAptoSeguro && eliminan.length > 0) return { ...sinVeredicto, apto_global: false };
@@ -543,6 +589,28 @@ var TrenziaNota = (() => {
   }
 
   // supabase/functions/_shared/oposiciones_archivo.ts
+  function variantesDeRegla(g, k, clave) {
+    var _a, _b;
+    const bruto = g.min_por_prueba_en_bruto === true;
+    const ex = (_a = g.excepciones) != null ? _a : null;
+    const ceros = (_b = g.ceros_permitidos) != null ? _b : null;
+    if ((bruto || ex !== null || ceros !== null) && g.min_por_prueba === null) {
+      throw new Error(`${clave}: min_por_prueba_en_bruto, excepciones y ceros_permitidos necesitan min_por_prueba`);
+    }
+    if (ex !== null && ceros !== null) throw new Error(`${clave}: excepciones y ceros_permitidos no van juntos`);
+    if (ex !== null) {
+      if (!Number.isInteger(ex.pruebas) || ex.pruebas < 1) throw new Error(`${clave}: excepciones.pruebas tiene que ser un entero de 1 o más`);
+      if (!Number.isFinite(ex.minimo) || ex.minimo < 0 || ex.minimo >= g.min_por_prueba) {
+        throw new Error(`${clave}: excepciones.minimo tiene que estar entre 0 y min_por_prueba (${g.min_por_prueba})`);
+      }
+    }
+    if (ceros !== null && (!Number.isInteger(ceros) || ceros < 1)) throw new Error(`${clave}: ceros_permitidos tiene que ser un entero de 1 o más`);
+    return {
+      ...bruto ? { min_points_per_test_raw: true } : {},
+      ...ex !== null ? { exceptions: { tests: ex.pruebas, min_points: r4(ex.minimo * k) } } : {},
+      ...ceros !== null ? { zeros_allowed: ceros } : {}
+    };
+  }
   var r4 = (x) => Math.round(x * 1e4) / 1e4;
   function marcasDeEstado(estado) {
     switch (estado) {
@@ -610,15 +678,17 @@ var TrenziaNota = (() => {
     let rules = null;
     if (c.nota.modelo === "points" && g) {
       if (g.tipo === "media_de_bloques") throw new Error(`${c.clave}: «media_de_bloques» aún no está soportado`);
-      if (coefs.size > 1 && g.min_por_prueba !== null) {
-        throw new Error(`${c.clave}: coeficientes distintos y min_por_prueba: no se puede traducir a una sola regla`);
+      const bruto = g.min_por_prueba_en_bruto === true;
+      if (coefs.size > 1 && g.min_por_prueba !== null && !bruto) {
+        throw new Error(`${c.clave}: coeficientes distintos y min_por_prueba: no se puede traducir a una sola regla (salvo con min_por_prueba_en_bruto)`);
       }
-      const k = coefs.size === 1 ? [...coefs][0] : 1;
+      const k = bruto ? 1 : coefs.size === 1 ? [...coefs][0] : 1;
       rules = {
         min_points_per_test: g.min_por_prueba === null ? null : r4(g.min_por_prueba * k),
         min_total_points: g.min_total,
         max_total_points: g.max_total,
-        ...g.tipo === "media" ? { nota: "media" } : {}
+        ...g.tipo === "media" ? { nota: "media" } : {},
+        ...variantesDeRegla(g, k, c.clave)
       };
       if (rules.min_points_per_test === null && rules.min_total_points === null && rules.max_total_points === null && rules.nota !== "media") rules = null;
     }

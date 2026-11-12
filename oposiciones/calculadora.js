@@ -215,7 +215,10 @@
     $("coef").hidden = !coef;
     const li = [];
     if (regla && regla.min_por_prueba != null) {
-      li.push(`<li class="${n.porDebajo.length ? "no" : n.completas ? "ok" : ""}">Al menos ${T.puntos(regla.min_por_prueba)} en cada prueba</li>`);
+      // Con excepciones o ceros (A-61, web-59) cambia la frase; el verde o el rojo sigue saliendo de nota.porDebajo.
+      const minimo = T.minimoEnCadaPrueba(regla);
+      const frase = minimo ? minimo.charAt(0).toUpperCase() + minimo.slice(1) : T.cerosTexto(regla);
+      li.push(`<li class="${n.porDebajo.length ? "no" : n.completas ? "ok" : ""}">${esc(frase)}</li>`);
     }
     if (regla && regla.min_total != null) {
       const cls = n.porDebajo.length ? "" : !n.completas ? "" : n.apto ? "ok" : "no";
