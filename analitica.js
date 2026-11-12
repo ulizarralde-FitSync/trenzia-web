@@ -14,7 +14,8 @@
  * - Solo en trenzia.es: en local o en una vista previa no sale nada.
  *
  * Eventos de clic: clic_probar (enlaces a probar) y clic_oposiciones (los de la portada
- * a /oposiciones/, con su origen).
+ * a /oposiciones/, con su origen). Un clic antes de que cargue posthog-js (tras load, cuando
+ * el navegador queda ocioso, 3 s como mucho) se queda en la cola y se pierde al cambiar de página.
  *
  * Lo cargan la portada, probar y /oposiciones/. Las páginas con token
  * (probar-confirmar, probar-gestionar, opinion), la 404 y los legales, no.
@@ -54,8 +55,10 @@
 
   function enviar(ph, e) {
     if (!e || typeof e[0] !== "string") return;
-    // Un clic que lleva a otra página: el evento sale aunque la página se vaya.
-    ph.capture(e[0], e[1] || {}, e[0] === "clic_probar" || e[0] === "clic_oposiciones" ? { transport: "sendBeacon" } : undefined);
+    // Un clic que lleva a otra página: sale en el momento, sin esperar a la cola de posthog-js,
+    // por fetch con keepalive (lo pone posthog-js), que sigue aunque la página se vaya. Con
+    // transport "sendBeacon" esperaba a la cola y salía en un beacon que PostHog no registraba (web-55).
+    ph.capture(e[0], e[1] || {}, e[0] === "clic_probar" || e[0] === "clic_oposiciones" ? { send_instantly: true } : undefined);
   }
 
   // Clics en cualquier enlace a probar.html. La portada marca los suyos con data-origen.
