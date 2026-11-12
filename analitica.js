@@ -13,6 +13,9 @@
  * - Con «No rastrear» o Global Privacy Control, no se carga nada.
  * - Solo en trenzia.es: en local o en una vista previa no sale nada.
  *
+ * Eventos de clic: clic_probar (enlaces a probar) y clic_oposiciones (los de la portada
+ * a /oposiciones/, con su origen).
+ *
  * Lo cargan la portada, probar y /oposiciones/. Las páginas con token
  * (probar-confirmar, probar-gestionar, opinion), la 404 y los legales, no.
  */
@@ -52,16 +55,22 @@
   function enviar(ph, e) {
     if (!e || typeof e[0] !== "string") return;
     // Un clic que lleva a otra página: el evento sale aunque la página se vaya.
-    ph.capture(e[0], e[1] || {}, e[0] === "clic_probar" ? { transport: "sendBeacon" } : undefined);
+    ph.capture(e[0], e[1] || {}, e[0] === "clic_probar" || e[0] === "clic_oposiciones" ? { transport: "sendBeacon" } : undefined);
   }
 
   // Clics en cualquier enlace a probar.html. La portada marca los suyos con data-origen.
+  // Y los de la portada a /oposiciones/ marcados con data-origen: clic_oposiciones (web-55).
   document.addEventListener("click", function (ev) {
     var a = ev.target && ev.target.closest && ev.target.closest("a[href]");
     if (!a) return;
     var u;
     try { u = new URL(a.getAttribute("href"), location.href); } catch (e) { return; }
-    if (u.origin !== location.origin || !/^\/probar(\.html)?$/.test(u.pathname) || /^\/probar(\.html)?$/.test(location.pathname)) return;
+    if (u.origin !== location.origin) return;
+    if (/^\/oposiciones\/(index\.html)?$/.test(u.pathname) && a.dataset.origen) {
+      cola.push(["clic_oposiciones", { origen: a.dataset.origen }]);
+      return;
+    }
+    if (!/^\/probar(\.html)?$/.test(u.pathname) || /^\/probar(\.html)?$/.test(location.pathname)) return;
     var datos = document.getElementById("datos"), props = {};
     if (a.dataset.origen) props.origen = a.dataset.origen;
     else if (datos) props.origen = "ficha";

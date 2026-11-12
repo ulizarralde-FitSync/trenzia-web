@@ -82,9 +82,13 @@
  p.lead{font-size:19px;color:#cfcfd4;margin:0 0 32px}
  ul{padding-left:20px;color:#e6e6ea;margin:0 0 40px}
  li{margin:6px 0}
- .soon{display:inline-block;border:1px solid var(--o);color:var(--o);border-radius:999px;padding:6px 14px;font-size:14px;margin-bottom:48px}
+ .soon{display:inline-block;border:1px solid var(--o);color:var(--o);border-radius:999px;padding:6px 14px;font-size:14px;margin-bottom:40px}
  .cta{display:inline-block;background:var(--o);color:#fff;text-decoration:none;font-weight:700;font-size:19px;border-radius:999px;padding:13px 26px;margin:0 12px 16px 0}
- .cta:focus-visible{outline:2px solid #fff;outline-offset:3px}
+ .cta:focus-visible,.cta2:focus-visible{outline:2px solid #fff;outline-offset:3px}
+ /* Primera pantalla (web-55): el botón principal y, al lado o debajo, el secundario con borde */
+ .acciones{margin:0 0 4px}
+ .cta2{display:inline-block;border:2px solid var(--o);color:#fff;text-decoration:none;font-weight:700;font-size:17px;border-radius:999px;padding:11px 22px;margin:0 0 16px}
+ @media (min-width:520px){.cta2{font-size:19px;padding:11px 24px}}
  /* Cómo funciona: pasos uno debajo de otro; en pantalla ancha, tres columnas */
  .como{margin:0 0 48px}
  .como h2{font-size:26px;line-height:1.25;margin:0 0 20px}
@@ -106,13 +110,16 @@
  </div>
  <h1>Llega a las físicas <em>sabiendo que tienes el apto</em>.</h1>
  <p class="lead">Bomberos, policía, Ertzaintza, ejército… Trenzia une todas las pruebas de tu convocatoria en un plan que se adapta a ti cada día.</p>
+ <div class="acciones">
+  <a class="cta" href="probar.html" data-origen="portada_arriba">Quiero probar la app</a>
+  <a class="cta2" href="/oposiciones/" data-origen="portada_arriba">Mira las pruebas de tu oposición</a>
+ </div>
+ <span class="soon">Próximamente en App Store y Google Play</span>
  <ul>
   <li><strong>Sabes cuánto te falta para el apto en cada prueba</strong>, con los baremos de tu convocatoria. Si no está, sube las bases y la app las lee.</li>
   <li><strong>Un solo plan para todas tus pruebas</strong>: carrera, natación, cuerda, press banca… sin pasarte de carga ni dejar ninguna atrás.</li>
   <li><strong>Cada día se ajusta a cómo llegas</strong>: si vienes cansado o con molestias, cambia la sesión. Y haz simulacros del examen para ver tu nota.</li>
  </ul>
- <a class="cta" href="probar.html" data-origen="portada_arriba">Quiero probar la app</a>
- <span class="soon">Próximamente en App Store y Google Play</span>
 
  <section class="como" id="como-funciona" aria-labelledby="como-titulo">
   <h2 id="como-titulo">Cómo funciona</h2>
@@ -121,7 +128,7 @@
    <li><span class="num" aria-hidden="true">2</span><div><strong>Mide dónde estás.</strong> Apunta tus marcas o haz un simulacro. Verás tu nota y cuánto te falta para el apto en cada prueba.</div></li>
    <li><span class="num" aria-hidden="true">3</span><div><strong>Entrena con tu plan.</strong> Cada semana, hasta el día del examen, un plan que reparte todas tus pruebas. Cada día cuentas cómo llegas y la sesión se ajusta.</div></li>
   </ol>
-  <p class="mas">¿Quieres ver ya las pruebas de tu oposición? <a href="/oposiciones/">Mira sus marcas y calcula tu nota</a>.</p>
+  <p class="mas">¿Quieres ver ya las pruebas de tu oposición? <a href="/oposiciones/" data-origen="portada_abajo">Mira sus marcas y calcula tu nota</a>.</p>
   <a class="cta" href="probar.html" data-origen="portada_abajo">Quiero probar la app</a>
  </section>
  <footer>
