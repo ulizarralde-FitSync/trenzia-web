@@ -8,14 +8,14 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=3">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=3">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3">
-<title>Trenzia · Prepara las pruebas físicas de tu oposición</title>
+<title>Trenzia · Un plan para todas tus pruebas físicas</title>
 <link rel="canonical" href="https://trenzia.es/">
-<meta name="description" content="Bomberos, policía local, Ertzaintza, Guardia Civil… Trenzia une las pruebas físicas y el baremo de tu convocatoria en un plan que se adapta a ti cada día.">
+<meta name="description" content="Trenzia reparte todas las pruebas físicas de tu oposición en un plan con el baremo de tu convocatoria y lo ajusta cada día según cómo llegas.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Trenzia">
 <meta property="og:locale" content="es_ES">
-<meta property="og:title" content="Trenzia · Prepara las pruebas físicas de tu oposición">
-<meta property="og:description" content="Bomberos, policía local, Ertzaintza, Guardia Civil… Trenzia une las pruebas físicas y el baremo de tu convocatoria en un plan que se adapta a ti cada día.">
+<meta property="og:title" content="Trenzia · Un plan para todas tus pruebas físicas">
+<meta property="og:description" content="Trenzia reparte todas las pruebas físicas de tu oposición en un plan con el baremo de tu convocatoria y lo ajusta cada día según cómo llegas.">
 <meta property="og:url" content="https://trenzia.es/">
 <meta property="og:image" content="https://trenzia.es/og-image.png">
 <meta property="og:image:width" content="1200">
@@ -66,6 +66,60 @@
    "publisher": {
     "@id": "https://trenzia.es/#organizacion"
    }
+  },
+  {
+   "@type": "FAQPage",
+   "@id": "https://trenzia.es/#preguntas",
+   "mainEntity": [
+    {
+     "@type": "Question",
+     "name": "¿Para qué oposiciones sirve?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Para las que tienen pruebas físicas: bomberos, policía local, Policía Nacional, Guardia Civil, Ertzaintza, Mossos, Policía Foral y Fuerzas Armadas. Mira si está la tuya en https://trenzia.es/oposiciones/."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "¿Y si mi convocatoria no está?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Subes las bases en PDF y la app lee las pruebas y el baremo."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "¿Sustituye a mi preparador?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "No. Trenzia organiza y ajusta tu plan cada día. La técnica de cada prueba la corrige una persona que te vea."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "¿Me asegura el apto?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "No. Ninguna app puede. Te dice cuánto te falta en cada prueba y qué entrenar para recortarlo."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "¿De dónde salen las marcas?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "De las bases oficiales de cada convocatoria. Cada ficha enlaza a su boletín. Manda siempre la convocatoria oficial."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "¿Cómo la pruebo?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Apúntate a la prueba cerrada en https://trenzia.es/probar.html, para iPhone y Android: las plazas son limitadas y se cubren por orden de llegada."
+     }
+    }
+   ]
   }
  ]
 }
@@ -82,6 +136,29 @@
  p.lead{font-size:19px;color:#cfcfd4;margin:0 0 32px}
  ul{padding-left:20px;color:#e6e6ea;margin:0 0 40px}
  li{margin:6px 0}
+ h2{font-size:26px;line-height:1.25;margin:0 0 20px}
+ /* El problema (web-61): tres líneas, sin iconos */
+ .problema{margin:0 0 48px}
+ .problema ul{list-style:none;padding:0;margin:0;display:grid;gap:12px}
+ .problema li{margin:0;font-size:18px;color:#e6e6ea;border-top:1px solid #2a2a2e;padding-top:12px}
+ /* Cómo lo resuelve: captura y texto; en pantalla ancha, a un lado y a otro, alternando */
+ .resuelve{margin:0 0 40px}
+ .bloque{margin:0 0 36px}
+ .bloque img{display:block;width:100%;max-width:320px;height:auto;border:1px solid #2a2a2e;border-radius:12px;margin:0 0 16px}
+ .bloque h3{font-size:21px;line-height:1.3;margin:0 0 8px}
+ .bloque p{margin:0;color:#e6e6ea}
+ @media (min-width:720px){.bloque{display:grid;grid-template-columns:280px 1fr;gap:40px;align-items:center}.bloque img{margin:0}.bloque:nth-child(odd){grid-template-columns:1fr 280px}.bloque:nth-child(odd) img{order:2}}
+ /* Línea de posición */
+ .posicion{font-size:19px;color:#fff;border-left:3px solid var(--o);padding:4px 0 4px 16px;margin:0 0 48px}
+ /* Preguntas frecuentes, desplegables */
+ .faq{margin:0 0 48px}
+ .faq details{border-top:1px solid #2a2a2e}
+ .faq details:last-of-type{border-bottom:1px solid #2a2a2e}
+ .faq summary{cursor:pointer;font-weight:700;font-size:17px;padding:14px 0}
+ .faq summary:focus-visible{outline:2px solid #fff;outline-offset:3px}
+ .faq details p{margin:0 0 16px;color:#e6e6ea}
+ .faq a{color:#fff}
+ .cierre{margin:0 0 48px}
  .soon{display:inline-block;border:1px solid var(--o);color:var(--o);border-radius:999px;padding:6px 14px;font-size:14px;margin-bottom:40px}
  .cta{display:inline-block;background:var(--o);color:#fff;text-decoration:none;font-weight:700;font-size:19px;border-radius:999px;padding:13px 26px;margin:0 12px 16px 0}
  .cta:focus-visible,.cta2:focus-visible{outline:2px solid #fff;outline-offset:3px}
@@ -91,7 +168,6 @@
  @media (min-width:520px){.cta2{font-size:19px;padding:11px 24px}}
  /* Cómo funciona: pasos uno debajo de otro; en pantalla ancha, tres columnas */
  .como{margin:0 0 48px}
- .como h2{font-size:26px;line-height:1.25;margin:0 0 20px}
  .pasos{list-style:none;padding:0;margin:0 0 28px;display:grid;gap:14px;color:#e6e6ea}
  .pasos li{margin:0;display:flex;gap:14px;align-items:flex-start;border:1px solid #2a2a2e;border-radius:12px;padding:18px}
  .pasos .num{flex:none;font-size:28px;font-weight:800;line-height:1.1;color:var(--o)}
@@ -108,18 +184,44 @@
  <div class="brand">
   <img src="lockup.svg" alt="Trenzia" width="241" height="48">
  </div>
- <h1>Llega a las físicas <em>sabiendo que tienes el apto</em>.</h1>
- <p class="lead">Bomberos, policía, Ertzaintza, ejército… Trenzia une todas las pruebas de tu convocatoria en un plan que se adapta a ti cada día.</p>
+ <h1>Preparas varias pruebas físicas. <em>¿Qué entrenas hoy?</em></h1>
+ <p class="lead">Carrera, natación, cuerda, press banca. Cada prueba pide algo distinto y la semana no da para todo. Trenzia las reparte en un plan con el baremo de tu convocatoria y lo ajusta cada día según cómo llegas.</p>
  <div class="acciones">
   <a class="cta" href="probar.html" data-origen="portada_arriba">Quiero probar la app</a>
   <a class="cta2" href="/oposiciones/" data-origen="portada_arriba">Mira las pruebas de tu oposición</a>
  </div>
  <span class="soon">Próximamente en App Store y Google Play</span>
- <ul>
-  <li><strong>Sabes cuánto te falta para el apto en cada prueba</strong>, con los baremos de tu convocatoria. Si no está, sube las bases y la app las lee.</li>
-  <li><strong>Un solo plan para todas tus pruebas</strong>: carrera, natación, cuerda, press banca… sin pasarte de carga ni dejar ninguna atrás.</li>
-  <li><strong>Cada día se ajusta a cómo llegas</strong>: si vienes cansado o con molestias, cambia la sesión. Y haz simulacros del examen para ver tu nota.</li>
- </ul>
+
+ <section class="problema" aria-labelledby="problema-titulo">
+  <h2 id="problema-titulo">Lo que pasa cuando preparas varias pruebas a la vez</h2>
+  <ul>
+   <li>Entrenas mucho y no sabes si llegas.</li>
+   <li>Acabas entrenando tu prueba favorita y la floja se queda atrás.</li>
+   <li>En muchas convocatorias, una sola prueba por debajo del mínimo te deja fuera.</li>
+  </ul>
+ </section>
+
+ <section class="resuelve" aria-labelledby="resuelve-titulo">
+  <h2 id="resuelve-titulo">Cómo lo resuelve Trenzia</h2>
+ <div class="bloque">
+  <img src="img/app-semana-390.webp" srcset="img/app-semana-390.webp 390w, img/app-semana-780.webp 780w" sizes="(min-width:720px) 280px, min(320px, calc(100vw - 40px))" width="390" height="750" loading="lazy" decoding="async" alt="Pantalla Semana de la app: el plan del 16 al 22 de noviembre, con carrera, dominadas y salto de altura en días distintos y uno de descanso.">
+  <div><h3>Un solo plan para todas tus pruebas</h3><p>Reparte carrera, natación, fuerza y técnica en tu semana, sin pasarte de carga ni dejar ninguna atrás.</p></div>
+ </div>
+ <div class="bloque">
+  <img src="img/app-hoy-390.webp" srcset="img/app-hoy-390.webp 390w, img/app-hoy-780.webp 780w" sizes="(min-width:720px) 280px, min(320px, calc(100vw - 40px))" width="390" height="765" loading="lazy" decoding="async" alt="Pantalla Hoy de la app: 118 días para el examen y cómo llegas hoy, 81, con la sesión al 100 %.">
+  <div><h3>Sabes qué toca hoy</h3><p>Abres la app y tienes la sesión del día, con sus series, ritmos y descansos.</p></div>
+ </div>
+ <div class="bloque">
+  <img src="img/app-checkin-390.webp" srcset="img/app-checkin-390.webp 390w, img/app-checkin-780.webp 780w" sizes="(min-width:720px) 280px, min(320px, calc(100vw - 40px))" width="390" height="799" loading="lazy" decoding="async" alt="Check-in de la mañana en la app: horas y calidad del sueño, estrés y agujetas, cada uno en su escala.">
+  <div><h3>Se ajusta cada mañana</h3><p>Cuentas cómo llegas. Si vienes cansado o con molestias, la sesión cambia.</p></div>
+ </div>
+ <div class="bloque">
+  <img src="img/app-progreso-390.webp" srcset="img/app-progreso-390.webp 390w, img/app-progreso-780.webp 780w" sizes="(min-width:720px) 280px, min(320px, calc(100vw - 40px))" width="390" height="562" loading="lazy" decoding="async" alt="Progreso en dominadas: 15 de 18 repeticiones, el 83 % del objetivo, con la línea del apto en 18.">
+  <div><h3>Cuánto te falta para el apto</h3><p>Apuntas tus marcas o haces un simulacro y ves cuánto te falta en cada prueba, con el baremo de tu convocatoria. Si tu convocatoria no está, subes las bases en PDF y la app las lee.</p></div>
+ </div>
+ </section>
+
+ <p class="posicion">Trenzia hace el plan. La técnica la corrige tu preparador.</p>
 
  <section class="como" id="como-funciona" aria-labelledby="como-titulo">
   <h2 id="como-titulo">Cómo funciona</h2>
@@ -128,9 +230,22 @@
    <li><span class="num" aria-hidden="true">2</span><div><strong>Mide dónde estás.</strong> Apunta tus marcas o haz un simulacro. Verás tu nota y cuánto te falta para el apto en cada prueba.</div></li>
    <li><span class="num" aria-hidden="true">3</span><div><strong>Entrena con tu plan.</strong> Cada semana, hasta el día del examen, un plan que reparte todas tus pruebas. Cada día cuentas cómo llegas y la sesión se ajusta.</div></li>
   </ol>
+ </section>
+
+ <section class="faq" aria-labelledby="faq-titulo">
+  <h2 id="faq-titulo">Preguntas frecuentes</h2>
+ <details data-faq="oposiciones"><summary>¿Para qué oposiciones sirve?</summary><p>Para las que tienen pruebas físicas: bomberos, policía local, Policía Nacional, Guardia Civil, Ertzaintza, Mossos, Policía Foral y Fuerzas Armadas. <a href="/oposiciones/">Mira si está la tuya</a>.</p></details>
+ <details data-faq="no_esta"><summary>¿Y si mi convocatoria no está?</summary><p>Subes las bases en PDF y la app lee las pruebas y el baremo.</p></details>
+ <details data-faq="preparador"><summary>¿Sustituye a mi preparador?</summary><p>No. Trenzia organiza y ajusta tu plan cada día. La técnica de cada prueba la corrige una persona que te vea.</p></details>
+ <details data-faq="apto"><summary>¿Me asegura el apto?</summary><p>No. Ninguna app puede. Te dice cuánto te falta en cada prueba y qué entrenar para recortarlo.</p></details>
+ <details data-faq="marcas"><summary>¿De dónde salen las marcas?</summary><p>De las bases oficiales de cada convocatoria. Cada ficha enlaza a su boletín. Manda siempre la convocatoria oficial.</p></details>
+ <details data-faq="probar"><summary>¿Cómo la pruebo?</summary><p><a href="probar.html" data-origen="portada_faq">Apúntate a la prueba cerrada</a>, para iPhone y Android: las plazas son limitadas y se cubren por orden de llegada.</p></details>
+ </section>
+
+ <div class="cierre">
   <p class="mas">¿Quieres ver ya las pruebas de tu oposición? <a href="/oposiciones/" data-origen="portada_abajo">Mira sus marcas y calcula tu nota</a>.</p>
   <a class="cta" href="probar.html" data-origen="portada_abajo">Quiero probar la app</a>
- </section>
+ </div>
  <footer>
   <p><a href="/oposiciones/">Pruebas físicas por oposición</a></p>
   <p>
