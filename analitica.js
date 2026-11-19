@@ -14,7 +14,7 @@
  * - Solo en trenzia.es: en local o en una vista previa no sale nada.
  *
  * Eventos de clic: clic_probar (enlaces a probar) y clic_oposiciones (los de la portada
- * a /oposiciones/, con su origen). Un clic antes de que cargue posthog-js (tras load, cuando
+ * a /oposiciones/, con su origen). faq_abierta: al abrir una pregunta frecuente de la portada. Un clic antes de que cargue posthog-js (tras load, cuando
  * el navegador queda ocioso, 3 s como mucho) se queda en la cola y se pierde al cambiar de página.
  *
  * Lo cargan la portada, probar y /oposiciones/. Las páginas con token
@@ -81,6 +81,13 @@
     else props.origen = "otro";
     if (datos) { try { props.organismo = JSON.parse(datos.textContent).organismo.codigo; } catch (e) { /* sin organismo */ } }
     cola.push(["clic_probar", props]);
+  }, true);
+
+  // Al abrir una pregunta frecuente de la portada: faq_abierta con su identificador corto,
+  // no el texto (web-61). toggle no sube por el árbol: se escucha en la fase de captura.
+  document.addEventListener("toggle", function (ev) {
+    var d = ev.target;
+    if (d && d.tagName === "DETAILS" && d.open && d.dataset && d.dataset.faq) cola.push(["faq_abierta", { pregunta: d.dataset.faq }]);
   }, true);
 
   function cargar() {

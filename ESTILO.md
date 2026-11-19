@@ -44,11 +44,15 @@ Fuente única: el kit del logo v3 (`tienda\trenzia-logo-v3\`, con cesión de der
 ## Formas y componentes
 
 - **Botón principal:** fondo naranja, texto blanco en negrita a 19 px (no menos: con 19 px en negrita cuenta como texto grande y el contraste blanco sobre naranja, 3,1 a 1, cumple; a 17 px no cumple. Decisión de Urko, 07/10), forma de píldora (`border-radius: 999px`), relleno de 13 a 14 px por 22 a 26 px.
-- **Botón secundario:** transparente, borde `#CFCFD4`, también en píldora.
+- **Botón secundario:** transparente, borde naranja `#FF5A1F` de 2 px y texto blanco en negrita, también en píldora (así está publicado desde el web-55). A 17 px en el móvil para que quepa en una línea; desde 520 px de ancho va al lado del principal, a 19 px y con su misma altura.
 - **Etiqueta "Próximamente":** borde y texto naranjas, píldora, 14 px.
 - **Tarjetas y cajas:** borde de 1 px `#2A2A2E`, esquinas de 12 px, relleno de 18 a 20 px. Las tarjetas de la lista del selector de oposición, más compactas: 14 × 16 px.
 - **Campos de formulario:** fondo `#16161A`, borde `#2A2A2E`, esquinas de 8 px.
 - **Chips de filtro:** píldora con borde `#2A2A2E`. Seleccionado: borde y texto naranjas y fondo naranja suave.
+- **Capturas de la app** (portada, web-61): imagen de producto, no decoración. Pantallas reales de la app, recortadas por dentro del marco de la tienda (sin el rótulo ni el borde del marco). Sin marco de teléfono dibujado, sin sombras ni degradados: esquinas de 12 px y borde de 1 px `#2A2A2E`. En WebP, a 390 px y a 780 px (2x) en `img/`, con `width` y `height`, `loading="lazy"` y un `alt` que describe la pantalla. Como mucho 320 px de ancho en el móvil y 280 px en escritorio, donde van a un lado y el texto al otro, alternando.
+- **Bloque de captura:** título (h3) de 21 px y dos líneas de texto en `#E6E6EA`.
+- **Línea de posición:** una frase de 19 px en blanco, con borde naranja de 3 px a la izquierda y 16 px de separación.
+- **Preguntas frecuentes:** desplegables (`<details>`), una línea `#2A2A2E` entre preguntas, la pregunta en negrita a 17 px y la respuesta en `#E6E6EA`. Cada una lleva `data-faq` con un identificador corto (para el evento `faq_abierta`) y van también en el JSON-LD como `FAQPage`, con el mismo texto.
 - **Foco (accesibilidad):** contorno de 2 px, blanco en los botones de la portada y naranja en los formularios. No se quita nunca.
 
 ### Pruebas físicas por oposición (`/oposiciones/`)
@@ -62,6 +66,7 @@ Mismas medidas que las páginas de probadores (640 px, h1 de 30 px). Su estilo e
 - **Tablas de marcas:** dentro de un desplegable («Ver la tabla oficial»), dos columnas (Marca y Puntos) con una línea `#2A2A2E` entre filas. Si la prueba puntúa en escala lineal, la tabla tiene solo dos filas y debajo la frase «Entre medias, proporcional (dos decimales)».
 - **Calculadora:** una caja por prueba con el campo de la marca (16 px, máximo 150 px de ancho), los puntos en grande (22 px, negrita), una barra de progreso naranja de 6 px y un mensaje de 14 px en verde (apto) o rojo claro (no apto). Debajo, la caja del total (30 px) con la regla de la convocatoria en una lista con ✓, ✕ u ○.
 - **Sexo:** control segmentado en píldora; el elegido, con fondo naranja suave y texto naranja.
+- **Frase de resultado** (web-61): encima de «Prepáralas con Trenzia», 17 px en blanco. Sale del resultado de `nota.js` (te faltan X en una prueba, puntos para el total o la media, apto, o el número de pruebas); sin JavaScript, «Trenzia reparte estas pruebas en un plan y lo ajusta cada día.».
 - **Botón «Prepáralas con Trenzia»:** el botón principal, a `probar.html?oposicion=CODIGO`.
 
 ## Maquetación

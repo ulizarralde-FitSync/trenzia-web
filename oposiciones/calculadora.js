@@ -196,6 +196,44 @@
       msg.textContent = m.txt;
     }
     pintaTotal(c, res);
+    pintaResultado(res);
+  }
+
+  /**
+   * La frase de encima de «Prepáralas con Trenzia» (web-61). El caso lo decide nota.js (apto,
+   * porDebajo y cada prueba); la diferencia es la misma «te faltan…» de la prueba. La web no calcula nada nuevo.
+   */
+  function pintaResultado(res) {
+    const n = res.nota, el = $("resultado");
+    if (!el) return;
+    const sigue = "Trenzia te dice qué entrenar cada día para";
+    // Las pruebas con marca que quedan por debajo, con lo que les falta para el apto.
+    const bajo = res.pruebas
+      .filter((p) => p.baremo && p.marca != null && p.r.label !== "Sin marca" && (n.porDebajo.includes(p.codigo) || p.r.is_apto === false))
+      .map((p) => ({ p, q: W.queFalta(p) }))
+      .filter((x) => x.q && !x.q.apto && x.q.falta > 0);
+    if (bajo.length) {
+      // La más lejos del apto, en proporción a su marca: segundos, repeticiones y centímetros no se comparan tal cual.
+      const rel = (x) => x.q.falta / (Math.abs(Number(x.p.baremo.marca_apto)) || 1);
+      const peor = bajo.reduce((a, b) => (rel(b) > rel(a) ? b : a));
+      const nombre = ((cat[peor.p.codigo] && cat[peor.p.codigo].nombre) || peor.p.codigo).replace(/^\p{Lu}(?!\p{Lu})/u, (x) => x.toLowerCase());
+      const otras = bajo.length - 1;
+      const y = otras ? `, y ${otras === 1 ? "otra prueba está" : `otras ${otras} pruebas están`} por debajo` : "";
+      el.textContent = `${faltan(peor.q.falta, peor.p.baremo.metrica, cat[peor.p.codigo] && cat[peor.p.codigo].unidad)} en ${nombre}${y}. ${sigue} recortarlo.`;
+      return;
+    }
+    // Por puntos con mínimo total o de media (Ertzaintza): ninguna prueba por debajo, pero no llega.
+    if (res.modelo === "points" && n.completas && n.apto === false && n.faltan > 0) {
+      el.textContent = `${n.faltan === 1 ? "Te falta" : "Te faltan"} ${T.puntos(n.faltan)} ${n.tipo === "media" ? "de media" : "para el total"}. ${sigue} subirlos.`;
+      return;
+    }
+    if (n.apto === true && n.completas && !(n.sinCargar && n.sinCargar.length) && !n.sinBaremo) {
+      el.textContent = "Con estas marcas hoy tendrías el apto. Trenzia te ayuda a mantenerlo y a subir nota hasta el examen.";
+      return;
+    }
+    // Las pruebas oficiales para este sexo, cargadas o no.
+    const total = n.total + (n.sinCargar ? n.sinCargar.length : 0);
+    el.textContent = total === 1 ? "Trenzia mete esta prueba en un plan y lo ajusta cada día." : `Trenzia reparte estas ${total} pruebas en un plan y lo ajusta cada día.`;
   }
 
   function pintaTotal(c, res) {

@@ -93,6 +93,7 @@ tr.aqui td{color:var(--o);font-weight:700}
 .regla li.ok::before{content:"✓ ";color:var(--ok)}
 .regla li.no::before{content:"✕ ";color:var(--err)}
 .veredicto{margin:12px 0 0;font-size:15px;color:#fff}
+.resultado{margin:24px 0 12px;font-size:17px;color:#fff}
 .btn{display:inline-block;background:var(--o);color:#fff;font-weight:700;font-size:19px;border-radius:999px;padding:13px 24px;text-decoration:none}
 .fuente{font-size:14px;color:var(--muted);margin-top:24px}
 footer{border-top:1px solid var(--line);margin-top:40px;padding-top:20px;font-size:14px;color:var(--muted)}
