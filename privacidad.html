@@ -23,7 +23,7 @@
  .box{border:1px solid #e3e3e6;border-radius:10px;padding:18px 20px;background:#fafafa;margin:20px 0}
 </style></head><body><main>
 <h1>Política de Privacidad de Trenzia</h1>
-<p><strong>Última actualización: 19 de noviembre de 2026 · Versión 1.13</strong></p>
+<p><strong>Última actualización: 24 de noviembre de 2026 · Versión 1.14</strong></p>
 <h2 id="responsable-del-tratamiento">1. Responsable del tratamiento</h2>
 <div class="tabla" role="region" aria-label="1. Responsable del tratamiento" tabindex="0">
 <table>
@@ -171,6 +171,8 @@
 <li>Check-in diario de bienestar: horas y calidad del sueño, estrés percibido, nivel y zonas de agujetas/dolor muscular, puntuación de nutrición, variabilidad de la frecuencia cardiaca (HRV/RMSSD), frecuencia cardiaca en reposo y puntuación de readiness calculada. Tabla: user_daily_readiness.</li>
 <li>Fase del ciclo menstrual, si la usuaria decide facilitarla, para ajustar la carga de entrenamiento. Es un campo opcional: dejarlo vacío no limita el uso de la app. (campo no expuesto en la versión publicada de la app; se documenta por existir en el modelo de datos) Campo: user_daily_readiness.menstrual_phase.</li>
 <li>Carga y fatiga fisiológica calculadas: ATL (carga aguda), CTL (carga crónica), TSB (balance de estrés), índice de fatiga por grupo muscular, carga neural semanal. Tabla: user_physiological_load.</li>
+<li>Salud y lesiones, solo si decides contestar a esa pantalla de la app y das tu consentimiento aparte (véase el apartado 4.1): la zona del cuerpo de cada lesión actual o pasada (de una lista fija, sin texto libre), si te molesta ahora o ya pasó, si quieres que el plan la siga trabajando con cuidado, y si un médico te ha pedido evitar algún esfuerzo y en qué zona. Guardamos también la fecha y la versión del consentimiento que diste. Tabla: user_lesiones.</li>
+<li>Aviso general de salud: en esa misma pantalla te mostramos un aviso para que consultes a tu médico antes de entrenar fuerte si has tenido dolor en el pecho, mareos o desmayos con el esfuerzo o un problema de corazón. No te hacemos preguntas sobre ello: solo guardamos la fecha y la versión del aviso que viste.</li>
 <li>Lesiones, molestias o limitaciones que el usuario describa libremente en las notas de sesión o en el chat con el entrenador IA.</li>
 </ul>
 <h3 id="datos-de-uso-de-la-aplicación-y-contenido-generado-por-el-usuario">3.4 Datos de uso de la aplicación y contenido generado por el usuario</h3>
@@ -243,7 +245,7 @@
 <tbody>
 <tr class="odd">
 <td>Analítica de producto (solo si la aceptas)</td>
-<td>Si marcas la casilla de analítica la primera vez que abres la app, registramos eventos de uso (pantallas abiertas, acciones realizadas), la plataforma (iOS/Android), la versión de la app y el identificador interno del usuario. Se guardan en nuestra base de datos, alojada en la Unión Europea, y se envían también a PostHog, en su servidor de la Unión Europea, con la dirección IP descartada y sin grabación de sesiones. Si no la aceptas, no se guarda ni se envía ningún evento de analítica. No usamos identificadores publicitarios ni compartimos estos datos con fines de publicidad</td>
+<td>Si marcas la casilla de analítica la primera vez que abres la app, registramos eventos de uso (pantallas abiertas, salvo la pantalla «Salud y lesiones», de la que no se registra nada; acciones realizadas), la plataforma (iOS/Android), la versión de la app y el identificador interno del usuario. Se guardan en nuestra base de datos, alojada en la Unión Europea, y se envían también a PostHog, en su servidor de la Unión Europea, con la dirección IP descartada y sin grabación de sesiones. Si no la aceptas, no se guarda ni se envía ningún evento de analítica. No usamos identificadores publicitarios ni compartimos estos datos con fines de publicidad</td>
 </tr>
 <tr class="even">
 <td>Estadísticas de la web trenzia.es (sin cookies)</td>
@@ -406,12 +408,14 @@
 </table>
 </div>
 <h3 id="sobre-el-consentimiento-para-los-datos-de-salud">4.1 Sobre el consentimiento para los datos de salud</h3>
-<p>Los datos descritos en el apartado 3.3 son categoría especial conforme al artículo 9 del RGPD. Solo los tratamos porque tú nos das tu consentimiento explícito al activar estas funciones dentro de la app.</p>
+<p>Los datos descritos en el apartado 3.3 son categoría especial conforme al artículo 9 del RGPD. Solo los tratamos con tu consentimiento explícito (art. 9.2.a RGPD), que pedimos en dos momentos distintos:</p>
 <ul>
-<li>El consentimiento es libre: puedes usar Trenzia sin rellenar el check-in diario ni el cuestionario de personalidad.</li>
-<li>El consentimiento es revocable en cualquier momento, sin que ello afecte a la licitud del tratamiento anterior. Retirarlo puede impedir que la app siga personalizando tus planes.</li>
+<li>Al darte de alta, en la pantalla «Tus datos de salud»: cubre los datos de perfil, check-in, marcas, sesiones, la carga y la fatiga calculadas y lo que cuentes al entrenador, incluido su envío al proveedor de IA (apartado 5). Sin este consentimiento la app no puede generar tu plan. Puedes retirarlo cuando quieras desde Ajustes; como la app no puede funcionar sin estos datos, retirarlo supone eliminar tu cuenta y todos tus datos.</li>
+<li>En la pantalla «Salud y lesiones», si decides contestarla: es un consentimiento aparte, con su propia casilla sin marcar. Es voluntario: puedes usar Trenzia sin contestarla. Puedes retirarlo con «Borrar mis respuestas» en esa misma pantalla, sin perder tu cuenta.</li>
 </ul>
-<p>La aplicación solicita el consentimiento explícito e informado (casilla no premarcada y enlace a esta política) antes del primer tratamiento de datos de salud.</p>
+<p>Las lesiones y las indicaciones de tu médico solo se usan para adaptar tu plan (por ejemplo, no programar una prueba mientras te molesta o subir la carga más despacio). El sistema de IA que redacta tu plan no recibe tus lesiones: solo recibe instrucciones de entrenamiento, como «no programar esta prueba esta semana». Si borras tus respuestas, tu plan deja de tenerlas en cuenta en cuanto se rehace, y como tarde desde la semana siguiente.</p>
+<p>Rellenar el check-in diario o el cuestionario de personalidad también es opcional. Retirar cualquiera de estos consentimientos no afecta a la licitud del tratamiento anterior.</p>
+<p>Guardamos la fecha y la versión del texto que aceptaste. Si cambiamos ese texto de forma sustancial, te pediremos que lo aceptes de nuevo.</p>
 <h3 id="decisiones-automatizadas-y-elaboración-de-perfiles">4.2 Decisiones automatizadas y elaboración de perfiles</h3>
 <p>Trenzia elabora perfiles: a partir de tus marcas, tu check-in diario y tu carga acumulada, el sistema calcula automáticamente tu readiness, tu carga fisiológica y tus proyecciones de rendimiento, y genera planes de entrenamiento personalizados.</p>
 <p>Estas decisiones <strong>no producen efectos jurídicos ni te afectan significativamente de modo similar</strong> en el sentido del artículo 22 del RGPD: son recomendaciones deportivas que puedes ignorar, editar o sustituir en todo momento. La app te permite modificar manualmente cualquier sesión propuesta.</p>
@@ -444,10 +448,10 @@
 <td>Servidores en la Unión Europea (AWS, región eu-central-1, Fráncfort, Alemania). El soporte técnico del proveedor, con sede en EE. UU., puede acceder puntualmente</td>
 </tr>
 <tr class="even">
-<td>Anthropic PBC</td>
+<td>Anthropic Ireland, Limited (Dublín, Irlanda), con quien contratamos el servicio, y su matriz Anthropic, PBC</td>
 <td>Modelos de IA (Claude) que generan los planes de entrenamiento, las respuestas del entrenador, la revisión semanal y la extracción de baremos desde PDF</td>
-<td>El texto de tus mensajes al coach y el contexto necesario (perfil, marcas, plan, readiness). No se envía tu email ni tu nombre: el contexto se identifica con un identificador interno</td>
-<td>Estados Unidos</td>
+<td>El texto de tus mensajes al coach y el contexto necesario (perfil, marcas, sesiones, plan y check-in). No se envía tu email ni tu nombre: el contexto se identifica con un identificador interno. No recibe tus lesiones ni las respuestas de la pantalla «Salud y lesiones», solo instrucciones de entrenamiento</td>
+<td>Estados Unidos (infraestructura de Anthropic)</td>
 </tr>
 <tr class="odd">
 <td>Google Ireland Ltd. / Google LLC (Firebase Cloud Messaging)</td>
@@ -503,7 +507,7 @@
 <h3 id="transferencias-internacionales">5.1 Transferencias internacionales</h3>
 <p>Los datos se almacenan en la Unión Europea. Sin embargo, algunas de las operaciones descritas implican transferir datos a Estados Unidos:</p>
 <ul>
-<li>El entrenador IA y la generación de planes, porque las peticiones se procesan en la infraestructura de Anthropic.</li>
+<li>El entrenador IA y la generación de planes: contratamos con Anthropic Ireland, Limited, y las peticiones se procesan en la infraestructura de Anthropic en Estados Unidos.</li>
 <li>La entrega de notificaciones push, a través de Firebase.</li>
 <li>El diagnóstico de errores (Sentry) y la analítica de producto y de la web (PostHog): los datos se almacenan en la Unión Europea, pero son empresas con sede en Estados Unidos y su personal puede acceder a ellos de forma puntual.</li>
 <li>El envío de correos del servicio, a través de Resend.</li>
@@ -544,6 +548,14 @@
 <tr class="even">
 <td>Perfil de personalidad (BFI-2)</td>
 <td>Se elimina inmediatamente, junto con su histórico, cuando lo solicitas desde la propia app</td>
+</tr>
+<tr class="odd">
+<td>Salud y lesiones (respuestas y consentimiento)</td>
+<td>Hasta que las borres desde esa pantalla o elimines tu cuenta. Se incluyen en la descarga de tus datos</td>
+</tr>
+<tr class="even">
+<td>Fecha y versión del aviso general de salud y de cada consentimiento aceptado</td>
+<td>Mientras la cuenta permanezca activa, para poder demostrar qué aceptaste y cuándo</td>
 </tr>
 <tr class="odd">
 <td>Registros técnicos del servidor (incluida la IP)</td>
@@ -706,6 +718,7 @@
 <li>Versión 1.11 (27 de octubre de 2026): ya no hace falta confirmar el correo para apuntarte a la prueba; las plazas se cubren por orden de llegada; el formulario solo pide nombre, correo, tipo de móvil y tu declaración de edad (apartados 3.8, 3.9, 4 y 6).</li>
 <li>Versión 1.12 (28 de octubre de 2026): se añaden las estadísticas de la web trenzia.es, sin cookies (apartados 2, 3.5, 4, 5, 5.1 y 6); se aclara que en iPhone no hace falta el Apple ID para la prueba (apartados 3.8 y 5), y que, si se libera una plaza, se ofrece por orden de llegada a quien está en la lista de espera (apartados 3.8, 4 y 6).</li>
 <li>Versión 1.13 (19 de noviembre de 2026): se añade cómo descargar una copia de tus datos desde la app (apartado 8) y se corrige el apartado 7: la app guarda en tu móvil tu sesión iniciada, que incluye tu correo. No se recoge ningún dato nuevo ni cambia la finalidad.</li>
+<li>Versión 1.14 (24 de noviembre de 2026): se añade la pantalla voluntaria «Salud y lesiones», con su propio consentimiento, y el aviso general de salud (apartados 3.3, 4.1 y 6); se explica que el consentimiento del alta es necesario para generar el plan y que retirarlo supone eliminar la cuenta (4.1); se indica que contratamos el servicio de IA con Anthropic Ireland, Limited, que procesa los datos en Estados Unidos, y que no recibe tus lesiones (5 y 5.1); y se aclara que de la pantalla «Salud y lesiones» no se registra analítica (3.5). Te pediremos de nuevo el consentimiento del alta en la app.</li>
 </ul>
 <hr />
 <h2 id="contacto">11. Contacto</h2>
