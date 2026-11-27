@@ -13,8 +13,9 @@
  * - Con «No rastrear» o Global Privacy Control, no se carga nada.
  * - Solo en trenzia.es: en local o en una vista previa no sale nada.
  *
- * Eventos de clic: clic_probar (enlaces a probar) y clic_oposiciones (los de la portada
- * a /oposiciones/, con su origen). faq_abierta: al abrir una pregunta frecuente de la portada. Un clic antes de que cargue posthog-js (tras load, cuando
+ * Eventos de clic: clic_probar (enlaces a probar), clic_oposiciones (los de la portada
+ * a /oposiciones/, con su origen) y clic_tienda (los de App Store y Google Play, con
+ * tienda y origen; web-66). faq_abierta: al abrir una pregunta frecuente de la portada. Un clic antes de que cargue posthog-js (tras load, cuando
  * el navegador queda ocioso, 3 s como mucho) se queda en la cola y se pierde al cambiar de página.
  *
  * Lo cargan la portada, probar y /oposiciones/. Las páginas con token
@@ -58,7 +59,7 @@
     // Un clic que lleva a otra página: sale en el momento, sin esperar a la cola de posthog-js,
     // por fetch con keepalive (lo pone posthog-js), que sigue aunque la página se vaya. Con
     // transport "sendBeacon" esperaba a la cola y salía en un beacon que PostHog no registraba (web-55).
-    ph.capture(e[0], e[1] || {}, e[0] === "clic_probar" || e[0] === "clic_oposiciones" ? { send_instantly: true } : undefined);
+    ph.capture(e[0], e[1] || {}, /^clic_(probar|oposiciones|tienda)$/.test(e[0]) ? { send_instantly: true } : undefined);
   }
 
   // Clics en cualquier enlace a probar.html. La portada marca los suyos con data-origen.
@@ -68,6 +69,15 @@
     if (!a) return;
     var u;
     try { u = new URL(a.getAttribute("href"), location.href); } catch (e) { return; }
+    // A una tienda (web-66): tienda app_store o google_play, y origen portada_arriba,
+    // portada_faq, probar u otro. Solo códigos.
+    var tienda = u.hostname === "apps.apple.com" ? "app_store" : u.hostname === "play.google.com" ? "google_play" : null;
+    if (tienda) {
+      var origen = a.dataset.origen;
+      if (!/^(portada_arriba|portada_faq|probar)$/.test(origen || "")) origen = /^\/probar(\.html)?$/.test(location.pathname) ? "probar" : "otro";
+      cola.push(["clic_tienda", { tienda: tienda, origen: origen }]);
+      return;
+    }
     if (u.origin !== location.origin) return;
     if (/^\/oposiciones\/(index\.html)?$/.test(u.pathname) && a.dataset.origen) {
       cola.push(["clic_oposiciones", { origen: a.dataset.origen }]);

@@ -113,10 +113,10 @@
     },
     {
      "@type": "Question",
-     "name": "¿Cómo la pruebo?",
+     "name": "¿Cómo la consigo?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "Apúntate a la prueba cerrada en https://trenzia.es/probar.html, para iPhone y Android: las plazas son limitadas y se cubren por orden de llegada."
+      "text": "Está en App Store y Google Play. Descárgala, elige tu oposición y la app te prepara el plan para tus pruebas físicas."
      }
     }
    ]
@@ -159,7 +159,10 @@
  .faq details p{margin:0 0 16px;color:#e6e6ea}
  .faq a{color:#fff}
  .cierre{margin:0 0 48px}
- .soon{display:inline-block;border:1px solid var(--o);color:var(--o);border-radius:999px;padding:6px 14px;font-size:14px;margin-bottom:40px}
+ .tiendas{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;margin:0 0 40px}
+ .tiendas a{display:inline-block;line-height:0}
+ .tiendas img{display:block;height:auto}
+ .tiendas a:focus-visible{outline:2px solid #fff;outline-offset:2px}
  .cta{display:inline-block;background:var(--o);color:#fff;text-decoration:none;font-weight:700;font-size:19px;border-radius:999px;padding:13px 26px;margin:0 12px 16px 0}
  .cta:focus-visible,.cta2:focus-visible{outline:2px solid #fff;outline-offset:3px}
  /* Primera pantalla (web-55): el botón principal y, al lado o debajo, el secundario con borde */
@@ -187,10 +190,13 @@
  <h1>Preparas varias pruebas físicas. <em>¿Qué entrenas hoy?</em></h1>
  <p class="lead">Carrera, natación, cuerda, press banca. Cada prueba pide algo distinto y la semana no da para todo. Trenzia las reparte en un plan con el baremo de tu convocatoria y lo ajusta cada día según cómo llegas.</p>
  <div class="acciones">
-  <a class="cta" href="probar.html" data-origen="portada_arriba">Quiero probar la app</a>
+  <a class="cta" href="probar.html" data-origen="portada_arriba">Descarga Trenzia</a>
   <a class="cta2" href="/oposiciones/" data-origen="portada_arriba">Mira las pruebas de tu oposición</a>
  </div>
- <span class="soon">Próximamente en App Store y Google Play</span>
+ <p class="tiendas">
+  <a href="https://apps.apple.com/es/app/id6794259784" rel="noopener" data-tienda="app_store" data-origen="portada_arriba"><img src="img/insignia-app-store.svg" alt="Consíguelo en el App Store" width="144" height="48"></a>
+  <a href="https://play.google.com/store/apps/details?id=com.fitsyncopo.app" rel="noopener" data-tienda="google_play" data-origen="portada_arriba"><img src="img/insignia-google-play.png" alt="Disponible en Google Play" width="160" height="62"></a>
+ </p>
 
  <section class="problema" aria-labelledby="problema-titulo">
   <h2 id="problema-titulo">Lo que pasa cuando preparas varias pruebas a la vez</h2>
@@ -239,12 +245,12 @@
  <details data-faq="preparador"><summary>¿Sustituye a mi preparador?</summary><p>No. Trenzia organiza y ajusta tu plan cada día. La técnica de cada prueba la corrige una persona que te vea.</p></details>
  <details data-faq="apto"><summary>¿Me asegura el apto?</summary><p>No. Ninguna app puede. Te dice cuánto te falta en cada prueba y qué entrenar para recortarlo.</p></details>
  <details data-faq="marcas"><summary>¿De dónde salen las marcas?</summary><p>De las bases oficiales de cada convocatoria. Cada ficha enlaza a su boletín. Manda siempre la convocatoria oficial.</p></details>
- <details data-faq="probar"><summary>¿Cómo la pruebo?</summary><p><a href="probar.html" data-origen="portada_faq">Apúntate a la prueba cerrada</a>, para iPhone y Android: las plazas son limitadas y se cubren por orden de llegada.</p></details>
+ <details data-faq="probar"><summary>¿Cómo la consigo?</summary><p>Está en <a href="https://apps.apple.com/es/app/id6794259784" rel="noopener" data-tienda="app_store" data-origen="portada_faq">App Store</a> y <a href="https://play.google.com/store/apps/details?id=com.fitsyncopo.app" rel="noopener" data-tienda="google_play" data-origen="portada_faq">Google Play</a>. Descárgala, elige tu oposición y la app te prepara el plan para tus pruebas físicas.</p></details>
  </section>
 
  <div class="cierre">
   <p class="mas">¿Quieres ver ya las pruebas de tu oposición? <a href="/oposiciones/" data-origen="portada_abajo">Mira sus marcas y calcula tu nota</a>.</p>
-  <a class="cta" href="probar.html" data-origen="portada_abajo">Quiero probar la app</a>
+  <a class="cta" href="probar.html" data-origen="portada_abajo">Descarga Trenzia</a>
  </div>
  <footer>
   <p><a href="/oposiciones/">Pruebas físicas por oposición</a></p>
