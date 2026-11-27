@@ -45,7 +45,7 @@ Fuente única: el kit del logo v3 (`tienda\trenzia-logo-v3\`, con cesión de der
 
 - **Botón principal:** fondo naranja, texto blanco en negrita a 19 px (no menos: con 19 px en negrita cuenta como texto grande y el contraste blanco sobre naranja, 3,1 a 1, cumple; a 17 px no cumple. Decisión de Urko, 07/10), forma de píldora (`border-radius: 999px`), relleno de 13 a 14 px por 22 a 26 px.
 - **Botón secundario:** transparente, borde naranja `#FF5A1F` de 2 px y texto blanco en negrita, también en píldora (así está publicado desde el web-55). A 17 px en el móvil para que quepa en una línea; desde 520 px de ancho va al lado del principal, a 19 px y con su misma altura.
-- **Etiqueta "Próximamente":** borde y texto naranjas, píldora, 14 px.
+- **Insignias de las tiendas** (web-66): las oficiales en español, sin modificar, en `img/`: «Consíguelo en el App Store» (`insignia-app-store.svg`, de Apple Marketing Tools: en español de España dice «Consíguelo», no «Descárgalo») y «Disponible en Google Play» (`insignia-google-play.png`, del generador de Google, con margen transparente arriba y abajo). El `alt` es el texto de la insignia. App Store a 48 px de alto y Google Play a 62 px, para que se vean del mismo tamaño y quepan en una línea a 375 px. Nunca una insignia redibujada. Enlazan a la ficha de cada tienda en la misma pestaña, con `rel="noopener"`.
 - **Tarjetas y cajas:** borde de 1 px `#2A2A2E`, esquinas de 12 px, relleno de 18 a 20 px. Las tarjetas de la lista del selector de oposición, más compactas: 14 × 16 px.
 - **Campos de formulario:** fondo `#16161A`, borde `#2A2A2E`, esquinas de 8 px.
 - **Chips de filtro:** píldora con borde `#2A2A2E`. Seleccionado: borde y texto naranjas y fondo naranja suave.
