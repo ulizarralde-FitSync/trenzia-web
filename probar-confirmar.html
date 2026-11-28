@@ -113,11 +113,11 @@
       const d = await r.json().catch(() => ({}));
       switch (d.estado) {
         case "confirmado":
-          mostrar("Plaza reservada", ["Te escribiremos cuando la app esté lista para instalar."]);
+          mostrar("Plaza reservada", ["Gracias por confirmar."]);
           tiendas();
           return;
         case "ya_confirmado":
-          mostrar("Tu plaza ya estaba reservada", ["Te escribiremos cuando la app esté lista para instalar."]);
+          mostrar("Tu plaza ya estaba reservada", ["Gracias por confirmar."]);
           tiendas();
           return;
         case "lista_espera":
