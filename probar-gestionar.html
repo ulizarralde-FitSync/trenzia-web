@@ -99,7 +99,7 @@
       const d = await r.json().catch(() => ({}));
       switch (d.estado) {
         case "baja":
-          mostrar("Te has dado de baja", "No te volveremos a escribir. Tus datos se borran solos a los 30 días. Si cambias de idea, puedes apuntarte otra vez.", ["Volver a apuntarme", "probar.html"]);
+          mostrar("Te has dado de baja", "No te volveremos a escribir. Tus datos se borran solos a los 30 días. La prueba cerrada ha terminado y ya no hace falta apuntarse: Trenzia está en App Store y Google Play.", ["Descarga Trenzia", "probar.html"]);
           return;
         case "borrado":
           mostrar("Datos borrados", "Hemos borrado todo lo que nos diste al apuntarte. Gracias por tu interés en Trenzia.");

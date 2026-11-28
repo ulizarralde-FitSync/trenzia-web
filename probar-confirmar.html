@@ -71,6 +71,7 @@
       const a = document.createElement("a");
       a.href = enlace[1];
       a.textContent = enlace[0];
+      a.className = "primary";
       const p = document.createElement("p");
       p.appendChild(a);
       res.appendChild(p);
@@ -78,10 +79,28 @@
     res.focus();
   }
 
-  const OTRA_VEZ = ["Volver a apuntarme", "probar.html"];
+  // Desde el web-66 no hay formulario de alta: quien llega con un enlace viejo va a la
+  // página de descarga (web-67).
+  const TERMINADA = "La prueba cerrada ha terminado y ya no hace falta apuntarse: Trenzia está en App Store y Google Play.";
+  const DESCARGA = ["Descarga Trenzia", "probar.html"];
+  // Tras una confirmación correcta: las dos tiendas como enlaces de texto, sin data-origen.
+  function tiendas() {
+    const p = document.createElement("p");
+    const enlace = (texto, href) => {
+      const a = document.createElement("a");
+      a.href = href;
+      a.rel = "noopener";
+      a.textContent = texto;
+      return a;
+    };
+    p.append("Ya puedes descargarla en ",
+      enlace("App Store", "https://apps.apple.com/es/app/id6794259784"), " y ",
+      enlace("Google Play", "https://play.google.com/store/apps/details?id=com.fitsyncopo.app"), ".");
+    res.appendChild(p);
+  }
 
   if (!t) {
-    mostrar("Falta el enlace", ["Abre esta página desde el botón del correo que te enviamos."], OTRA_VEZ);
+    mostrar("Falta el enlace", [TERMINADA], DESCARGA);
     return;
   }
 
@@ -94,27 +113,25 @@
       const d = await r.json().catch(() => ({}));
       switch (d.estado) {
         case "confirmado":
-          mostrar("Plaza reservada", ["Te escribiremos cuando la app esté lista para instalar."]);
+          mostrar("Plaza reservada", ["Gracias por confirmar."]);
+          tiendas();
           return;
         case "ya_confirmado":
-          mostrar("Tu plaza ya estaba reservada", ["Te escribiremos cuando la app esté lista para instalar."]);
+          mostrar("Tu plaza ya estaba reservada", ["Gracias por confirmar."]);
+          tiendas();
           return;
         case "lista_espera":
-          // Plazas cubiertas al confirmar (A-27): sin botón de volver a apuntarse.
-          mostrar("Estás en la lista de espera", [
-            "Gracias por confirmar. Las plazas de la prueba ya están cubiertas, así que esta vez no te enviaremos invitación.",
-            "Te avisaremos a este correo el día que Trenzia salga en las tiendas.",
-            "Solo guardamos tu nombre, tu correo, el tipo de móvil y el enlace por el que llegaste, además del registro de que aceptaste la política, y lo borraremos todo después de avisarte.",
-          ]);
+          // Plazas cubiertas al confirmar (A-27).
+          mostrar("Estás en la lista de espera", [TERMINADA], DESCARGA);
           return;
         case "caducado":
-          mostrar("Este enlace ha caducado", ["El enlace de confirmación vale 7 días. Vuelve a apuntarte con el mismo correo y te mandaremos uno nuevo."], OTRA_VEZ);
+          mostrar("Este enlace ha caducado", [TERMINADA], DESCARGA);
           return;
         case "baja":
-          mostrar("Te diste de baja", ["Si quieres volver, apúntate de nuevo."], OTRA_VEZ);
+          mostrar("Te diste de baja", [TERMINADA], DESCARGA);
           return;
         case "invalido":
-          mostrar("Este enlace no es válido", ["Puede que ya no exista o que se haya copiado incompleto. Si te apuntaste hace poco, busca el último correo que te enviamos, o vuelve a apuntarte."], OTRA_VEZ);
+          mostrar("Este enlace no es válido", [TERMINADA], DESCARGA);
           return;
       }
       throw new Error(d.message || "respuesta inesperada");
